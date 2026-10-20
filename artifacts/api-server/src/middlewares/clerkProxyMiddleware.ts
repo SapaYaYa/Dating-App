@@ -1,0 +1,179 @@
+/**
+ * Clerk Frontend API Proxy Middleware
+ *
+ * Proxies Clerk Frontend API requests through your domain, enabling Clerk
+ * authentication on custom domains and .replit.app deployments without
+ * requiring CNAME DNS configuration.
+ *
+ * AUTH CONFIGURATION: To manage users, enable/disable login providers
+ * (Google, GitHub, etc.), change app branding, or configure OAuth credentials,
+ * use the Auth pane in the workspace toolbar. There is no external Clerk
+ * dashboard — all auth configuration is done through the Auth pane.
+ *
+ * IMPORTANT:
+ * - Only active in production (Clerk proxying doesn't work for dev instances)
+ * - Must be mounted BEFORE express.json() middleware
+ *
+ * Usage in app.ts:
+ *   import { CLERK_PROXY_PATH, clerkProxyMiddleware } from "./middlewares/clerkProxyMiddleware";
+ *   app.use(CLERK_PROXY_PATH, clerkProxyMiddleware());
+ */
+
+import { createProxyMiddleware } from "http-proxy-middleware";
+import type { RequestHandler } from "express";
+import type { IncomingHttpHeaders } from "http";
+
+const CLERK_FAPI = "https://frontend-api.clerk.dev";
+export const CLERK_PROXY_PATH = "/api/__clerk";
+
+function normalizeHostname(value: string | undefined): string | undefined {
+  const candidate = value?.trim();
+  if (!candidate) return undefined;
+
+  try {
+    const url = new URL(
+      /^https?:\/\//i.test(candidate) ? candidate : `https://${candidate}`,
+    );
+    return url.hostname.toLowerCase();
+  } catch {
+    return undefined;
+  }
+}
+
+function getAllowedClerkProxyHosts(): Set<string> {
+  const configuredHosts = [
+    process.env.REPLIT_DOMAINS,
+    process.env.REPLIT_INTERNAL_APP_DOMAIN,
+    process.env.REPLIT_DEV_DOMAIN,
+    process.env.CLERK_ALLOWED_HOSTS,
+  ]
+    .filter(Boolean)
+    .flatMap((value) => value!.split(","))
+    .map(normalizeHostname)
+    .filter((host): host is string => Boolean(host));
+
+  return new Set(configuredHosts);
+}
+
+/**
+ * Returns the first effective public hostname for the given request,
+ * preferring x-forwarded-host over the Host header so callers behind a
+ * proxy see the original client-facing host.
+ *
+ * x-forwarded-host can take three shapes:
+ *   - undefined (no proxy involved)
+ *   - a single string (one proxy hop)
+ *   - a comma-delimited string when an upstream appended rather than
+ *     replaced the header (Node folds duplicate headers this way), or a
+ *     string[] in some Express typings
+ * In the multi-value case, the leftmost value is the original client-
+ * facing host. Take that one in all forms. Exported so that app.ts
+ * (clerkMiddleware callback) and this proxy middleware agree on which
+ * hostname is canonical — otherwise multi-domain/custom-domain flows
+ * break.
+ */
+export function getClerkProxyHost(req: {
+  headers: IncomingHttpHeaders;
+}): string | undefined {
+  const allowedHosts = getAllowedClerkProxyHosts();
+  const forwarded = req.headers["x-forwarded-host"];
+  const raw = Array.isArray(forwarded) ? forwarded[0] : forwarded;
+  const candidates = [raw?.split(",")[0], req.headers.host];
+
+  for (const candidate of candidates) {
+    const host = normalizeHostname(candidate);
+    if (host && allowedHosts.has(host)) {
+      return host;
+    }
+  }
+
+  return undefined;
+}
+
+export function clerkProxyMiddleware(): RequestHandler {
+  // Only run proxy in production — Clerk proxying doesn't work for dev instances
+  if (process.env.NODE_ENV !== "production") {
+    return (_req, _res, next) => next();
+  }
+
+  const secretKey = process.env.CLERK_SECRET_KEY;
+  if (!secretKey) {
+    return (_req, _res, next) => next();
+  }
+
+  const proxy = createProxyMiddleware({
+    target: CLERK_FAPI,
+    changeOrigin: true,
+    // The deployment edge rejects chunked proxied responses. Take over the
+    // response so dynamic Clerk responses can be sent with Content-Length.
+    selfHandleResponse: true,
+    pathRewrite: (path: string) =>
+      path.replace(new RegExp(`^${CLERK_PROXY_PATH}`), ""),
+    on: {
+      proxyReq: (proxyReq, req) => {
+        const protocol = req.headers["x-forwarded-proto"] || "https";
+        const host = getClerkProxyHost(req) || "";
+        const proxyUrl = `${protocol}://${host}${CLERK_PROXY_PATH}`;
+
+        proxyReq.setHeader("Clerk-Proxy-Url", proxyUrl);
+        proxyReq.setHeader("Clerk-Secret-Key", secretKey);
+
+        const xff = req.headers["x-forwarded-for"];
+        const clientIp =
+          (Array.isArray(xff) ? xff[0] : xff)?.split(",")[0]?.trim() ||
+          req.socket?.remoteAddress ||
+          "";
+        if (clientIp) {
+          proxyReq.setHeader("X-Forwarded-For", clientIp);
+        }
+      },
+      proxyRes: (proxyRes, req, res) => {
+        const headers = { ...proxyRes.headers };
+        delete headers["transfer-encoding"];
+        delete headers.connection;
+        delete headers["keep-alive"];
+
+        const status = proxyRes.statusCode ?? 502;
+        if (status < 200 || status === 204) {
+          delete headers["content-length"];
+        }
+
+        const bodyless =
+          req.method === "HEAD" ||
+          status < 200 ||
+          status === 204 ||
+          status === 304;
+
+        if (headers["content-length"] !== undefined || bodyless) {
+          res.writeHead(status, headers);
+          proxyRes.on("error", () => res.destroy());
+          proxyRes.pipe(res);
+          return;
+        }
+
+        const chunks: Buffer[] = [];
+        proxyRes.on("data", (chunk: Buffer) => chunks.push(chunk));
+        proxyRes.on("end", () => {
+          const body = Buffer.concat(chunks);
+          headers["content-length"] = String(body.length);
+          res.writeHead(status, headers);
+          res.end(body);
+        });
+        proxyRes.on("error", () => {
+          if (!res.headersSent) {
+            res.writeHead(502, { "content-length": "0" });
+          }
+          res.end();
+        });
+      },
+    },
+  }) as RequestHandler;
+
+  return (req, res, next) => {
+    if (!getClerkProxyHost(req)) {
+      res.status(400).send("Invalid Clerk proxy host");
+      return;
+    }
+    proxy(req, res, next);
+  };
+}

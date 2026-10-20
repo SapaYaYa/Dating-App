@@ -1,0 +1,2 @@
+- [Orval 201 response validation](orval-201-response-validation.md) — Zod codegen may omit named response validators for successful 201 operations.
+- [Clerk CAPTCHA verification](clerk-captcha-verification.md) — automated preview tests can trigger Cloudflare 600010 even when the human-facing widget is wired correctly.

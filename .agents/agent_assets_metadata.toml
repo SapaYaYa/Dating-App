@@ -1,0 +1,8 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "BQCFp2jF2A6cAVl0reTUH"
+uri = "file://artifacts/mobile/assets/images/icon.png"
+type = "image"
+title = "dating app icon"
