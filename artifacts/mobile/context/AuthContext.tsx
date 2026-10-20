@@ -241,6 +241,81 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+const DEMO_USER_ID = "demo-user";
+
+const DEMO_PROFILE: AuthUser = {
+  id: DEMO_USER_ID,
+  name: "Alex",
+  email: "alex@example.com",
+  age: 27,
+  gender: "Non-binary",
+  lookingFor: ["Everyone"],
+  bio: "Just exploring the app in demo mode.",
+  images: ["https://randomuser.me/api/portraits/lego/1.jpg"],
+  interests: ["Music", "Hiking", "Coffee"],
+  occupation: "Designer",
+};
+
+// Stands in for AuthProvider when DEMO_MODE is on: no Clerk, no API calls.
+// The profile lives only in local storage; signing out resets it.
+export function DemoAuthProvider({ children }: { children: React.ReactNode }) {
+  const [profile, setProfile] = useState<Partial<AuthUser>>(DEMO_PROFILE);
+  const [isLoading, setIsLoading] = useState(true);
+  const [verificationStatus, setVerificationStatusState] = useState<VerificationStatus>("none");
+
+  useEffect(() => {
+    Promise.all([
+      AsyncStorage.getItem(profileKey(DEMO_USER_ID)),
+      AsyncStorage.getItem(verificationKey(DEMO_USER_ID)),
+    ])
+      .then(([rawProfile, storedVerification]) => {
+        if (rawProfile) setProfile({ ...DEMO_PROFILE, ...JSON.parse(rawProfile) });
+        if (storedVerification === "pending" || storedVerification === "verified") {
+          setVerificationStatusState(storedVerification);
+        }
+      })
+      .catch(() => {})
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  const updateUser = useCallback(
+    (data: Partial<AuthUser>) => {
+      const updated = { ...profile, ...data };
+      setProfile(updated);
+      AsyncStorage.setItem(profileKey(DEMO_USER_ID), JSON.stringify(updated));
+    },
+    [profile],
+  );
+
+  const saveProfile = useCallback(
+    async (_userId: string, data: Partial<AuthUser>) => {
+      const merged = { ...profile, ...data };
+      setProfile(merged);
+      await AsyncStorage.setItem(profileKey(DEMO_USER_ID), JSON.stringify(merged));
+    },
+    [profile],
+  );
+
+  const updateVerification = useCallback((status: VerificationStatus) => {
+    setVerificationStatusState(status);
+    AsyncStorage.setItem(verificationKey(DEMO_USER_ID), status);
+  }, []);
+
+  const logout = async () => {
+    await AsyncStorage.multiRemove([profileKey(DEMO_USER_ID), verificationKey(DEMO_USER_ID)]);
+    setProfile(DEMO_PROFILE);
+    setVerificationStatusState("none");
+  };
+
+  const user: AuthUser = { ...DEMO_PROFILE, ...profile, id: DEMO_USER_ID, verificationStatus };
+
+  return (
+    <AuthContext.Provider value={{ user, isLoading, verificationStatus, logout, updateUser, saveProfile, updateVerification }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
 export function useAuth() {
   const ctx = useContext(AuthContext);
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");

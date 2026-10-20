@@ -18,7 +18,8 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { setBaseUrl } from "@workspace/api-client-react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { AuthProvider } from "@/context/AuthContext";
+import { DEMO_MODE } from "@/constants/demo";
+import { AuthProvider, DemoAuthProvider } from "@/context/AuthContext";
 import { AppProvider } from "@/context/AppContext";
 
 SplashScreen.preventAutoHideAsync();
@@ -66,28 +67,36 @@ export default function RootLayout() {
 
   if (!fontsLoaded && !fontError) return null;
 
+  const app = (
+    <AppProvider>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <KeyboardProvider>
+          <RootLayoutNav />
+        </KeyboardProvider>
+      </GestureHandlerRootView>
+    </AppProvider>
+  );
+
   return (
     <SafeAreaProvider>
       <ErrorBoundary>
-        <ClerkProvider
-          publishableKey={publishableKey}
-          proxyUrl={clerkProxyUrl}
-          tokenCache={tokenCache}
-        >
-          <ClerkLoaded>
-            <QueryClientProvider client={queryClient}>
-              <AuthProvider>
-                <AppProvider>
-                  <GestureHandlerRootView style={{ flex: 1 }}>
-                    <KeyboardProvider>
-                      <RootLayoutNav />
-                    </KeyboardProvider>
-                  </GestureHandlerRootView>
-                </AppProvider>
-              </AuthProvider>
-            </QueryClientProvider>
-          </ClerkLoaded>
-        </ClerkProvider>
+        {DEMO_MODE ? (
+          <QueryClientProvider client={queryClient}>
+            <DemoAuthProvider>{app}</DemoAuthProvider>
+          </QueryClientProvider>
+        ) : (
+          <ClerkProvider
+            publishableKey={publishableKey}
+            proxyUrl={clerkProxyUrl}
+            tokenCache={tokenCache}
+          >
+            <ClerkLoaded>
+              <QueryClientProvider client={queryClient}>
+                <AuthProvider>{app}</AuthProvider>
+              </QueryClientProvider>
+            </ClerkLoaded>
+          </ClerkProvider>
+        )}
       </ErrorBoundary>
     </SafeAreaProvider>
   );
