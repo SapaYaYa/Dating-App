@@ -1,0 +1,303 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: profiles
+    description: User profile operations
+  - name: reports
+    description: User safety reports
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+  /profiles:
+    get:
+      operationId: listProfiles
+      tags: [profiles]
+      security:
+        - bearerAuth: []
+      summary: List profiles for discovery
+      description: >
+        Returns other users' profiles for the discovery feed. Each profile
+        includes a server-computed, pre-rounded distanceKm based on the
+        requesting user's stored location. Raw coordinates are never returned.
+      responses:
+        "200":
+          description: Profiles returned
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ProfileList"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /profiles/me:
+    get:
+      operationId: getMyProfile
+      tags: [profiles]
+      security:
+        - bearerAuth: []
+      summary: Get current user's profile
+      description: Returns the profile for the authenticated user
+      responses:
+        "200":
+          description: Profile found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "404":
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: upsertMyProfile
+      tags: [profiles]
+      security:
+        - bearerAuth: []
+      summary: Create or update current user's profile
+      description: Upserts the profile for the authenticated user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileInput"
+      responses:
+        "200":
+          description: Profile saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /reports:
+    post:
+      operationId: createReport
+      tags: [reports]
+      security:
+        - bearerAuth: []
+      summary: Submit a report
+      description: Stores a report for moderation with the authenticated user as the reporter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ReportInput"
+      responses:
+        "201":
+          description: Report stored
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Report"
+        "400":
+          description: Invalid report input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+    Profile:
+      type: object
+      required: [id, name, lookingFor, bio, photos, interests, occupation]
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        age:
+          type: ["integer", "null"]
+        birthday:
+          type: ["string", "null"]
+        gender:
+          type: ["string", "null"]
+        lookingFor:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum: [Men, Women, Non-binary, Trans Men, Trans Women, Everyone]
+        bio:
+          type: string
+        photos:
+          type: array
+          items:
+            type: string
+        interests:
+          type: array
+          items:
+            type: string
+        occupation:
+          type: string
+        distanceKm:
+          type: ["integer", "null"]
+          description: >
+            Pre-rounded distance in whole kilometres between this profile and the
+            requesting user. Null when viewing your own profile. Never includes
+            raw coordinates.
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    ProfileInput:
+      type: object
+      properties:
+        name:
+          type: string
+        age:
+          type: integer
+        birthday:
+          type: string
+        gender:
+          type: string
+        lookingFor:
+          type: array
+          minItems: 1
+          items:
+            type: string
+            enum: [Men, Women, Non-binary, Trans Men, Trans Women, Everyone]
+        bio:
+          type: string
+        photos:
+          type: array
+          items:
+            type: string
+        interests:
+          type: array
+          items:
+            type: string
+        occupation:
+          type: string
+        latitude:
+          type: number
+          description: >
+            Viewer's current latitude. Stored server-side only for distance
+            computation; never returned in any profile response.
+        longitude:
+          type: number
+          description: >
+            Viewer's current longitude. Stored server-side only for distance
+            computation; never returned in any profile response.
+    ProfileList:
+      type: object
+      required: [profiles]
+      properties:
+        profiles:
+          type: array
+          items:
+            $ref: "#/components/schemas/Profile"
+    ReportInput:
+      type: object
+      required: [reportedProfileId, category]
+      properties:
+        reportedProfileId:
+          type: string
+          description: ID of the profile being reported
+        category:
+          type: string
+          enum:
+            - Fake Profile
+            - Harassment
+            - Spam
+            - Inappropriate Photos
+            - Violence
+            - Catfishing
+            - Impersonation
+        note:
+          type: string
+          maxLength: 500
+          default: ""
+          description: Optional details about the report
+    Report:
+      type: object
+      required: [id, reportedProfileId, reporterId, category, note, timestamp]
+      properties:
+        id:
+          type: integer
+        reportedProfileId:
+          type: string
+        reporterId:
+          type: string
+        category:
+          type: string
+          enum:
+            - Fake Profile
+            - Harassment
+            - Spam
+            - Inappropriate Photos
+            - Violence
+            - Catfishing
+            - Impersonation
+        note:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string
