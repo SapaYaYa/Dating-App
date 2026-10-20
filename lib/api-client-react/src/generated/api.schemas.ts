@@ -59,20 +59,43 @@ export const ProfileInputLookingForItem = {
 } as const;
 
 export interface ProfileInput {
+  /** @maxLength 50 */
   name?: string;
+  /**
+   * Users must be 18 or older.
+   * @minimum 18
+   * @maximum 120
+   */
   age?: number;
+  /**
+   * Date of birth as YYYY-MM-DD.
+   * @pattern ^\d{4}-\d{2}-\d{2}$
+   */
   birthday?: string;
+  /** @maxLength 50 */
   gender?: string;
   /** @minItems 1 */
   lookingFor?: ProfileInputLookingForItem[];
+  /** @maxLength 500 */
   bio?: string;
+  /** @maxItems 9 */
   photos?: string[];
+  /** @maxItems 20 */
   interests?: string[];
+  /** @maxLength 100 */
   occupation?: string;
-  /** Viewer's current latitude. Stored server-side only for distance computation; never returned in any profile response.
+  /**
+   * Viewer's current latitude. Stored server-side only for distance computation; never returned in any profile response.
+
+   * @minimum -90
+   * @maximum 90
    */
   latitude?: number;
-  /** Viewer's current longitude. Stored server-side only for distance computation; never returned in any profile response.
+  /**
+   * Viewer's current longitude. Stored server-side only for distance computation; never returned in any profile response.
+
+   * @minimum -180
+   * @maximum 180
    */
   longitude?: number;
 }
@@ -95,7 +118,11 @@ export const ReportInputCategory = {
 } as const;
 
 export interface ReportInput {
-  /** ID of the profile being reported */
+  /**
+   * ID of the profile being reported. You cannot report yourself.
+   * @minLength 1
+   * @maxLength 255
+   */
   reportedProfileId: string;
   category: ReportInputCategory;
   /**

@@ -20,7 +20,8 @@ export function formatDistance(raw: string | number, unit: "km" | "mi" = "km"): 
   if (raw === null || raw === undefined || raw === "") return "";
 
   if (typeof raw === "number") {
-    if (!isFinite(raw) || raw < 1) {
+    if (!Number.isFinite(raw)) return "";
+    if (raw < 1) {
       return `< 1 ${unit} away`;
     }
     return `~${Math.round(raw)} ${unit} away`;

@@ -527,6 +527,7 @@ export default function RegisterScreen() {
                     value={name}
                     onChangeText={setName}
                     autoCapitalize="words"
+                    maxLength={50}
                   />
                 </View>
               </View>

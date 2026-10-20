@@ -19,6 +19,11 @@ router.post("/reports", async (req, res): Promise<void> => {
     return;
   }
 
+  if (parsed.data.reportedProfileId === userId) {
+    res.status(400).json({ error: "You cannot report your own profile" });
+    return;
+  }
+
   const [report] = await db
     .insert(reportsTable)
     .values({

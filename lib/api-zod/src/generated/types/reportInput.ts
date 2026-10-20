@@ -8,7 +8,11 @@
 import type { ReportInputCategory } from "./reportInputCategory";
 
 export interface ReportInput {
-  /** ID of the profile being reported */
+  /**
+   * ID of the profile being reported. You cannot report yourself.
+   * @minLength 1
+   * @maxLength 255
+   */
   reportedProfileId: string;
   category: ReportInputCategory;
   /**

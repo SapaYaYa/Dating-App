@@ -54,9 +54,11 @@ router.get("/profiles", async (req, res): Promise<void> => {
     .from(profilesTable)
     .where(ne(profilesTable.id, userId));
 
-  const profiles = others.map((p) =>
-    toProfileResponse(p, viewer?.latitude, viewer?.longitude),
-  );
+  // Age is enough for discovery; another user's exact birthday is not shared.
+  const profiles = others.map((p) => ({
+    ...toProfileResponse(p, viewer?.latitude, viewer?.longitude),
+    birthday: null,
+  }));
 
   res.json(ListProfilesResponse.parse({ profiles }));
 });

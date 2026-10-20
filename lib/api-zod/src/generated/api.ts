@@ -16,7 +16,7 @@ export const HealthCheckResponse = zod.object({
 });
 
 /**
- * Returns other users' profiles for the discovery feed. Each profile includes a server-computed, pre-rounded distanceKm based on the requesting user's stored location. Raw coordinates are never returned.
+ * Returns other users' profiles for the discovery feed. Each profile includes a server-computed, pre-rounded distanceKm based on the requesting user's stored location. Raw coordinates and birthdays are never returned for other users.
 
  * @summary List profiles for discovery
  */
@@ -98,12 +98,46 @@ export const GetMyProfileResponse = zod.object({
  * Upserts the profile for the authenticated user
  * @summary Create or update current user's profile
  */
+export const upsertMyProfileBodyNameMax = 50;
+
+export const upsertMyProfileBodyAgeMin = 18;
+export const upsertMyProfileBodyAgeMax = 120;
+
+export const upsertMyProfileBodyBirthdayRegExp = new RegExp(
+  "^\\d{4}-\\d{2}-\\d{2}$",
+);
+export const upsertMyProfileBodyGenderMax = 50;
+
+export const upsertMyProfileBodyBioMax = 500;
+
+export const upsertMyProfileBodyPhotosMax = 9;
+
+export const upsertMyProfileBodyInterestsItemMax = 50;
+
+export const upsertMyProfileBodyInterestsMax = 20;
+
+export const upsertMyProfileBodyOccupationMax = 100;
+
+export const upsertMyProfileBodyLatitudeMin = -90;
+export const upsertMyProfileBodyLatitudeMax = 90;
+
+export const upsertMyProfileBodyLongitudeMin = -180;
+export const upsertMyProfileBodyLongitudeMax = 180;
 
 export const UpsertMyProfileBody = zod.object({
-  name: zod.string().optional(),
-  age: zod.number().optional(),
-  birthday: zod.string().optional(),
-  gender: zod.string().optional(),
+  name: zod.string().max(upsertMyProfileBodyNameMax).optional(),
+  age: zod
+    .number()
+    .min(upsertMyProfileBodyAgeMin)
+    .max(upsertMyProfileBodyAgeMax)
+    .optional()
+    .describe("Users must be 18 or older."),
+  birthday: zod
+    .string()
+    .regex(upsertMyProfileBodyBirthdayRegExp)
+    .optional()
+    .describe("Date of birth as YYYY-MM-DD."),
+  gender: zod.string().max(upsertMyProfileBodyGenderMax).optional(),
   lookingFor: zod
     .array(
       zod.enum([
@@ -117,18 +151,25 @@ export const UpsertMyProfileBody = zod.object({
     )
     .min(1)
     .optional(),
-  bio: zod.string().optional(),
-  photos: zod.array(zod.string()).optional(),
-  interests: zod.array(zod.string()).optional(),
-  occupation: zod.string().optional(),
+  bio: zod.string().max(upsertMyProfileBodyBioMax).optional(),
+  photos: zod.array(zod.string()).max(upsertMyProfileBodyPhotosMax).optional(),
+  interests: zod
+    .array(zod.string().max(upsertMyProfileBodyInterestsItemMax))
+    .max(upsertMyProfileBodyInterestsMax)
+    .optional(),
+  occupation: zod.string().max(upsertMyProfileBodyOccupationMax).optional(),
   latitude: zod
     .number()
+    .min(upsertMyProfileBodyLatitudeMin)
+    .max(upsertMyProfileBodyLatitudeMax)
     .optional()
     .describe(
       "Viewer's current latitude. Stored server-side only for distance computation; never returned in any profile response.\n",
     ),
   longitude: zod
     .number()
+    .min(upsertMyProfileBodyLongitudeMin)
+    .max(upsertMyProfileBodyLongitudeMax)
     .optional()
     .describe(
       "Viewer's current longitude. Stored server-side only for distance computation; never returned in any profile response.\n",
@@ -171,11 +212,17 @@ export const UpsertMyProfileResponse = zod.object({
  * Stores a report for moderation with the authenticated user as the reporter
  * @summary Submit a report
  */
+export const createReportBodyReportedProfileIdMax = 255;
+
 export const createReportBodyNoteDefault = ``;
 export const createReportBodyNoteMax = 500;
 
 export const CreateReportBody = zod.object({
-  reportedProfileId: zod.string().describe("ID of the profile being reported"),
+  reportedProfileId: zod
+    .string()
+    .min(1)
+    .max(createReportBodyReportedProfileIdMax)
+    .describe("ID of the profile being reported. You cannot report yourself."),
   category: zod.enum([
     "Fake Profile",
     "Harassment",

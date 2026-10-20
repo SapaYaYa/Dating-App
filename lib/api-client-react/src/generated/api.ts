@@ -112,7 +112,7 @@ export function useHealthCheck<
 }
 
 /**
- * Returns other users' profiles for the discovery feed. Each profile includes a server-computed, pre-rounded distanceKm based on the requesting user's stored location. Raw coordinates are never returned.
+ * Returns other users' profiles for the discovery feed. Each profile includes a server-computed, pre-rounded distanceKm based on the requesting user's stored location. Raw coordinates and birthdays are never returned for other users.
 
  * @summary List profiles for discovery
  */

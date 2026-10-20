@@ -82,6 +82,32 @@ function toApiPayload(data: Partial<AuthUser>) {
   };
 }
 
+// The API names the photo list `photos` and uses null for unset fields;
+// the app's AuthUser uses `images` and undefined.
+function fromApiProfile(data: Record<string, unknown>): Partial<AuthUser> {
+  const { photos, age, birthday, gender, ...rest } = data;
+  return {
+    ...rest,
+    images: Array.isArray(photos) ? photos : [],
+    age: typeof age === "number" ? age : undefined,
+    birthday: typeof birthday === "string" ? birthday : undefined,
+    gender: typeof gender === "string" ? gender : undefined,
+  } as Partial<AuthUser>;
+}
+
+// Reads a locally cached profile. Older builds cached the raw API shape
+// (with `photos`), so normalize that too. Corrupt cache entries read as null.
+function parseCachedProfile(raw: string | null): Partial<AuthUser> | null {
+  if (!raw) return null;
+  try {
+    const data = JSON.parse(raw);
+    if (!data || typeof data !== "object") return null;
+    return "photos" in data && !("images" in data) ? fromApiProfile(data) : data;
+  } catch {
+    return null;
+  }
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { user: clerkUser, isLoaded } = useUser();
   const { signOut, getToken } = useClerkAuth();
@@ -120,7 +146,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const res = await apiFetch("/profiles/me", token);
 
           if (res.ok) {
-            const data = await res.json();
+            const data = fromApiProfile(await res.json());
             setProfile(data);
             await AsyncStorage.setItem(profileKey(userId), JSON.stringify(data));
             return;
@@ -143,10 +169,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         const raw = await AsyncStorage.getItem(profileKey(userId));
-        setProfile(raw ? JSON.parse(raw) : null);
+        setProfile(parseCachedProfile(raw));
       } catch {
         const raw = await AsyncStorage.getItem(profileKey(userId));
-        setProfile(raw ? JSON.parse(raw) : null);
+        setProfile(parseCachedProfile(raw));
       } finally {
         setProfileLoading(false);
       }
