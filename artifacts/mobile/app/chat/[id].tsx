@@ -68,7 +68,8 @@ export default function ChatScreen() {
     return shuffled.slice(0, 3);
   }, []);
 
-  const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
+  // The list is inverted, so it needs newest-first; sample chats are oldest-first.
+  const [messages, setMessages] = useState<ChatMessage[]>(() => [...initialMessages].reverse());
   const [input, setInput] = useState("");
   const [showIceBreakers, setShowIceBreakers] = useState(messages.length === 0);
   const [reportModalVisible, setReportModalVisible] = useState(false);

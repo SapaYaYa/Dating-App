@@ -43,6 +43,8 @@ export default function TabLayout() {
           ) : null,
       }}
     >
+      {/* Redirect-only route; keep it reachable but out of the tab bar. */}
+      <Tabs.Screen name="index" options={{ href: null }} />
       <Tabs.Screen
         name="discover"
         options={{

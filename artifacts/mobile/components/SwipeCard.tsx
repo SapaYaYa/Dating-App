@@ -26,9 +26,11 @@ interface Props {
   onSwipeRight: () => void;
   isTop: boolean;
   index: number;
+  /** Space available for the card; it shrinks below its usual height to fit. */
+  maxHeight?: number;
 }
 
-export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, isTop, index }: Props) {
+export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, isTop, index, maxHeight }: Props) {
   const colors = useColors();
   const pan = useRef(new Animated.ValueXY()).current;
 
@@ -88,6 +90,7 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, isTop, index }: 
       style={[
         styles.card,
         {
+          height: Math.min(CARD_HEIGHT, maxHeight ?? CARD_HEIGHT),
           transform: isTop
             ? [{ translateX: pan.x }, { translateY: pan.y }, { rotate }]
             : [{ scale }, { translateY }],

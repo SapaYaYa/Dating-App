@@ -24,6 +24,8 @@ import { useColors } from "@/hooks/useColors";
 import { getBlockedProfileIds } from "@/utils/blocks";
 
 const { width: W, height: H } = Dimensions.get("window");
+// Height of the pass/like row, set by the like button.
+const ACTIONS_HEIGHT = 68;
 
 export default function DiscoverScreen() {
   const colors = useColors();
@@ -41,6 +43,7 @@ export default function DiscoverScreen() {
   const [matchedSlowToReply, setMatchedSlowToReply] = useState(false);
   const matchAnim = useRef(new Animated.Value(0)).current;
   const [showFilter, setShowFilter] = useState(false);
+  const [cardAreaHeight, setCardAreaHeight] = useState<number | undefined>(undefined);
   const [activeFilters, setActiveFilters] = useState<DiscoverFilters>(DEFAULT_FILTERS);
   const filterPreferenceInitialized = useRef(false);
   const filterCount = getActiveFilterCount(activeFilters);
@@ -123,6 +126,9 @@ export default function DiscoverScreen() {
 
   const topPad = insets.top + (Platform.OS === "web" ? 67 : 0);
   const bottomPad = insets.bottom + (Platform.OS === "web" ? 34 : 0) + 68;
+  // The pass/like row sits just above the tab bar; the card area ends above it.
+  const actionsBottom = bottomPad + 12;
+  const cardBottom = actionsBottom + ACTIONS_HEIGHT + 12;
 
   const isLegend = level >= 5;
   const canRewind = level >= 4 && lastPassedProfile !== null;
@@ -162,7 +168,10 @@ export default function DiscoverScreen() {
         </View>
       </View>
 
-      <View style={[styles.cardArea, { marginBottom: bottomPad }]}>
+      <View
+        style={[styles.cardArea, { marginBottom: cardBottom }]}
+        onLayout={(e) => setCardAreaHeight(e.nativeEvent.layout.height)}
+      >
         {!blocksLoaded ? (
           <View style={styles.emptyState}>
             <Text style={[styles.emptySubtitle, { color: colors.mutedForeground }]}>
@@ -186,13 +195,15 @@ export default function DiscoverScreen() {
               index={index}
               onSwipeLeft={handleSwipeLeft}
               onSwipeRight={handleSwipeRight}
+              // Leave room for the stacked cards peeking out below.
+              maxHeight={cardAreaHeight !== undefined ? cardAreaHeight - 24 : undefined}
             />
           ))
         )}
       </View>
 
       {blocksLoaded && profiles.length > 0 && (
-        <View style={[styles.actions, { bottom: bottomPad - 56, paddingHorizontal: 40 }]}>
+        <View style={[styles.actions, { bottom: actionsBottom, paddingHorizontal: 40 }]}>
           {canRewind ? (
             <TouchableOpacity
               onPress={handleRewind}
@@ -226,7 +237,7 @@ export default function DiscoverScreen() {
 
       {blocksLoaded && profiles.length > 0 && topProfile && (
         <TouchableOpacity
-          style={[styles.profileTap, { bottom: bottomPad + 16, right: 20 }]}
+          style={[styles.profileTap, { bottom: cardBottom + 16, right: 20 }]}
           onPress={() => router.push(`/profile/${topProfile.id}`)}
         >
           <Feather name="info" size={16} color={colors.mutedForeground} />
@@ -271,7 +282,7 @@ export default function DiscoverScreen() {
       )}
 
       {dailyLikes === 0 && (
-        <View style={[styles.lowLikesBar, { backgroundColor: colors.gold, bottom: bottomPad }]}>
+        <View style={[styles.lowLikesBar, { backgroundColor: colors.gold, bottom: cardBottom }]}>
           <Feather name="zap" size={14} color="#fff" />
           <Text style={styles.lowLikesText}>Out of likes — complete a challenge to earn more!</Text>
         </View>
@@ -401,9 +412,9 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   likeBtn: {
-    width: 68,
-    height: 68,
-    borderRadius: 34,
+    width: ACTIONS_HEIGHT,
+    height: ACTIONS_HEIGHT,
+    borderRadius: ACTIONS_HEIGHT / 2,
   },
   profileTap: {
     position: "absolute",
