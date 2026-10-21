@@ -5,6 +5,7 @@ import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { useColorScheme } from "react-native";
 
+import { ReplyStatusSheet } from "@/components/ReplyStatusSheet";
 import { useColors } from "@/hooks/useColors";
 
 export default function TabLayout() {
@@ -15,6 +16,7 @@ export default function TabLayout() {
   const isWeb = Platform.OS === "web";
 
   return (
+    <>
     <Tabs
       screenOptions={{
         headerShown: false,
@@ -80,5 +82,7 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    <ReplyStatusSheet />
+    </>
   );
 }

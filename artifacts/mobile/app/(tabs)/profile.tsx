@@ -18,8 +18,11 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { GhostIcon } from "@/components/GhostIcon";
+import { ReplyStatusCard } from "@/components/ReplyStatusCard";
 import { useAuth } from "@/context/AuthContext";
 import { useApp } from "@/context/AppContext";
+import { useReplyStatus } from "@/context/ReplyStatusContext";
 import { useColors } from "@/hooks/useColors";
 import { PROFILE_QUESTIONS } from "@/constants/mockData";
 
@@ -41,6 +44,7 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, logout, updateUser, verificationStatus } = useAuth();
   const { totalPoints, level, currentStreak } = useApp();
+  const { status: replyStatus } = useReplyStatus();
   const scheme = useColorScheme();
   const [notificationsOn, setNotificationsOn] = useState(true);
   const [matchNote, setMatchNote] = useState(user?.matchNote ?? "");
@@ -135,9 +139,16 @@ export default function ProfileScreen() {
           {user?.images.length ?? 0}/{MAX_PHOTOS} photos
         </Text>
 
-        <Text style={[styles.userName, { color: colors.foreground }]}>
-          {user?.name || "Alex"}, {user?.age || 26}
-        </Text>
+        <View style={styles.userNameRow}>
+          <Text style={[styles.userName, { color: colors.foreground }]}>
+            {user?.name || "Alex"}, {user?.age || 26}
+          </Text>
+          {replyStatus === "badge" && (
+            <View accessibilityRole="image" accessibilityLabel="Slow to reply badge">
+              <GhostIcon size={18} color={colors.slowReply} />
+            </View>
+          )}
+        </View>
 
         <View style={styles.badgesRow}>
           <View style={[styles.badge, { backgroundColor: colors.gold + "22" }]}>
@@ -168,6 +179,8 @@ export default function ProfileScreen() {
           )}
         </View>
       </View>
+
+      <ReplyStatusCard />
 
       {verificationStatus === "none" && (
         <TouchableOpacity
@@ -441,6 +454,7 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: "#fff",
   },
+  userNameRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   userName: { fontSize: 22, fontWeight: "700" },
   userOccupation: { fontSize: 14 },
   badgesRow: { flexDirection: "row", gap: 8, marginTop: 4 },

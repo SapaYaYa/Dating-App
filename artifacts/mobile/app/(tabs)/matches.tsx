@@ -12,7 +12,9 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { GhostBadgeDot } from "@/components/GhostIcon";
 import { MessageItem } from "@/components/MessageItem";
+import { hasSlowToReplyBadge } from "@/components/SlowToReplyNotice";
 import { MOCK_MATCHES } from "@/constants/mockData";
 import { useColors } from "@/hooks/useColors";
 import { getBlockedProfileIds } from "@/utils/blocks";
@@ -72,7 +74,8 @@ export default function MatchesScreen() {
                 >
                   <View style={styles.avatarWrap}>
                     <Image source={{ uri: match.profile.images[0] }} style={styles.newMatchAvatar} />
-                    {match.hasIceBreaker && (
+                    {hasSlowToReplyBadge(match.profile.badges) && <GhostBadgeDot size={24} />}
+                    {match.hasIceBreaker && !hasSlowToReplyBadge(match.profile.badges) && (
                       <View style={[styles.iceBreakerDot, { backgroundColor: colors.accent }]}>
                         <Feather name="message-circle" size={8} color="#fff" />
                       </View>

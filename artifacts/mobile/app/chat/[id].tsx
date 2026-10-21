@@ -29,7 +29,10 @@ import { MOCK_CHAT_MESSAGES, MOCK_MATCHES, ICE_BREAKERS, type ChatMessage } from
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
 import { hasBlocked } from "@/utils/blocks";
+import { dismissSlowReplyNotice, isSlowReplyNoticeDismissed } from "@/utils/slowReplyDismissals";
 import ReportModal, { hasReported } from "@/components/ReportModal";
+import { GhostIcon } from "@/components/GhostIcon";
+import { SlowToReplyNotice, hasSlowToReplyBadge } from "@/components/SlowToReplyNotice";
 
 const MESSAGE_MAX = 280;
 const WAVE_COUNT = 22;
@@ -96,6 +99,21 @@ export default function ChatScreen() {
       hasReported(match.profile.id).then(setAlreadyReported);
     }
   }, [match?.profile.id]);
+
+  const isSlowToReply = hasSlowToReplyBadge(match?.profile.badges);
+  // Start hidden so a dismissed bar doesn't flash before storage answers.
+  const [slowReplyNoticeDismissed, setSlowReplyNoticeDismissed] = useState(true);
+
+  useEffect(() => {
+    if (!match || !isSlowToReply) return;
+    isSlowReplyNoticeDismissed(match.profile.id).then(setSlowReplyNoticeDismissed);
+  }, [match?.profile.id, isSlowToReply]);
+
+  const handleDismissSlowReplyNotice = () => {
+    if (!match) return;
+    setSlowReplyNoticeDismissed(true);
+    dismissSlowReplyNotice(match.profile.id).catch(() => {});
+  };
 
   useFocusEffect(
     useCallback(() => {
@@ -339,7 +357,14 @@ export default function ChatScreen() {
           <TouchableOpacity style={styles.profileInfo} activeOpacity={0.8}>
             <Image source={{ uri: match.profile.images[0] }} style={styles.headerAvatar} />
             <View>
-              <Text style={[styles.headerName, { color: colors.foreground }]}>{match.profile.name}</Text>
+              <View style={styles.headerNameRow}>
+                <Text style={[styles.headerName, { color: colors.foreground }]}>{match.profile.name}</Text>
+                {isSlowToReply && (
+                  <View accessibilityRole="image" accessibilityLabel="Slow to reply badge">
+                    <GhostIcon size={16} color={colors.slowReply} />
+                  </View>
+                )}
+              </View>
               <Text style={[styles.headerSub, { color: colors.green }]}>Online</Text>
             </View>
           </TouchableOpacity>
@@ -356,6 +381,16 @@ export default function ChatScreen() {
           )}
         </TouchableOpacity>
       </View>
+
+      {match && isSlowToReply && !slowReplyNoticeDismissed && (
+        <View style={styles.slowReplyNotice}>
+          <SlowToReplyNotice
+            name={match.profile.name}
+            variant="chat"
+            onDismiss={handleDismissSlowReplyNotice}
+          />
+        </View>
+      )}
 
       <KeyboardAvoidingView
         style={{ flex: 1 }}
@@ -553,7 +588,9 @@ const styles = StyleSheet.create({
   backBtn: { padding: 4 },
   profileInfo: { flex: 1, flexDirection: "row", alignItems: "center", gap: 10 },
   headerAvatar: { width: 38, height: 38, borderRadius: 19 },
+  headerNameRow: { flexDirection: "row", alignItems: "center", gap: 5 },
   headerName: { fontSize: 16, fontWeight: "600" },
+  slowReplyNotice: { paddingHorizontal: 16, paddingTop: 12 },
   headerSub: { fontSize: 12 },
   iconBtn: { width: 38, height: 38, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   messageList: { paddingHorizontal: 16, paddingTop: 12 },

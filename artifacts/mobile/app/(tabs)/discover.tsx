@@ -14,6 +14,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { FilterModal, DEFAULT_FILTERS, DiscoverFilters, getActiveFilterCount } from "@/components/FilterModal";
+import { SlowToReplyNotice, hasSlowToReplyBadge } from "@/components/SlowToReplyNotice";
 import { SwipeCard } from "@/components/SwipeCard";
 import { normalizeLookingFor } from "@/constants/lookingFor";
 import { MOCK_PROFILES, type Profile } from "@/constants/mockData";
@@ -37,6 +38,7 @@ export default function DiscoverScreen() {
   const [showMatch, setShowMatch] = useState(false);
   const [matchedName, setMatchedName] = useState("");
   const [matchedNote, setMatchedNote] = useState("");
+  const [matchedSlowToReply, setMatchedSlowToReply] = useState(false);
   const matchAnim = useRef(new Animated.Value(0)).current;
   const [showFilter, setShowFilter] = useState(false);
   const [activeFilters, setActiveFilters] = useState<DiscoverFilters>(DEFAULT_FILTERS);
@@ -91,6 +93,7 @@ export default function DiscoverScreen() {
     if (matched && topProfile) {
       setMatchedName(topProfile.name);
       setMatchedNote(topProfile.matchNote ?? "");
+      setMatchedSlowToReply(hasSlowToReplyBadge(topProfile.badges));
       setShowMatch(true);
       Animated.spring(matchAnim, { toValue: 1, useNativeDriver: true, friction: 5 }).start();
     }
@@ -250,6 +253,7 @@ export default function DiscoverScreen() {
                 <Text style={[styles.matchNoteText, { color: colors.foreground }]}>"{matchedNote}"</Text>
               </View>
             ) : null}
+            {matchedSlowToReply && <SlowToReplyNotice name={matchedName} variant="match" />}
             <View style={styles.matchButtons}>
               <TouchableOpacity
                 onPress={() => { dismissMatch(); router.push("/(tabs)/matches"); }}

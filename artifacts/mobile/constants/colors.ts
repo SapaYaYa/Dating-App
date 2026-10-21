@@ -22,6 +22,10 @@ const colors = {
     gold: "#FFB800",
     green: "#34C759",
     spotify: "#1DB954",
+    slowReply: "#5B4BC4",
+    slowReplyBg: "#F0EDFB",
+    slowReplyTitle: "#43369A",
+    slowReplyText: "#3B3355",
   },
   dark: {
     text: "#FAFAFA",
@@ -46,6 +50,10 @@ const colors = {
     gold: "#FFB800",
     green: "#30D158",
     spotify: "#1DB954",
+    slowReply: "#9D8FF0",
+    slowReplyBg: "#26213D",
+    slowReplyTitle: "#CFC6FF",
+    slowReplyText: "#DAD5F2",
   },
   radius: 14,
 };

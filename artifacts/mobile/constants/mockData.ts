@@ -1,3 +1,5 @@
+import type { ProfileBadge } from "@/constants/replyBadge";
+
 export interface Profile {
   id: string;
   name: string;
@@ -15,6 +17,8 @@ export interface Profile {
   likesYou?: boolean;
   likeNote?: string;
   matchNote?: string;
+  /** Shown to the user's matches only, never on Discover. */
+  badges?: ProfileBadge[];
 }
 
 export interface Match {
@@ -208,6 +212,7 @@ export const MOCK_PROFILES: Profile[] = [
     ],
     iceBreakers: ["Serif or sans-serif?", "Most beautiful thing you've seen this week?"],
     verified: true,
+    badges: ["slowToReply"],
     likesYou: true,
     matchNote: "I designed my ideal match in my head for years. Glad you showed up.",
   },
@@ -283,6 +288,7 @@ export const MOCK_PROFILES: Profile[] = [
     ],
     iceBreakers: ["Favorite movie of all time?", "What role would you want to play?"],
     verified: false,
+    badges: ["slowToReply"],
     likesYou: true,
     matchNote: "You matched me! Now I'm somehow more nervous than before an audition.",
   },
@@ -708,4 +714,17 @@ export const PROFILE_QUESTIONS = [
   "My superpower is...",
   "A perfect date for me is...",
   "I'm weirdly good at...",
+];
+
+// Sample reply history for the signed-in user over the last 2 weeks:
+// 8 matches messaged them and these 6 are still waiting on a reply.
+export const MOCK_MESSAGED_MATCHES = 8;
+
+export const MOCK_WAITING_ON_YOU: { profile: Profile; lastMessage: string; waitingDays: number }[] = [
+  { profile: MOCK_PROFILES[7], lastMessage: "So are we still on for that taco place?", waitingDays: 4 },
+  { profile: MOCK_PROFILES[8], lastMessage: "Haha okay your turn, best concert ever?", waitingDays: 5 },
+  { profile: MOCK_PROFILES[9], lastMessage: "Hey! Loved your hiking photos", waitingDays: 6 },
+  { profile: MOCK_PROFILES[11], lastMessage: "What are you up to this weekend?", waitingDays: 8 },
+  { profile: MOCK_PROFILES[12], lastMessage: "Okay that's a great answer", waitingDays: 9 },
+  { profile: MOCK_PROFILES[13], lastMessage: "Did you end up trying that ramen spot?", waitingDays: 11 },
 ];
