@@ -100,7 +100,12 @@ export function ReplyStatusProvider({ children }: { children: React.ReactNode })
 
   const greatChatStats: GreatChatStats = {
     ...MOCK_GREAT_CHAT,
-    replyRate: stats.messagedMatches > 0 ? 1 - stats.unanswered / stats.messagedMatches : 1,
+    // Matches in the waiting list waited 3+ days, so replying to them now is
+    // late: it clears Slow to reply but doesn't count as a timely reply.
+    timelyReplyRate:
+      stats.messagedMatches > 0
+        ? 1 - MOCK_WAITING_ON_YOU.length / stats.messagedMatches
+        : 1,
     hasSlowToReply: status === "badge",
   };
   const greatChatEarned = qualifiesForGreatChat(greatChatStats);

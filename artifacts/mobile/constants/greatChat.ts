@@ -3,8 +3,13 @@
 export const GREAT_CHAT_RULE = {
   ACTIVITY_WINDOW_DAYS: 14,
   RATING_WINDOW_DAYS: 30,
-  /** Replied to at least this share of matches who messaged them. */
+  /** Replied within TIMELY_REPLY_HOURS to at least this share of matches who messaged them. */
   MIN_REPLY_RATE: 0.8,
+  /**
+   * Only replies this fast count toward Great Chat. A late reply still clears
+   * Slow to reply, but can't be used to jump straight to Great Chat.
+   */
+  TIMELY_REPLY_HOURS: 24,
   /** At least this many conversations reached LONG_MIN_MESSAGES... */
   MIN_LONG_CONVERSATIONS: 3,
   LONG_MIN_MESSAGES: 10,
@@ -20,7 +25,8 @@ export const GREAT_CHAT_RULE = {
 } as const;
 
 export interface GreatChatStats {
-  replyRate: number;
+  /** Share of matches who messaged them that got a reply within TIMELY_REPLY_HOURS. */
+  timelyReplyRate: number;
   longConversations: number;
   /** The user's median share of messages across their conversations. */
   typicalShare: number;
@@ -35,7 +41,7 @@ export function qualifiesForGreatChat(stats: GreatChatStats): boolean {
   return (
     !stats.hasRecentReport &&
     !stats.hasSlowToReply &&
-    stats.replyRate >= r.MIN_REPLY_RATE &&
+    stats.timelyReplyRate >= r.MIN_REPLY_RATE &&
     stats.longConversations >= r.MIN_LONG_CONVERSATIONS &&
     stats.typicalShare >= r.BALANCE_MIN &&
     stats.typicalShare <= r.BALANCE_MAX &&

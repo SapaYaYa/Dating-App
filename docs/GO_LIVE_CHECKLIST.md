@@ -50,15 +50,15 @@ These screens still run on sample data (`MOCK_*` in
 - [ ] Store chat ratings (Great / Okay / Not great) on the server. They're
       currently saved only on the phone. Individual ratings must never be
       shown to the person who was rated.
-- [ ] Track what the rule needs on the server: reply rate, conversations
+- [ ] Track what the rule needs on the server: timely reply rate, conversations
       with 10+ messages and 4+ from each side, and each person's share of
       messages.
 - [ ] Calculate the badge on the server using the rule in
       `artifacts/mobile/constants/greatChat.ts` (activity over 2 weeks,
       ratings over 30 days).
-- [ ] Decide how to stop users jumping straight from Slow to reply to Great
-      Chat by sending quick late replies (options: count only timely replies
-      toward Great Chat, add a cooldown, or both).
+- [ ] Record when each reply is sent, so the server can tell timely replies
+      (within 24 hours) from late ones. Only timely replies count toward
+      Great Chat's reply rate; late replies still clear Slow to reply.
 - [ ] Send the "you've earned Great Chat" message based on the server's
       numbers.
 

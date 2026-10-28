@@ -15,8 +15,8 @@ export function GreatChatCard() {
 
   const rows = [
     {
-      label: "Reply rate, last 2 weeks",
-      value: `${Math.round(greatChat.replyRate * 100)}%`,
+      label: `Replied within ${GREAT_CHAT_RULE.TIMELY_REPLY_HOURS} hours, last 2 weeks`,
+      value: `${Math.round(greatChat.timelyReplyRate * 100)}%`,
     },
     {
       label: `Conversations with ${GREAT_CHAT_RULE.LONG_MIN_MESSAGES}+ messages`,
