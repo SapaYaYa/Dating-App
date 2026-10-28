@@ -15,6 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { useReplyStatus } from "@/context/ReplyStatusContext";
 import { useColors } from "@/hooks/useColors";
+import { unmatchProfile } from "@/utils/unmatches";
 
 export default function WaitingScreen() {
   const colors = useColors();
@@ -29,6 +30,11 @@ export default function WaitingScreen() {
   const clear = (profileId: string) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     clearMatch(profileId);
+  };
+
+  const unmatch = (profileId: string) => {
+    clear(profileId);
+    unmatchProfile(profileId).catch(() => {});
   };
 
   const statusText =
@@ -105,7 +111,7 @@ export default function WaitingScreen() {
                   <Text style={[styles.btnText, { color: colors.primaryForeground }]}>Reply</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  onPress={() => clear(w.profile.id)}
+                  onPress={() => unmatch(w.profile.id)}
                   style={[styles.unmatchBtn, { borderColor: colors.border }]}
                   activeOpacity={0.85}
                   accessibilityLabel={`Unmatch ${w.profile.name}`}

@@ -1,3 +1,4 @@
+import { Feather } from "@expo/vector-icons";
 import { router } from "expo-router";
 import React from "react";
 import { Modal, Pressable, StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -7,11 +8,47 @@ import { GhostIcon } from "@/components/GhostIcon";
 import { useReplyStatus } from "@/context/ReplyStatusContext";
 import { useColors } from "@/hooks/useColors";
 
-/** The one-time advance warning or "you've earned the badge" message. */
+/**
+ * One-time messages about the user's own badges: the Slow to reply warning,
+ * earning Slow to reply, and earning Great Chat.
+ */
 export function ReplyStatusSheet() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { sheetToShow, markSheetSeen, unanswered, messagedMatches } = useReplyStatus();
+  const { sheetToShow, markSheetSeen, unanswered, messagedMatches, showGreatChatSheet, markGreatChatSeen } =
+    useReplyStatus();
+
+  if (showGreatChatSheet) {
+    return (
+      <Modal transparent animationType="slide" visible onRequestClose={markGreatChatSeen}>
+        <Pressable style={styles.backdrop} onPress={markGreatChatSeen} accessibilityLabel="Close" />
+        <View style={[styles.sheet, { backgroundColor: colors.background, paddingBottom: insets.bottom + 24 }]}>
+          <View style={[styles.handle, { backgroundColor: colors.border }]} />
+          <View style={[styles.iconWrap, { backgroundColor: colors.greatChatBg }]}>
+            <Feather name="message-square" size={26} color={colors.greatChat} />
+          </View>
+          <Text style={[styles.title, { color: colors.foreground }]}>You've earned the Great Chat badge!</Text>
+          <Text style={[styles.body, { color: colors.mutedForeground }]}>
+            Your matches say they enjoy talking with you. Everyone sees this badge on your profile,
+            including people you haven't matched with yet.
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              markGreatChatSeen();
+              router.push("/(tabs)/profile");
+            }}
+            style={[styles.primaryBtn, { backgroundColor: colors.primary }]}
+            activeOpacity={0.85}
+          >
+            <Text style={[styles.primaryText, { color: colors.primaryForeground }]}>See my badge</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={markGreatChatSeen} style={styles.secondaryBtn}>
+            <Text style={[styles.secondaryText, { color: colors.mutedForeground }]}>Nice!</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+    );
+  }
 
   if (!sheetToShow || sheetToShow === "clear") return null;
 

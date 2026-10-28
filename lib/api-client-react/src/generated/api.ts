@@ -22,6 +22,7 @@ import type {
   Profile,
   ProfileInput,
   ProfileList,
+  ProfileRef,
   Report,
   ReportInput,
 } from "./api.schemas";
@@ -350,7 +351,8 @@ export const useUpsertMyProfile = <
 };
 
 /**
- * Stores a report for moderation with the authenticated user as the reporter
+ * Stores a report for moderation with the authenticated user as the reporter, and blocks the reported profile.
+
  * @summary Submit a report
  */
 export const getCreateReportUrl = () => {
@@ -434,4 +436,180 @@ export const useCreateReport = <
   TContext
 > => {
   return useMutation(getCreateReportMutationOptions(options));
+};
+
+/**
+ * Blocks a profile for the authenticated user. Blocked people are hidden from each other and their conversation ends. Blocking twice is a no-op.
+
+ * @summary Block a profile
+ */
+export const getBlockProfileUrl = () => {
+  return `/api/blocks`;
+};
+
+export const blockProfile = async (
+  profileRef: ProfileRef,
+  options?: RequestInit,
+): Promise<void> => {
+  return customFetch<void>(getBlockProfileUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(profileRef),
+  });
+};
+
+export const getBlockProfileMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof blockProfile>>,
+    TError,
+    { data: BodyType<ProfileRef> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof blockProfile>>,
+  TError,
+  { data: BodyType<ProfileRef> },
+  TContext
+> => {
+  const mutationKey = ["blockProfile"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof blockProfile>>,
+    { data: BodyType<ProfileRef> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return blockProfile(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type BlockProfileMutationResult = NonNullable<
+  Awaited<ReturnType<typeof blockProfile>>
+>;
+export type BlockProfileMutationBody = BodyType<ProfileRef>;
+export type BlockProfileMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Block a profile
+ */
+export const useBlockProfile = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof blockProfile>>,
+    TError,
+    { data: BodyType<ProfileRef> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof blockProfile>>,
+  TError,
+  { data: BodyType<ProfileRef> },
+  TContext
+> => {
+  return useMutation(getBlockProfileMutationOptions(options));
+};
+
+/**
+ * Ends the match between the authenticated user and a profile without blocking. Unmatching twice is a no-op.
+
+ * @summary Unmatch a profile
+ */
+export const getUnmatchProfileUrl = () => {
+  return `/api/unmatches`;
+};
+
+export const unmatchProfile = async (
+  profileRef: ProfileRef,
+  options?: RequestInit,
+): Promise<void> => {
+  return customFetch<void>(getUnmatchProfileUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(profileRef),
+  });
+};
+
+export const getUnmatchProfileMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof unmatchProfile>>,
+    TError,
+    { data: BodyType<ProfileRef> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof unmatchProfile>>,
+  TError,
+  { data: BodyType<ProfileRef> },
+  TContext
+> => {
+  const mutationKey = ["unmatchProfile"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof unmatchProfile>>,
+    { data: BodyType<ProfileRef> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return unmatchProfile(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UnmatchProfileMutationResult = NonNullable<
+  Awaited<ReturnType<typeof unmatchProfile>>
+>;
+export type UnmatchProfileMutationBody = BodyType<ProfileRef>;
+export type UnmatchProfileMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Unmatch a profile
+ */
+export const useUnmatchProfile = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof unmatchProfile>>,
+    TError,
+    { data: BodyType<ProfileRef> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof unmatchProfile>>,
+  TError,
+  { data: BodyType<ProfileRef> },
+  TContext
+> => {
+  return useMutation(getUnmatchProfileMutationOptions(options));
 };

@@ -13,11 +13,12 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { GhostBadgeDot } from "@/components/GhostIcon";
+import { GreatChatDot, hasGreatChatBadge } from "@/components/GreatChatBadge";
 import { MessageItem } from "@/components/MessageItem";
 import { hasSlowToReplyBadge } from "@/components/SlowToReplyNotice";
 import { MOCK_MATCHES } from "@/constants/mockData";
 import { useColors } from "@/hooks/useColors";
-import { getBlockedProfileIds } from "@/utils/blocks";
+import { getHiddenProfileIds } from "@/utils/hiddenProfiles";
 
 export default function MatchesScreen() {
   const colors = useColors();
@@ -33,7 +34,7 @@ export default function MatchesScreen() {
       let cancelled = false;
       setBlocksLoaded(false);
 
-      getBlockedProfileIds().then((ids) => {
+      getHiddenProfileIds().then((ids) => {
         if (cancelled) return;
         setBlockedProfileIds(ids);
         setBlocksLoaded(true);
@@ -74,8 +75,14 @@ export default function MatchesScreen() {
                 >
                   <View style={styles.avatarWrap}>
                     <Image source={{ uri: match.profile.images[0] }} style={styles.newMatchAvatar} />
-                    {hasSlowToReplyBadge(match.profile.badges) && <GhostBadgeDot size={24} />}
-                    {match.hasIceBreaker && !hasSlowToReplyBadge(match.profile.badges) && (
+                    {hasSlowToReplyBadge(match.profile.badges) ? (
+                      <GhostBadgeDot size={24} />
+                    ) : hasGreatChatBadge(match.profile.badges) ? (
+                      <GreatChatDot size={24} />
+                    ) : null}
+                    {match.hasIceBreaker &&
+                      !hasSlowToReplyBadge(match.profile.badges) &&
+                      !hasGreatChatBadge(match.profile.badges) && (
                       <View style={[styles.iceBreakerDot, { backgroundColor: colors.accent }]}>
                         <Feather name="message-circle" size={8} color="#fff" />
                       </View>

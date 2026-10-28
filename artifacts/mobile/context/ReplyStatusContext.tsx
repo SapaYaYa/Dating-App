@@ -2,10 +2,22 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { MOCK_MESSAGED_MATCHES, MOCK_WAITING_ON_YOU } from "@/constants/mockData";
+import { qualifiesForGreatChat, type GreatChatStats } from "@/constants/greatChat";
 import { getReplyStatus, repliesToClearBadge, type ReplyStatus } from "@/constants/replyBadge";
 
 const CLEARED_KEY = "spark_reply_cleared";
 const SHEET_SEEN_KEY = "spark_reply_sheet_seen";
+const GREAT_CHAT_SEEN_KEY = "spark_great_chat_seen";
+
+// Sample Great Chat numbers for the signed-in user. Their reply rate and
+// Slow to reply status come from the live sample reply status below.
+const MOCK_GREAT_CHAT = {
+  longConversations: 4,
+  typicalShare: 0.52,
+  raters: 5,
+  greatRatings: 4,
+  hasRecentReport: false,
+};
 
 const STATUS_LEVEL: Record<ReplyStatus, number> = { clear: 0, warning: 1, badge: 2 };
 
@@ -20,6 +32,10 @@ interface ReplyStatusContextType {
   markSheetSeen: () => void;
   /** Reply to or unmatch a waiting match; either way it stops counting. */
   clearMatch: (profileId: string) => void;
+  greatChat: GreatChatStats & { earned: boolean };
+  /** True once, when the user first earns Great Chat (or earns it again). */
+  showGreatChatSheet: boolean;
+  markGreatChatSeen: () => void;
 }
 
 const ReplyStatusContext = createContext<ReplyStatusContextType | null>(null);
@@ -29,11 +45,17 @@ const ReplyStatusContext = createContext<ReplyStatusContextType | null>(null);
 export function ReplyStatusProvider({ children }: { children: React.ReactNode }) {
   const [clearedIds, setClearedIds] = useState<string[]>([]);
   const [seenStatus, setSeenStatus] = useState<ReplyStatus>("clear");
+  const [greatChatSeen, setGreatChatSeen] = useState(false);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    Promise.all([AsyncStorage.getItem(CLEARED_KEY), AsyncStorage.getItem(SHEET_SEEN_KEY)])
-      .then(([rawCleared, rawSeen]) => {
+    Promise.all([
+      AsyncStorage.getItem(CLEARED_KEY),
+      AsyncStorage.getItem(SHEET_SEEN_KEY),
+      AsyncStorage.getItem(GREAT_CHAT_SEEN_KEY),
+    ])
+      .then(([rawCleared, rawSeen, rawGreatChatSeen]) => {
+        setGreatChatSeen(rawGreatChatSeen === "true");
         const parsed: unknown = rawCleared ? JSON.parse(rawCleared) : [];
         if (Array.isArray(parsed)) {
           setClearedIds(parsed.filter((id): id is string => typeof id === "string"));
@@ -76,6 +98,25 @@ export function ReplyStatusProvider({ children }: { children: React.ReactNode })
   const sheetToShow =
     loaded && STATUS_LEVEL[status] > STATUS_LEVEL[seenStatus] ? status : null;
 
+  const greatChatStats: GreatChatStats = {
+    ...MOCK_GREAT_CHAT,
+    replyRate: stats.messagedMatches > 0 ? 1 - stats.unanswered / stats.messagedMatches : 1,
+    hasSlowToReply: status === "badge",
+  };
+  const greatChatEarned = qualifiesForGreatChat(greatChatStats);
+
+  // Losing the badge is quiet; it just resets so earning it again is announced.
+  useEffect(() => {
+    if (!loaded || greatChatEarned || !greatChatSeen) return;
+    setGreatChatSeen(false);
+    AsyncStorage.setItem(GREAT_CHAT_SEEN_KEY, "false").catch(() => {});
+  }, [loaded, greatChatEarned, greatChatSeen]);
+
+  const markGreatChatSeen = useCallback(() => {
+    setGreatChatSeen(true);
+    AsyncStorage.setItem(GREAT_CHAT_SEEN_KEY, "true").catch(() => {});
+  }, []);
+
   return (
     <ReplyStatusContext.Provider
       value={{
@@ -87,6 +128,9 @@ export function ReplyStatusProvider({ children }: { children: React.ReactNode })
         sheetToShow,
         markSheetSeen,
         clearMatch,
+        greatChat: { ...greatChatStats, earned: greatChatEarned },
+        showGreatChatSheet: loaded && greatChatEarned && !greatChatSeen && !sheetToShow,
+        markGreatChatSeen,
       }}
     >
       {children}

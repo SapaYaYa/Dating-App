@@ -17,10 +17,11 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { GreatChatPill, hasGreatChatBadge } from "@/components/GreatChatBadge";
 import { MOCK_PROFILES } from "@/constants/mockData";
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
-import { hasBlocked } from "@/utils/blocks";
+import { isProfileHidden } from "@/utils/hiddenProfiles";
 import { formatDistance } from "@/utils/distance";
 import ReportModal, { hasReported } from "@/components/ReportModal";
 
@@ -49,7 +50,7 @@ export default function ProfileDetailScreen() {
       let cancelled = false;
       setBlockStatusLoaded(false);
 
-      hasBlocked(profile.id).then((blocked) => {
+      isProfileHidden(profile.id).then((blocked) => {
         if (cancelled) return;
         setIsBlocked(blocked);
         setBlockStatusLoaded(true);
@@ -136,6 +137,11 @@ export default function ProfileDetailScreen() {
                 {profile.verified && <Feather name="check-circle" size={18} color="#fff" />}
               </View>
               <Text style={styles.profileOccupation}>{profile.occupation}</Text>
+              {hasGreatChatBadge(profile.badges) && (
+                <View style={styles.greatChatRow}>
+                  <GreatChatPill />
+                </View>
+              )}
               <View style={styles.distanceRow}>
                 <Feather name="map-pin" size={13} color="rgba(255,255,255,0.75)" />
                 <Text style={styles.distanceText}>{formatDistance(profile.distance)}</Text>
@@ -289,6 +295,7 @@ const styles = StyleSheet.create({
   },
   basicInfo: { gap: 4 },
   nameRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+  greatChatRow: { flexDirection: "row", marginTop: 4 },
   profileName: { color: "#fff", fontSize: 28, fontWeight: "700" },
   profileOccupation: { color: "rgba(255,255,255,0.85)", fontSize: 16 },
   distanceRow: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 },

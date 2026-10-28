@@ -26,6 +26,9 @@ const colors = {
     slowReplyBg: "#F0EDFB",
     slowReplyTitle: "#43369A",
     slowReplyText: "#3B3355",
+    greatChat: "#C2410C",
+    greatChatBg: "#FFF1E6",
+    greatChatText: "#5C2A0E",
   },
   dark: {
     text: "#FAFAFA",
@@ -54,6 +57,9 @@ const colors = {
     slowReplyBg: "#26213D",
     slowReplyTitle: "#CFC6FF",
     slowReplyText: "#DAD5F2",
+    greatChat: "#FDBA74",
+    greatChatBg: "#3A2416",
+    greatChatText: "#FBE3CF",
   },
   radius: 14,
 };

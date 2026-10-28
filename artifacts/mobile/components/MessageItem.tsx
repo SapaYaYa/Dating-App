@@ -2,6 +2,7 @@ import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { GhostBadgeDot } from "@/components/GhostIcon";
+import { GreatChatDot, hasGreatChatBadge } from "@/components/GreatChatBadge";
 import { hasSlowToReplyBadge } from "@/components/SlowToReplyNotice";
 import { useColors } from "@/hooks/useColors";
 import type { Match } from "@/constants/mockData";
@@ -25,6 +26,8 @@ export function MessageItem({ match, onPress }: Props) {
         <Image source={{ uri: match.profile.images[0] }} style={styles.avatar} />
         {hasSlowToReplyBadge(match.profile.badges) ? (
           <GhostBadgeDot />
+        ) : hasGreatChatBadge(match.profile.badges) ? (
+          <GreatChatDot />
         ) : (
           <View style={[styles.onlineDot, { backgroundColor: colors.green }]} />
         )}

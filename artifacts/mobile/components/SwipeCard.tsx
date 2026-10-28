@@ -14,6 +14,7 @@ import {
 import { useColors } from "@/hooks/useColors";
 import { formatDistance } from "@/utils/distance";
 import type { Profile } from "@/constants/mockData";
+import { GreatChatPill, hasGreatChatBadge } from "@/components/GreatChatBadge";
 
 const { width: W, height: H } = Dimensions.get("window");
 const SWIPE_THRESHOLD = W * 0.28;
@@ -114,10 +115,15 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, isTop, index, ma
         <Text style={styles.nopeText}>NOPE</Text>
       </Animated.View>
 
-      {profile.verified && (
-        <View style={styles.verifiedBadge}>
-          <Feather name="check-circle" size={14} color="#fff" />
-          <Text style={styles.verifiedText}>Verified</Text>
+      {(profile.verified || hasGreatChatBadge(profile.badges)) && (
+        <View style={styles.topBadges}>
+          {hasGreatChatBadge(profile.badges) && <GreatChatPill />}
+          {profile.verified && (
+            <View style={styles.verifiedBadge}>
+              <Feather name="check-circle" size={14} color="#fff" />
+              <Text style={styles.verifiedText}>Verified</Text>
+            </View>
+          )}
         </View>
       )}
 
@@ -219,10 +225,14 @@ const styles = StyleSheet.create({
     fontSize: 22,
     letterSpacing: 2,
   },
-  verifiedBadge: {
+  topBadges: {
     position: "absolute",
     top: 16,
     right: 16,
+    flexDirection: "row",
+    gap: 6,
+  },
+  verifiedBadge: {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.5)",

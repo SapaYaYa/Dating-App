@@ -16,7 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { MOCK_PROFILES } from "@/constants/mockData";
 import { useColors } from "@/hooks/useColors";
-import { getBlockedProfileIds } from "@/utils/blocks";
+import { getHiddenProfileIds } from "@/utils/hiddenProfiles";
 import { formatDistance } from "@/utils/distance";
 
 const INITIAL_LIKES = MOCK_PROFILES.filter((p) => p.likesYou);
@@ -39,7 +39,7 @@ export default function LikesScreen() {
       let cancelled = false;
       setBlocksLoaded(false);
 
-      getBlockedProfileIds().then((blockedProfileIds) => {
+      getHiddenProfileIds().then((blockedProfileIds) => {
         if (cancelled) return;
         const blocked = new Set(blockedProfileIds);
         setPendingLikes((profiles) =>

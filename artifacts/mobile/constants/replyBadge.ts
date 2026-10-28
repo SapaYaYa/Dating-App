@@ -10,7 +10,7 @@ export const SLOW_REPLY_RULE = {
   WARNING_MIN_UNANSWERED: 3,
 } as const;
 
-export type ProfileBadge = "slowToReply";
+export type ProfileBadge = "slowToReply" | "greatChat";
 
 export type ReplyStatus = "clear" | "warning" | "badge";
 

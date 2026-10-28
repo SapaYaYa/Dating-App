@@ -10,8 +10,6 @@ import React, {
   useState,
 } from "react";
 import {
-  ActionSheetIOS,
-  Alert,
   Animated,
   FlatList,
   Image,
@@ -28,10 +26,22 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { MOCK_CHAT_MESSAGES, MOCK_MATCHES, ICE_BREAKERS, type ChatMessage } from "@/constants/mockData";
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
-import { hasBlocked } from "@/utils/blocks";
+import { blockProfile } from "@/utils/blocks";
+import { isProfileHidden } from "@/utils/hiddenProfiles";
+import { unmatchProfile } from "@/utils/unmatches";
 import { dismissSlowReplyNotice, isSlowReplyNoticeDismissed } from "@/utils/slowReplyDismissals";
 import ReportModal, { hasReported } from "@/components/ReportModal";
+import { ChatOptionsSheet } from "@/components/ChatOptionsSheet";
 import { GhostIcon } from "@/components/GhostIcon";
+import { hasGreatChatBadge } from "@/components/GreatChatBadge";
+import { ChatRatingCard } from "@/components/ChatRatingCard";
+import {
+  isConversationRateable,
+  shouldAskForRating,
+  type ChatRating,
+  type ChatRatingRecord,
+} from "@/constants/greatChat";
+import { getChatRatingRecord, saveChatRating, skipChatRating } from "@/utils/chatRatings";
 import { SlowToReplyNotice, hasSlowToReplyBadge } from "@/components/SlowToReplyNotice";
 
 const MESSAGE_MAX = 280;
@@ -73,6 +83,7 @@ export default function ChatScreen() {
   const [input, setInput] = useState("");
   const [showIceBreakers, setShowIceBreakers] = useState(messages.length === 0);
   const [reportModalVisible, setReportModalVisible] = useState(false);
+  const [optionsVisible, setOptionsVisible] = useState(false);
   const [alreadyReported, setAlreadyReported] = useState(false);
   const [blockStatusLoaded, setBlockStatusLoaded] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
@@ -110,6 +121,40 @@ export default function ChatScreen() {
     isSlowReplyNoticeDismissed(match.profile.id).then(setSlowReplyNoticeDismissed);
   }, [match?.profile.id, isSlowToReply]);
 
+  // "How's your conversation going?" card. undefined = not loaded yet.
+  const [ratingRecord, setRatingRecord] = useState<ChatRatingRecord | null | undefined>(undefined);
+  const [ratingAnswered, setRatingAnswered] = useState(false);
+
+  useEffect(() => {
+    if (!match) return;
+    getChatRatingRecord(match.profile.id).then((record) => setRatingRecord(record ?? null));
+  }, [match?.profile.id]);
+
+  const showRatingCard =
+    ratingAnswered ||
+    (ratingRecord !== undefined &&
+      isConversationRateable(messages) &&
+      shouldAskForRating(ratingRecord ?? undefined, messages.length, Date.now()));
+
+  const handleRate = (rating: ChatRating) => {
+    if (!match) return;
+    Haptics.selectionAsync();
+    setRatingAnswered(true);
+    setRatingRecord((current) => ({ skips: current?.skips ?? 0, ...current, rating }));
+    saveChatRating(match.profile.id, rating).catch(() => {});
+  };
+
+  const handleSkipRating = () => {
+    if (!match) return;
+    setRatingRecord((current) => ({
+      ...current,
+      skips: (current?.skips ?? 0) + 1,
+      lastSkippedAt: Date.now(),
+      messagesAtLastSkip: messages.length,
+    }));
+    skipChatRating(match.profile.id, messages.length).catch(() => {});
+  };
+
   const handleDismissSlowReplyNotice = () => {
     if (!match) return;
     setSlowReplyNoticeDismissed(true);
@@ -128,7 +173,7 @@ export default function ChatScreen() {
         };
       }
 
-      hasBlocked(match.profile.id).then((blocked) => {
+      isProfileHidden(match.profile.id).then((blocked) => {
         if (cancelled) return;
         setIsBlocked(blocked);
         setBlockStatusLoaded(true);
@@ -311,33 +356,23 @@ export default function ChatScreen() {
   const handleMoreOptions = () => {
     if (!match || alreadyReported) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    setOptionsVisible(true);
+  };
 
-    if (Platform.OS === "ios") {
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options: [`Report ${match.profile.name}`, "Cancel"],
-          destructiveButtonIndex: 0,
-          cancelButtonIndex: 1,
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 0) setReportModalVisible(true);
-        }
-      );
-    } else {
-      Alert.alert(
-        "Options",
-        undefined,
-        [
-          {
-            text: `Report ${match.profile.name}`,
-            style: "destructive",
-            onPress: () => setReportModalVisible(true),
-          },
-          { text: "Cancel", style: "cancel" },
-        ],
-        { cancelable: true }
-      );
-    }
+  const handleBlock = async () => {
+    if (!match) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await blockProfile(match.profile.id);
+    setIsBlocked(true);
+    router.replace("/(tabs)/matches");
+  };
+
+  const handleUnmatch = async () => {
+    if (!match) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await unmatchProfile(match.profile.id);
+    setIsBlocked(true);
+    router.replace("/(tabs)/matches");
   };
 
   const bottomPad = insets.bottom + (Platform.OS === "web" ? 34 : 0);
@@ -363,6 +398,11 @@ export default function ChatScreen() {
                 {isSlowToReply && (
                   <View accessibilityRole="image" accessibilityLabel="Slow to reply badge">
                     <GhostIcon size={16} color={colors.slowReply} />
+                  </View>
+                )}
+                {hasGreatChatBadge(match.profile.badges) && (
+                  <View accessibilityRole="image" accessibilityLabel="Great Chat badge">
+                    <Feather name="message-square" size={15} color={colors.greatChat} />
                   </View>
                 )}
               </View>
@@ -405,7 +445,14 @@ export default function ChatScreen() {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={[styles.messageList, { paddingBottom: 16 }]}
           ListHeaderComponent={
-            showIceBreakers && match ? (
+            showRatingCard && match ? (
+              <ChatRatingCard
+                name={match.profile.name}
+                answered={ratingAnswered}
+                onRate={handleRate}
+                onSkip={handleSkipRating}
+              />
+            ) : showIceBreakers && match ? (
               <View style={styles.iceBreakers}>
                 <Text style={[styles.iceBreakerTitle, { color: colors.mutedForeground }]}>
                   Break the ice with {match.profile.name}
@@ -557,6 +604,16 @@ export default function ChatScreen() {
         )}
       </KeyboardAvoidingView>
 
+      {match && (
+        <ChatOptionsSheet
+          visible={optionsVisible}
+          name={match.profile.name}
+          onClose={() => setOptionsVisible(false)}
+          onReport={() => setReportModalVisible(true)}
+          onBlock={handleBlock}
+          onUnmatch={handleUnmatch}
+        />
+      )}
       {match && (
         <ReportModal
           visible={reportModalVisible}

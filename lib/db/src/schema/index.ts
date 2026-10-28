@@ -19,3 +19,5 @@
 
 export * from "./profiles";
 export * from "./reports";
+export * from "./blocks";
+export * from "./unmatches";

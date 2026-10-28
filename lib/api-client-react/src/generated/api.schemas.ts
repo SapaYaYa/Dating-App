@@ -154,6 +154,15 @@ export interface Report {
   timestamp: string;
 }
 
+export interface ProfileRef {
+  /**
+   * ID of the other profile. You cannot block or unmatch yourself.
+   * @minLength 1
+   * @maxLength 255
+   */
+  profileId: string;
+}
+
 export interface ErrorResponse {
   error: string;
 }

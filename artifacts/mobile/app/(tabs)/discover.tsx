@@ -21,7 +21,7 @@ import { MOCK_PROFILES, type Profile } from "@/constants/mockData";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
-import { getBlockedProfileIds } from "@/utils/blocks";
+import { getHiddenProfileIds } from "@/utils/hiddenProfiles";
 
 const { width: W, height: H } = Dimensions.get("window");
 // Height of the pass/like row, set by the like button.
@@ -63,7 +63,7 @@ export default function DiscoverScreen() {
       let cancelled = false;
       setBlocksLoaded(false);
 
-      getBlockedProfileIds().then((blockedProfileIds) => {
+      getHiddenProfileIds().then((blockedProfileIds) => {
         if (cancelled) return;
         const blocked = new Set(blockedProfileIds);
 

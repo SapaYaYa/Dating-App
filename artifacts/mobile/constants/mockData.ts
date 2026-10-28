@@ -17,7 +17,7 @@ export interface Profile {
   likesYou?: boolean;
   likeNote?: string;
   matchNote?: string;
-  /** Shown to the user's matches only, never on Discover. */
+  /** Slow to reply shows after matching only; Great Chat shows everywhere. */
   badges?: ProfileBadge[];
 }
 
@@ -98,6 +98,7 @@ export const MOCK_PROFILES: Profile[] = [
     ],
     iceBreakers: ["Best coffee spot in the city?", "Favorite recipe you've tried recently?"],
     verified: true,
+    badges: ["greatChat"],
   },
   {
     id: "2",
@@ -137,6 +138,7 @@ export const MOCK_PROFILES: Profile[] = [
     ],
     iceBreakers: ["Favorite artist of all time?", "What emotion would you paint today?"],
     verified: false,
+    badges: ["greatChat"],
     matchNote: "I paint feelings — and right now I'm feeling pretty excited about this.",
   },
   {
@@ -156,6 +158,7 @@ export const MOCK_PROFILES: Profile[] = [
     ],
     iceBreakers: ["What's your comfort food?", "Best meal you've ever had?"],
     verified: true,
+    badges: ["greatChat"],
     likesYou: true,
     matchNote: "First date is dinner at my place. I'll cook — that's a promise.",
   },
@@ -435,6 +438,8 @@ export const MOCK_CHAT_MESSAGES: { [matchId: string]: ChatMessage[] } = {
     { id: "4", senderId: "me", text: "Not yet but I want to learn! Any good darkrooms nearby?", timestamp: "10:25 AM", isOwn: true },
     { id: "5", senderId: "jake", text: "There's one downtown! I could show you sometime", timestamp: "10:27 AM", isOwn: false },
     { id: "6", senderId: "me", text: "I'd love that! When are you free?", timestamp: "10:28 AM", isOwn: true },
+    { id: "6a", senderId: "jake", text: "There's a film swap there Saturday afternoon. Want to come?", timestamp: "10:31 AM", isOwn: false },
+    { id: "6b", senderId: "me", text: "Perfect, count me in! I'll bring my old Pentax", timestamp: "10:33 AM", isOwn: true },
     { id: "7", senderId: "jake", text: "Can't wait for Saturday!", timestamp: "2:15 PM", isOwn: false },
     { id: "8", senderId: "jake", text: "Also do you prefer morning or afternoon?", timestamp: "2:16 PM", isOwn: false },
   ],

@@ -13,6 +13,7 @@ export * from "./profileInput";
 export * from "./profileInputLookingForItem";
 export * from "./profileList";
 export * from "./profileLookingForItem";
+export * from "./profileRef";
 export * from "./report";
 export * from "./reportCategory";
 export * from "./reportInput";

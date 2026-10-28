@@ -14,6 +14,8 @@ tags:
     description: User profile operations
   - name: reports
     description: User safety reports
+  - name: safety
+    description: Blocking and unmatching
 paths:
   /healthz:
     get:
@@ -119,7 +121,9 @@ paths:
       security:
         - bearerAuth: []
       summary: Submit a report
-      description: Stores a report for moderation with the authenticated user as the reporter
+      description: >
+        Stores a report for moderation with the authenticated user as the
+        reporter, and blocks the reported profile.
       requestBody:
         required: true
         content:
@@ -135,6 +139,68 @@ paths:
                 $ref: "#/components/schemas/Report"
         "400":
           description: Invalid report input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /blocks:
+    post:
+      operationId: blockProfile
+      tags: [safety]
+      security:
+        - bearerAuth: []
+      summary: Block a profile
+      description: >
+        Blocks a profile for the authenticated user. Blocked people are hidden
+        from each other and their conversation ends. Blocking twice is a no-op.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileRef"
+      responses:
+        "204":
+          description: Profile blocked
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /unmatches:
+    post:
+      operationId: unmatchProfile
+      tags: [safety]
+      security:
+        - bearerAuth: []
+      summary: Unmatch a profile
+      description: >
+        Ends the match between the authenticated user and a profile without
+        blocking. Unmatching twice is a no-op.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileRef"
+      responses:
+        "204":
+          description: Unmatched
+        "400":
+          description: Invalid input
           content:
             application/json:
               schema:
@@ -314,6 +380,15 @@ components:
         timestamp:
           type: string
           format: date-time
+    ProfileRef:
+      type: object
+      required: [profileId]
+      properties:
+        profileId:
+          type: string
+          minLength: 1
+          maxLength: 255
+          description: ID of the other profile. You cannot block or unmatch yourself.
     ErrorResponse:
       type: object
       required: [error]

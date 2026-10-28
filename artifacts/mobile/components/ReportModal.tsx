@@ -91,7 +91,6 @@ export default function ReportModal({
     useState<ReportCategory | null>(null);
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [blocking, setBlocking] = useState(false);
   const createReport = useCreateReport();
 
   const slideAnim = useRef(new Animated.Value(SCREEN_H)).current;
@@ -101,7 +100,6 @@ export default function ReportModal({
       setStage("categories");
       setSelectedCategory(null);
       setNote("");
-      setBlocking(false);
       Animated.spring(slideAnim, {
         toValue: 0,
         useNativeDriver: true,
@@ -118,11 +116,16 @@ export default function ReportModal({
   }, [visible]);
 
   const handleClose = () => {
+    // After a report the profile is already blocked, so closing leaves the chat.
+    const reported = stage === "success";
     Animated.timing(slideAnim, {
       toValue: SCREEN_H,
       duration: 240,
       useNativeDriver: true,
-    }).start(() => onClose());
+    }).start(() => {
+      onClose();
+      if (reported) onBlocked?.(profileId);
+    });
   };
 
   const handleSelectCategory = (cat: ReportCategory) => {
@@ -158,6 +161,13 @@ export default function ReportModal({
           "Report submitted, but the local reported-profile cache could not be updated.",
         );
       }
+      // Reporting always blocks. The server already blocked as part of the
+      // report, so only the phone's copy needs updating.
+      try {
+        await blockProfile(profileId, { syncServer: false });
+      } catch {
+        console.warn("Report submitted, but the local block list could not be updated.");
+      }
 
       setSubmitting(false);
       setStage("success");
@@ -167,21 +177,6 @@ export default function ReportModal({
         "Couldn't submit report",
         "Please check your connection and try again.",
       );
-    }
-  };
-
-  const handleBlock = async () => {
-    setBlocking(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-
-    try {
-      await blockProfile(profileId);
-      setBlocking(false);
-      onBlocked?.(profileId);
-      handleClose();
-    } catch {
-      setBlocking(false);
-      Alert.alert("Couldn't block this profile", "Please try again.");
     }
   };
 
@@ -387,7 +382,7 @@ export default function ReportModal({
               <Text
                 style={[styles.successTitle, { color: colors.foreground }]}
               >
-                Report Submitted
+                Report submitted
               </Text>
               <Text
                 style={[
@@ -395,35 +390,13 @@ export default function ReportModal({
                   { color: colors.mutedForeground },
                 ]}
               >
-                Thanks for your report. We'll review it shortly.
+                {profileName} has been blocked. Thanks for your report. We'll review it shortly.
               </Text>
               <TouchableOpacity
-                onPress={handleBlock}
-                disabled={blocking}
-                style={[
-                  styles.blockBtn,
-                  {
-                    backgroundColor: colors.destructive,
-                    opacity: blocking ? 0.7 : 1,
-                  },
-                ]}
-              >
-                <Feather name="slash" size={16} color="#fff" />
-                <Text style={styles.blockText}>
-                  {blocking ? "Blocking…" : `Block ${profileName}`}
-                </Text>
-              </TouchableOpacity>
-              <TouchableOpacity
                 onPress={handleClose}
-                style={styles.doneBtn}
-                disabled={blocking}
+                style={[styles.doneBtn, { backgroundColor: colors.primary }]}
               >
-                <Text
-                  style={[
-                    styles.doneText,
-                    { color: colors.mutedForeground },
-                  ]}
-                >
+                <Text style={[styles.doneText, { color: colors.primaryForeground }]}>
                   Done
                 </Text>
               </TouchableOpacity>
@@ -550,27 +523,16 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     paddingHorizontal: 20,
   },
-  blockBtn: {
+  doneBtn: {
     width: "100%",
     borderRadius: 14,
     paddingVertical: 15,
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    gap: 8,
     marginTop: 8,
   },
-  blockText: {
-    color: "#fff",
+  doneText: {
     fontSize: 16,
     fontWeight: "600",
-  },
-  doneBtn: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
-  },
-  doneText: {
-    fontSize: 15,
-    fontWeight: "500",
   },
 });

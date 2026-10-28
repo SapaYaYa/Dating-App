@@ -209,7 +209,8 @@ export const UpsertMyProfileResponse = zod.object({
 });
 
 /**
- * Stores a report for moderation with the authenticated user as the reporter
+ * Stores a report for moderation with the authenticated user as the reporter, and blocks the reported profile.
+
  * @summary Submit a report
  */
 export const createReportBodyReportedProfileIdMax = 255;
@@ -237,4 +238,34 @@ export const CreateReportBody = zod.object({
     .max(createReportBodyNoteMax)
     .default(createReportBodyNoteDefault)
     .describe("Optional details about the report"),
+});
+
+/**
+ * Blocks a profile for the authenticated user. Blocked people are hidden from each other and their conversation ends. Blocking twice is a no-op.
+
+ * @summary Block a profile
+ */
+export const blockProfileBodyProfileIdMax = 255;
+
+export const BlockProfileBody = zod.object({
+  profileId: zod
+    .string()
+    .min(1)
+    .max(blockProfileBodyProfileIdMax)
+    .describe("ID of the other profile. You cannot block or unmatch yourself."),
+});
+
+/**
+ * Ends the match between the authenticated user and a profile without blocking. Unmatching twice is a no-op.
+
+ * @summary Unmatch a profile
+ */
+export const unmatchProfileBodyProfileIdMax = 255;
+
+export const UnmatchProfileBody = zod.object({
+  profileId: zod
+    .string()
+    .min(1)
+    .max(unmatchProfileBodyProfileIdMax)
+    .describe("ID of the other profile. You cannot block or unmatch yourself."),
 });

@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { getAuth } from "@clerk/express";
-import { eq, ne } from "drizzle-orm";
-import { db, profilesTable } from "@workspace/db";
+import { and, eq, ne, notInArray, or } from "drizzle-orm";
+import { db, blocksTable, profilesTable, unmatchesTable } from "@workspace/db";
 import {
   UpsertMyProfileBody,
   UpsertMyProfileResponse,
@@ -49,10 +49,34 @@ router.get("/profiles", async (req, res): Promise<void> => {
     .from(profilesTable)
     .where(eq(profilesTable.id, userId));
 
+  // Hide anyone either person has blocked or unmatched.
+  const [blocks, unmatches] = await Promise.all([
+    db
+      .select()
+      .from(blocksTable)
+      .where(or(eq(blocksTable.blockerId, userId), eq(blocksTable.blockedProfileId, userId))),
+    db
+      .select()
+      .from(unmatchesTable)
+      .where(or(eq(unmatchesTable.userId, userId), eq(unmatchesTable.unmatchedProfileId, userId))),
+  ]);
+  const hiddenIds = [
+    ...blocks.flatMap((b) =>
+      b.blockerId === userId ? [b.blockedProfileId] : b.blockedProfileId === userId ? [b.blockerId] : [],
+    ),
+    ...unmatches.flatMap((u) =>
+      u.userId === userId ? [u.unmatchedProfileId] : u.unmatchedProfileId === userId ? [u.userId] : [],
+    ),
+  ];
+
   const others = await db
     .select()
     .from(profilesTable)
-    .where(ne(profilesTable.id, userId));
+    .where(
+      hiddenIds.length > 0
+        ? and(ne(profilesTable.id, userId), notInArray(profilesTable.id, hiddenIds))
+        : ne(profilesTable.id, userId),
+    );
 
   // Age is enough for discovery; another user's exact birthday is not shared.
   const profiles = others.map((p) => ({

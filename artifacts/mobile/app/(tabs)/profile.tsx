@@ -19,6 +19,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { GhostIcon } from "@/components/GhostIcon";
+import { GreatChatCard } from "@/components/GreatChatCard";
 import { ReplyStatusCard } from "@/components/ReplyStatusCard";
 import { useAuth } from "@/context/AuthContext";
 import { useApp } from "@/context/AppContext";
@@ -44,7 +45,7 @@ export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const { user, logout, updateUser, verificationStatus } = useAuth();
   const { totalPoints, level, currentStreak } = useApp();
-  const { status: replyStatus } = useReplyStatus();
+  const { status: replyStatus, greatChat } = useReplyStatus();
   const scheme = useColorScheme();
   const [notificationsOn, setNotificationsOn] = useState(true);
   const [matchNote, setMatchNote] = useState(user?.matchNote ?? "");
@@ -148,6 +149,11 @@ export default function ProfileScreen() {
               <GhostIcon size={18} color={colors.slowReply} />
             </View>
           )}
+          {greatChat.earned && (
+            <View accessibilityRole="image" accessibilityLabel="Great Chat badge">
+              <Feather name="message-square" size={17} color={colors.greatChat} />
+            </View>
+          )}
         </View>
 
         <View style={styles.badgesRow}>
@@ -181,6 +187,7 @@ export default function ProfileScreen() {
       </View>
 
       <ReplyStatusCard />
+      <GreatChatCard />
 
       {verificationStatus === "none" && (
         <TouchableOpacity
