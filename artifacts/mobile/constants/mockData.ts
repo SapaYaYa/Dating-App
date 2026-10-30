@@ -19,6 +19,8 @@ export interface Profile {
   matchNote?: string;
   /** Slow to reply shows after matching only; Great Chat shows everywhere. */
   badges?: ProfileBadge[];
+  /** False if they turned off "Show my boards on Discover". */
+  showsBoardsOnDiscover?: boolean;
 }
 
 export interface Match {
@@ -52,6 +54,29 @@ export interface Board {
   category: string;
   emoji: string;
   trending: boolean;
+  /** Sample profiles known to be in this board (Discover's "Both in" tag). */
+  memberIds?: string[];
+  /** Set for boards users created. */
+  creatorId?: string;
+  creatorName?: string;
+}
+
+export interface BoardComment {
+  id: string;
+  /** A profile id, or "me" for the signed-in user. */
+  authorId: string;
+  text: string;
+  time: string;
+}
+
+export interface BoardPost {
+  id: string;
+  boardId: string;
+  /** A profile id, or "me" for the signed-in user. */
+  authorId: string;
+  text: string;
+  time: string;
+  comments: BoardComment[];
 }
 
 export interface Event {
@@ -138,6 +163,7 @@ export const MOCK_PROFILES: Profile[] = [
     ],
     iceBreakers: ["Favorite artist of all time?", "What emotion would you paint today?"],
     verified: false,
+    showsBoardsOnDiscover: false,
     badges: ["greatChat"],
     matchNote: "I paint feelings — and right now I'm feeling pretty excited about this.",
   },
@@ -467,6 +493,7 @@ export const MOCK_CHAT_MESSAGES: { [matchId: string]: ChatMessage[] } = {
 export const MOCK_BOARDS: Board[] = [
   {
     id: "b1",
+    memberIds: ["1", "3", "7"],
     title: "Coffee & Conversations",
     description: "For those who believe every great connection starts with a good cup.",
     members: 4821,
@@ -477,6 +504,7 @@ export const MOCK_BOARDS: Board[] = [
   },
   {
     id: "b2",
+    memberIds: ["2", "6", "9"],
     title: "Adventure Seekers",
     description: "Hiking, travel, and outdoor experiences. Find your adventure partner.",
     members: 6203,
@@ -487,6 +515,7 @@ export const MOCK_BOARDS: Board[] = [
   },
   {
     id: "b3",
+    memberIds: ["4", "1"],
     title: "Foodie Dates",
     description: "Restaurant recommendations, cooking dates, and food adventures.",
     members: 8941,
@@ -497,6 +526,7 @@ export const MOCK_BOARDS: Board[] = [
   },
   {
     id: "b4",
+    memberIds: ["5", "11"],
     title: "Night Owls",
     description: "Late night conversations, 2am thoughts, finding your fellow insomniac.",
     members: 3156,
@@ -507,6 +537,7 @@ export const MOCK_BOARDS: Board[] = [
   },
   {
     id: "b5",
+    memberIds: ["3", "13"],
     title: "Bookworms & Beyond",
     description: "Share your reading list, discuss stories, find your literary soulmate.",
     members: 5672,
@@ -517,6 +548,7 @@ export const MOCK_BOARDS: Board[] = [
   },
   {
     id: "b6",
+    memberIds: ["6", "15"],
     title: "Music Lovers",
     description: "Share playlists, concert experiences, and find your music match.",
     members: 7344,
@@ -732,4 +764,53 @@ export const MOCK_WAITING_ON_YOU: { profile: Profile; lastMessage: string; waiti
   { profile: MOCK_PROFILES[11], lastMessage: "What are you up to this weekend?", waitingDays: 8 },
   { profile: MOCK_PROFILES[12], lastMessage: "Okay that's a great answer", waitingDays: 9 },
   { profile: MOCK_PROFILES[13], lastMessage: "Did you end up trying that ramen spot?", waitingDays: 11 },
+];
+
+// The signed-in user starts out in these boards.
+export const MOCK_JOINED_BOARD_IDS = ["b1", "b2"];
+
+export const MOCK_BOARD_POSTS: BoardPost[] = [
+  {
+    id: "p1", boardId: "b1", authorId: "1", time: "2h ago",
+    text: "Best spot for a first-date coffee that isn't too loud? Asking for... me.",
+    comments: [
+      { id: "c1", authorId: "7", text: "Anywhere with a window seat. Easy to people-watch if it gets quiet.", time: "1h ago" },
+      { id: "c2", authorId: "3", text: "Somewhere you can walk to a park after!", time: "45m ago" },
+    ],
+  },
+  {
+    id: "p2", boardId: "b1", authorId: "7", time: "Yesterday",
+    text: "Hot take: oat milk is better than regular milk in a cortado.",
+    comments: [{ id: "c3", authorId: "1", text: "Correct and I will not be taking questions.", time: "Yesterday" }],
+  },
+  {
+    id: "p3", boardId: "b2", authorId: "2", time: "5h ago",
+    text: "Planning a sunrise hike this Saturday. Any trails with a good view and a short drive?",
+    comments: [{ id: "c4", authorId: "6", text: "The ridge loop! 40 min drive, worth it.", time: "4h ago" }],
+  },
+  {
+    id: "p4", boardId: "b2", authorId: "9", time: "2 days ago",
+    text: "Just got back from a week of camping. Ask me anything about packing light.",
+    comments: [],
+  },
+  {
+    id: "p5", boardId: "b3", authorId: "4", time: "3h ago",
+    text: "Cooking date idea: each person brings one surprise ingredient.",
+    comments: [{ id: "c5", authorId: "1", text: "Love this. Chaos in the best way.", time: "2h ago" }],
+  },
+  {
+    id: "p6", boardId: "b4", authorId: "5", time: "1:12 AM",
+    text: "Who else is wide awake thinking about whether fish get thirsty?",
+    comments: [],
+  },
+  {
+    id: "p7", boardId: "b5", authorId: "13", time: "Yesterday",
+    text: "Currently reading something I can't put down. What's the last book that kept you up?",
+    comments: [{ id: "c6", authorId: "3", text: "Anything by Sally Rooney, every time.", time: "Yesterday" }],
+  },
+  {
+    id: "p8", boardId: "b6", authorId: "15", time: "6h ago",
+    text: "Drop the song you'd play on a road trip first date.",
+    comments: [{ id: "c7", authorId: "6", text: "Electric Feel. No notes.", time: "5h ago" }],
+  },
 ];

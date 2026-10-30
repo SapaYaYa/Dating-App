@@ -62,6 +62,21 @@ These screens still run on sample data (`MOCK_*` in
 - [ ] Send the "you've earned Great Chat" message based on the server's
       numbers.
 
+## Community boards
+
+- [ ] Store boards, memberships, posts and comments on the server. They're
+      sample data saved on the phone, so boards someone creates are visible
+      only to them.
+- [ ] Enforce the board rules on the server too (`artifacts/mobile/constants/boards.ts`):
+      name and description limits, 3 boards per person, the duplicate-name
+      check, and owners deleting only boards with fewer than 10 members.
+- [ ] Send board and post reports to your team for review. Today a report
+      only hides the board or post on the reporter's phone.
+- [ ] Compute "Both in ..." tags and the Discover boost on the server,
+      respecting each person's "Show my boards on Discover" setting.
+- [ ] Hide blocked and unmatched people in boards on the server, not just
+      on the phone.
+
 ## Quality
 
 - [ ] Add automated tests. The project has none; at minimum cover the two

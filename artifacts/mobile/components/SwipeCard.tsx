@@ -29,9 +29,11 @@ interface Props {
   index: number;
   /** Space available for the card; it shrinks below its usual height to fit. */
   maxHeight?: number;
+  /** A Community board you're both in, shown as "Both in ...". */
+  sharedBoard?: { title: string; emoji: string };
 }
 
-export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, isTop, index, maxHeight }: Props) {
+export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, isTop, index, maxHeight, sharedBoard }: Props) {
   const colors = useColors();
   const pan = useRef(new Animated.ValueXY()).current;
 
@@ -149,6 +151,15 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, isTop, index, ma
           <Text style={styles.infoText}>{formatDistance(profile.distance)}</Text>
         </View>
 
+        {sharedBoard && (
+          <View style={styles.sharedBoard}>
+            <Text style={styles.sharedBoardEmoji}>{sharedBoard.emoji}</Text>
+            <Text style={styles.sharedBoardText} numberOfLines={1}>
+              Both in {sharedBoard.title}
+            </Text>
+          </View>
+        )}
+
         <View style={styles.tags}>
           {profile.interests.slice(0, 3).map((tag) => (
             <View key={tag} style={styles.tag}>
@@ -257,6 +268,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     flex: 1,
   },
+  sharedBoard: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "flex-start",
+    gap: 6,
+    backgroundColor: "rgba(255,255,255,0.18)",
+    borderRadius: 14,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginTop: 8,
+    maxWidth: "100%",
+  },
+  sharedBoardEmoji: { fontSize: 13 },
+  sharedBoardText: { color: "#fff", fontSize: 13, fontWeight: "600", flexShrink: 1 },
   name: {
     color: "#fff",
     fontSize: 26,

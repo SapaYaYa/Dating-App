@@ -1,9 +1,11 @@
 import { Feather } from "@expo/vector-icons";
-import React, { useState } from "react";
+import { router } from "expo-router";
+import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { useColors } from "@/hooks/useColors";
 import type { Board } from "@/constants/mockData";
+import { useCommunity } from "@/context/CommunityContext";
 
 interface Props {
   board: Board;
@@ -12,11 +14,14 @@ interface Props {
 
 export function BoardCard({ board, compact }: Props) {
   const colors = useColors();
-  const [joined, setJoined] = useState(false);
+  const { isJoined, isOwner, join, leave } = useCommunity();
+  const joined = isJoined(board.id);
+  const open = () => router.push(`/community/${board.id}`);
 
   if (compact) {
     return (
       <TouchableOpacity
+        onPress={open}
         style={[styles.compact, { backgroundColor: colors.card, borderColor: colors.border }]}
         activeOpacity={0.8}
       >
@@ -25,7 +30,7 @@ export function BoardCard({ board, compact }: Props) {
           {board.title}
         </Text>
         <Text style={[styles.compactMembers, { color: colors.mutedForeground }]}>
-          {(board.members / 1000).toFixed(1)}k
+          {board.members < 1000 ? board.members : `${(board.members / 1000).toFixed(1)}k`}
         </Text>
       </TouchableOpacity>
     );
@@ -33,7 +38,7 @@ export function BoardCard({ board, compact }: Props) {
 
   return (
     <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
-      <View style={styles.row}>
+      <TouchableOpacity onPress={open} style={styles.row} activeOpacity={0.7}>
         <Text style={styles.bigEmoji}>{board.emoji}</Text>
         <View style={styles.info}>
           <View style={styles.titleRow}>
@@ -63,9 +68,14 @@ export function BoardCard({ board, compact }: Props) {
             </View>
           </View>
         </View>
-      </View>
+      </TouchableOpacity>
+      {isOwner(board) ? (
+        <View style={[styles.joinBtn, { backgroundColor: colors.secondary }]}>
+          <Text style={[styles.joinText, { color: colors.foreground }]}>Your board</Text>
+        </View>
+      ) : (
       <TouchableOpacity
-        onPress={() => setJoined(!joined)}
+        onPress={() => (joined ? leave(board.id) : join(board.id))}
         style={[
           styles.joinBtn,
           { backgroundColor: joined ? colors.secondary : colors.primary },
@@ -76,6 +86,7 @@ export function BoardCard({ board, compact }: Props) {
           {joined ? "Joined" : "Join"}
         </Text>
       </TouchableOpacity>
+      )}
     </View>
   );
 }

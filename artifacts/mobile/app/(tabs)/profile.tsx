@@ -24,6 +24,7 @@ import { ReplyStatusCard } from "@/components/ReplyStatusCard";
 import { useAuth } from "@/context/AuthContext";
 import { useApp } from "@/context/AppContext";
 import { useReplyStatus } from "@/context/ReplyStatusContext";
+import { useCommunity } from "@/context/CommunityContext";
 import { useColors } from "@/hooks/useColors";
 import { PROFILE_QUESTIONS } from "@/constants/mockData";
 
@@ -46,6 +47,7 @@ export default function ProfileScreen() {
   const { user, logout, updateUser, verificationStatus } = useAuth();
   const { totalPoints, level, currentStreak } = useApp();
   const { status: replyStatus, greatChat } = useReplyStatus();
+  const { showBoardsOnDiscover, setShowBoardsOnDiscover } = useCommunity();
   const scheme = useColorScheme();
   const [notificationsOn, setNotificationsOn] = useState(true);
   const [matchNote, setMatchNote] = useState(user?.matchNote ?? "");
@@ -354,6 +356,9 @@ export default function ProfileScreen() {
         {[
           { icon: "edit-2", label: "Edit Profile" },
           { icon: "bell", label: "Notifications", toggle: true, value: notificationsOn, onToggle: () => setNotificationsOn(!notificationsOn) },
+          // Off: your boards aren't shown on Discover cards or used to boost
+          // people, in either direction.
+          { icon: "users", label: "Show my boards on Discover", toggle: true, value: showBoardsOnDiscover, onToggle: () => setShowBoardsOnDiscover(!showBoardsOnDiscover) },
           { icon: "shield", label: "Privacy & Safety" },
           { icon: "help-circle", label: "Help & Support" },
         ].map((item, i, arr) => (

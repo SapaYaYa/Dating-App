@@ -20,6 +20,7 @@ import { normalizeLookingFor } from "@/constants/lookingFor";
 import { MOCK_PROFILES, type Profile } from "@/constants/mockData";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
+import { useCommunity } from "@/context/CommunityContext";
 import { useColors } from "@/hooks/useColors";
 import { getHiddenProfileIds } from "@/utils/hiddenProfiles";
 
@@ -36,6 +37,8 @@ export default function DiscoverScreen() {
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [blocksLoaded, setBlocksLoaded] = useState(false);
   const profileStateInitialized = useRef(false);
+  const { loaded: communityLoaded, sharedBoardsWith } = useCommunity();
+  const boostApplied = useRef(false);
   const [lastPassedProfile, setLastPassedProfile] = useState<Profile | null>(null);
   const [showMatch, setShowMatch] = useState(false);
   const [matchedName, setMatchedName] = useState("");
@@ -85,6 +88,19 @@ export default function DiscoverScreen() {
       };
     }, []),
   );
+
+  // Boost: once the deck and boards are loaded, people who share a board with
+  // the user move up, in their existing order. Nobody is added who wasn't
+  // already in the deck, so Discover's preferences still decide who appears.
+  useEffect(() => {
+    if (boostApplied.current || !communityLoaded || !blocksLoaded) return;
+    boostApplied.current = true;
+    setProfiles((current) => {
+      const shared = current.filter((p) => sharedBoardsWith(p).length > 0);
+      const rest = current.filter((p) => sharedBoardsWith(p).length === 0);
+      return [...shared, ...rest];
+    });
+  }, [communityLoaded, blocksLoaded, sharedBoardsWith]);
 
   const topProfile = profiles[0];
 
@@ -195,6 +211,7 @@ export default function DiscoverScreen() {
               index={index}
               onSwipeLeft={handleSwipeLeft}
               onSwipeRight={handleSwipeRight}
+              sharedBoard={sharedBoardsWith(profile)[0]}
               // Leave room for the stacked cards peeking out below.
               maxHeight={cardAreaHeight !== undefined ? cardAreaHeight - 24 : undefined}
             />

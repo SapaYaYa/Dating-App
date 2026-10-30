@@ -21,6 +21,7 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { DEMO_MODE } from "@/constants/demo";
 import { AuthProvider, DemoAuthProvider } from "@/context/AuthContext";
 import { AppProvider } from "@/context/AppContext";
+import { CommunityProvider } from "@/context/CommunityContext";
 import { ReplyStatusProvider } from "@/context/ReplyStatusContext";
 
 SplashScreen.preventAutoHideAsync();
@@ -49,6 +50,8 @@ function RootLayoutNav() {
         options={{ headerShown: false, presentation: "modal" }}
       />
       <Stack.Screen name="waiting" options={{ headerShown: false }} />
+      <Stack.Screen name="community/create" options={{ headerShown: false, presentation: "modal" }} />
+      <Stack.Screen name="community/[id]" options={{ headerShown: false }} />
     </Stack>
   );
 }
@@ -72,11 +75,13 @@ export default function RootLayout() {
   const app = (
     <AppProvider>
       <ReplyStatusProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <KeyboardProvider>
-            <RootLayoutNav />
-          </KeyboardProvider>
-        </GestureHandlerRootView>
+        <CommunityProvider>
+          <GestureHandlerRootView style={{ flex: 1 }}>
+            <KeyboardProvider>
+              <RootLayoutNav />
+            </KeyboardProvider>
+          </GestureHandlerRootView>
+        </CommunityProvider>
       </ReplyStatusProvider>
     </AppProvider>
   );
