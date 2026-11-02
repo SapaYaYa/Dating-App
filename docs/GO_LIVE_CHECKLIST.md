@@ -48,6 +48,25 @@ These screens still run on sample data (`MOCK_*` in
 - [ ] Board boost only reorders people already within both distance limits;
       it never adds anyone from farther away.
 
+## Home city and browsing another city
+
+- [ ] Store each user's home city ("Lives in ..."): set from their phone's
+      location at sign-up, changeable in profile settings at most once a
+      month. Store the city's coordinates, not just its name.
+- [ ] Show "Lives in City, ST" on Discover cards, full profiles and in Likes.
+      City and state only, never a neighborhood or exact location.
+- [ ] Browsing city: users can pick another city in Discover filters at most
+      once a week. Switching back to "Use My Location" is always allowed.
+- [ ] While browsing another city, Discover shows people there, with
+      distances measured from that city.
+- [ ] Browsing users never appear in the other city's Discover. Their likes
+      still reach the person they liked and show up in that person's Likes,
+      mixed in with local likes (no separate section).
+- [ ] "Both distance limits met" applies to Discover only. Likes can come
+      from any distance.
+- [ ] Replace the fixed US city and ZIP lists with a real city search that
+      covers cities worldwide and returns coordinates.
+
 ## Slow to reply badge
 
 - [ ] Track unanswered matches on the server: the other person's last
