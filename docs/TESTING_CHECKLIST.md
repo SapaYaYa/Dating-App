@@ -182,6 +182,14 @@ private/incognito window to start fresh. To test kilometers, set your phone
       Likes) and under New Matches.
 - [ ] My Prompts shows your 3 answers; Edit prompts opens the editor; Save
       stays disabled until all 3 have answers; saved answers show on Profile.
+- [ ] Edit Profile (Account section, the My Bio card, or Add/Edit under My
+      Interests) opens the editor with your current bio and interests.
+- [ ] Bio stops at 150 characters and the counter matches; saved bio shows
+      in My Bio and is still there after reloading.
+- [ ] Interests: pick up to 5 from the list; tapping a 6th shows the limit
+      message and doesn't add it; tapping a picked one removes it.
+- [ ] Saved interests show under My Interests. With none, it shows only
+      "Add interests" (no made-up interests).
 - [ ] Get Verified flow runs. It's a placeholder that approves automatically.
 - [ ] There's no Profile Strength score on Profile.
 - [ ] Level, streak and Priority (level 5+) badges show correctly.
@@ -206,6 +214,8 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Server rejects fewer than 3 or more than 8 photos.
 - [ ] Creating a profile without photos is rejected; later updates without
       photos (e.g. only the bio) are accepted.
+- [ ] Editing bio and interests on Profile saves to the server and shows on
+      another device.
 - [ ] Server rejects: age under 18 or over 120, bad birthday format, invalid
       coordinates, over-long name/bio/occupation, or more than 20 interests.
 - [ ] Another user's exact birthday and coordinates are never returned.

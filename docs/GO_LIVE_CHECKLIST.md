@@ -32,6 +32,12 @@ These screens still run on sample data (`MOCK_*` in
 - [ ] **Photos:** add a photo upload service. Photos are currently saved as
       file paths on the user's phone, which no one else can open.
 
+## Bio and interests
+
+- [ ] Match the server's limits to the app: bio up to 150 characters and up
+      to 5 interests from the list in `artifacts/mobile/constants/profileFields.ts`
+      (the server currently allows longer bios and 20 free-text interests).
+
 ## Scroll Discover, likes and prompts
 
 - [ ] Store prompts on the server (3 per profile, question from the list,

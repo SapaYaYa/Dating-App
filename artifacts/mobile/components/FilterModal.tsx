@@ -32,6 +32,7 @@ import {
   unitToMiles,
 } from "@/utils/units";
 import { LOCATION_RULE, formatChangeDate, nextChangeAllowedAt } from "@/constants/location";
+import { INTEREST_OPTIONS } from "@/constants/profileFields";
 import type { BrowseCityChange } from "@/utils/browseCity";
 
 const { height: SCREEN_H } = Dimensions.get("window");
@@ -146,7 +147,7 @@ const OPTS = {
   hasKids: ["No kids", "Kids (live with me)", "Kids (don't live with me)", "Prefer not to say"],
   pets: ["Dog person", "Cat person", "Love all animals", "Fish / reptiles", "Small animals", "No pets", "Allergic to pets", "Open to getting pets"],
   educationLevel: ["High School", "Some College", "Associate's Degree", "Bachelor's Degree", "Master's Degree", "Doctoral / PhD", "Trade / Vocational", "Currently studying"],
-  interests: ["Travel", "Coffee", "Music", "Cooking", "Yoga", "Hiking", "Art", "Photography", "Fitness", "Reading", "Gaming", "Film", "Dancing", "Outdoors", "Fashion", "Wine"],
+  interests: INTEREST_OPTIONS,
   bodyType: ["Slim", "Athletic", "Average", "Curvy", "Muscular", "Plus-size", "Stocky", "Prefer not to say"],
   tattoos: ["None", "One", "A few", "Several", "Heavily tattooed"],
   piercings: ["None", "A few", "Multiple"],

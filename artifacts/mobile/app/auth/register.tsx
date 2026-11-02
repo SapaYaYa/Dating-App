@@ -20,6 +20,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PHOTO_RULES } from "@/constants/photos";
+import { BIO_MAX } from "@/constants/profileFields";
 import { PROMPT_RULES, promptsComplete, type PromptAnswer } from "@/constants/prompts";
 import { PromptsEditor, emptyPrompts } from "@/components/PromptsEditor";
 import { DrumRollPicker } from "@/components/DrumRollPicker";
@@ -133,7 +134,6 @@ export default function RegisterScreen() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [prompts, setPrompts] = useState<PromptAnswer[]>(emptyPrompts);
 
-  const BIO_MAX = 150;
 
   const toggleLookingFor = async (option: LookingForOption) => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

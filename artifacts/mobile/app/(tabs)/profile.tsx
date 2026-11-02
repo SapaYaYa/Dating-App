@@ -286,23 +286,37 @@ export default function ProfileScreen() {
         </TouchableOpacity>
       </SectionCard>
 
+      <SectionCard colors={colors} title="My Bio">
+        <TouchableOpacity onPress={() => router.push("/edit-profile")} activeOpacity={0.7} style={styles.bioRow}>
+          <Text style={[styles.bioText, { color: user?.bio ? colors.foreground : colors.mutedForeground }]}>
+            {user?.bio || "Add a short bio"}
+          </Text>
+          <Feather name="edit-2" size={14} color={colors.mutedForeground} />
+        </TouchableOpacity>
+      </SectionCard>
+
       <SectionCard colors={colors} title="My Interests">
         <View style={styles.interestsWrap}>
-          {(user?.interests || ["Travel", "Coffee", "Music", "Hiking", "Photography"]).map((interest) => (
+          {(user?.interests ?? []).map((interest) => (
             <View key={interest} style={[styles.interestChip, { backgroundColor: colors.secondary }]}>
               <Text style={[styles.interestText, { color: colors.foreground }]}>{interest}</Text>
             </View>
           ))}
-          <TouchableOpacity style={[styles.addInterestChip, { borderColor: colors.border }]}>
-            <Feather name="plus" size={14} color={colors.mutedForeground} />
-            <Text style={[styles.addText, { color: colors.mutedForeground }]}>Add</Text>
+          <TouchableOpacity
+            onPress={() => router.push("/edit-profile")}
+            style={[styles.addInterestChip, { borderColor: colors.border }]}
+          >
+            <Feather name={user?.interests?.length ? "edit-2" : "plus"} size={14} color={colors.mutedForeground} />
+            <Text style={[styles.addText, { color: colors.mutedForeground }]}>
+              {user?.interests?.length ? "Edit" : "Add interests"}
+            </Text>
           </TouchableOpacity>
         </View>
       </SectionCard>
 
       <SectionCard colors={colors} title="Account">
         {[
-          { icon: "edit-2", label: "Edit Profile" },
+          { icon: "edit-2", label: "Edit Profile", onPress: () => router.push("/edit-profile") },
           { icon: "home", label: "Home city", detail: user?.homeCity ?? "Not set", onPress: () => router.push("/home-city") },
           { icon: "bell", label: "Notifications", toggle: true, value: notificationsOn, onToggle: () => setNotificationsOn(!notificationsOn) },
           // Off: your boards aren't shown on Discover cards or used to boost
@@ -427,6 +441,8 @@ const styles = StyleSheet.create({
   promptAnswer: { fontSize: 15, lineHeight: 21 },
   editPrompts: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, height: 48, borderTopWidth: 1 },
   editPromptsText: { fontSize: 14, fontWeight: "600" },
+  bioRow: { flexDirection: "row", alignItems: "flex-start", gap: 10, padding: 14 },
+  bioText: { flex: 1, fontSize: 15, lineHeight: 21 },
   interestsWrap: { flexDirection: "row", flexWrap: "wrap", gap: 8, padding: 14 },
   interestChip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20 },
   interestText: { fontSize: 13, fontWeight: "500" },
