@@ -175,10 +175,11 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Sign-up saves the profile to the server; signing in on another device
       shows the same profile and photos.
 - [ ] Photo upload works, and other people can see your photos.
-- [ ] Server rejects profiles with fewer than 3 photos.
+- [ ] Server rejects fewer than 3 or more than 8 photos.
+- [ ] Creating a profile without photos is rejected; later updates without
+      photos (e.g. only the bio) are accepted.
 - [ ] Server rejects: age under 18 or over 120, bad birthday format, invalid
-      coordinates, over-long name/bio/occupation, more than 9 photos or 20
-      interests.
+      coordinates, over-long name/bio/occupation, or more than 20 interests.
 - [ ] Another user's exact birthday and coordinates are never returned.
 - [ ] Unknown address returns a JSON "Not found"; broken JSON returns a JSON
       error; server errors never show stack traces.

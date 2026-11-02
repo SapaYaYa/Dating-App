@@ -110,7 +110,8 @@ export const upsertMyProfileBodyGenderMax = 50;
 
 export const upsertMyProfileBodyBioMax = 500;
 
-export const upsertMyProfileBodyPhotosMax = 9;
+export const upsertMyProfileBodyPhotosMin = 3;
+export const upsertMyProfileBodyPhotosMax = 8;
 
 export const upsertMyProfileBodyInterestsItemMax = 50;
 
@@ -152,7 +153,14 @@ export const UpsertMyProfileBody = zod.object({
     .min(1)
     .optional(),
   bio: zod.string().max(upsertMyProfileBodyBioMax).optional(),
-  photos: zod.array(zod.string()).max(upsertMyProfileBodyPhotosMax).optional(),
+  photos: zod
+    .array(zod.string())
+    .min(upsertMyProfileBodyPhotosMin)
+    .max(upsertMyProfileBodyPhotosMax)
+    .optional()
+    .describe(
+      "At least 3 and at most 8 photos. Required when the profile is first created; optional on later updates (e.g. editing the bio).\n",
+    ),
   interests: zod
     .array(zod.string().max(upsertMyProfileBodyInterestsItemMax))
     .max(upsertMyProfileBodyInterestsMax)

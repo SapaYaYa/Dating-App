@@ -27,7 +27,12 @@ export interface ProfileInput {
   lookingFor?: ProfileInputLookingForItem[];
   /** @maxLength 500 */
   bio?: string;
-  /** @maxItems 9 */
+  /**
+   * At least 3 and at most 8 photos. Required when the profile is first created; optional on later updates (e.g. editing the bio).
+
+   * @minItems 3
+   * @maxItems 8
+   */
   photos?: string[];
   /** @maxItems 20 */
   interests?: string[];

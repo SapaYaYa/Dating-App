@@ -131,6 +131,19 @@ router.put("/profiles/me", async (req, res): Promise<void> => {
     return;
   }
 
+  // Photos are optional on later updates, but a new profile needs them; the
+  // body schema already enforces 3-8 whenever they're sent.
+  if (parsed.data.photos === undefined) {
+    const [existing] = await db
+      .select({ id: profilesTable.id })
+      .from(profilesTable)
+      .where(eq(profilesTable.id, userId));
+    if (!existing) {
+      res.status(400).json({ error: "A new profile needs at least 3 photos" });
+      return;
+    }
+  }
+
   const { latitude, longitude, ...profileFields } = parsed.data;
 
   const values = {

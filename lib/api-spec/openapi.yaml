@@ -297,7 +297,11 @@ components:
           maxLength: 500
         photos:
           type: array
-          maxItems: 9
+          minItems: 3
+          maxItems: 8
+          description: >
+            At least 3 and at most 8 photos. Required when the profile is
+            first created; optional on later updates (e.g. editing the bio).
           items:
             type: string
         interests:
