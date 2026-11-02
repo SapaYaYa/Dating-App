@@ -29,6 +29,25 @@ These screens still run on sample data (`MOCK_*` in
 - [ ] **Photos:** add a photo upload service. Photos are currently saved as
       file paths on the user's phone, which no one else can open.
 
+## Discover distance
+
+- [ ] Load Discover from `GET /profiles` and apply every filter on the server
+      (distance, age, Show Me and the rest). Today filters are saved but
+      never change who appears.
+- [ ] Save each user's location and maximum distance on the server: GPS
+      ("Use My Location") or a searched city/ZIP.
+- [ ] Only show two people to each other when both distance limits are met:
+      each is within the other's maximum distance.
+- [ ] Maximum distance is 1 to 150 miles, default 25 miles. The top of the
+      range is a real limit, never "Anywhere".
+- [ ] Show distances in miles or kilometers based on the user's country
+      (150 miles is about 240 km, 25 miles about 40 km). The server
+      calculates in kilometers today; convert for display.
+- [ ] Replace the sample "2 mi away" text with each card's real rounded
+      distance from the server.
+- [ ] Board boost only reorders people already within both distance limits;
+      it never adds anyone from farther away.
+
 ## Slow to reply badge
 
 - [ ] Track unanswered matches on the server: the other person's last
