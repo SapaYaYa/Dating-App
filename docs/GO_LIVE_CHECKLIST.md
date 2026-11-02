@@ -26,6 +26,9 @@ These screens still run on sample data (`MOCK_*` in
 - [ ] **Likes:** load real likes.
 - [ ] **Community and challenges:** decide whether these launch, and wire
       them to real data if so.
+- [ ] **Photo minimum:** enforce at least 3 photos on the server, matching
+      sign-up and the Profile screen (`artifacts/mobile/constants/photos.ts`).
+      The server currently allows 0-9.
 - [ ] **Photos:** add a photo upload service. Photos are currently saved as
       file paths on the user's phone, which no one else can open.
 

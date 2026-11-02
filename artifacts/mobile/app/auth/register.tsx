@@ -19,6 +19,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { PHOTO_RULES } from "@/constants/photos";
 import { DrumRollPicker } from "@/components/DrumRollPicker";
 import {
   DEFAULT_LOOKING_FOR,
@@ -81,8 +82,9 @@ function clerkErrorDetails(error: unknown, fallback: string): {
 }
 
 const FORM_STEPS = 5;
-const MAX_PHOTOS = 3;
-const MIN_PHOTOS = 1;
+// Sign-up asks for exactly the minimum; more can be added later on Profile.
+const MIN_PHOTOS = PHOTO_RULES.MIN_PHOTOS;
+const MAX_PHOTOS = PHOTO_RULES.MIN_PHOTOS;
 
 const GENDER_OPTIONS = [
   "Man", "Woman", "Non-binary", "Trans Man", "Trans Woman",
@@ -359,7 +361,7 @@ export default function RegisterScreen() {
     "Choose the gender identities you want in your card stack",
     "Email address and password",
     "Write a short bio (optional)",
-    "Add at least 1 photo (up to 3) to show who you are",
+    `Add ${PHOTO_RULES.MIN_PHOTOS} photos to show who you are. You can add up to ${PHOTO_RULES.MAX_PHOTOS} later on your profile.`,
   ];
 
   const filledPhotos = photos.filter(Boolean).length;
@@ -754,11 +756,9 @@ export default function RegisterScreen() {
               <View style={[styles.photoHintRow, { backgroundColor: colors.secondary }]}>
                 <Feather name="info" size={14} color={colors.mutedForeground} />
                 <Text style={[styles.photoHint, { color: colors.mutedForeground }]}>
-                  {filledPhotos === 0
-                    ? `Add at least 1 photo to continue (up to ${MAX_PHOTOS} total)`
-                    : filledPhotos === MAX_PHOTOS
-                    ? "All 3 photos added — you're all set!"
-                    : `${filledPhotos} of ${MAX_PHOTOS} added · you can add more or continue`}
+                  {filledPhotos >= MIN_PHOTOS
+                    ? `All ${MIN_PHOTOS} photos added — you're all set!`
+                    : `${filledPhotos} of ${MIN_PHOTOS} added · add ${MIN_PHOTOS - filledPhotos} more to continue`}
                 </Text>
               </View>
             </View>

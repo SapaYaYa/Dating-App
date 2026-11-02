@@ -21,7 +21,8 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Register: name (max 50 characters), birthday, gender, Show Me, email,
       password, bio, photos.
 - [ ] Under 18 can't continue; exactly 18 today can.
-- [ ] Photos: at least 1 required at sign-up, max 3.
+- [ ] Photos: exactly 3 required at sign-up; Continue stays disabled until
+      all 3 are added, and the hint counts how many are left.
 - [ ] Email verification code: correct code, wrong code, resend.
 - [ ] Sign in with email and password; wrong password message.
 - [ ] Second-factor email code at sign-in, if prompted.
@@ -151,9 +152,8 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] People who turned it off themselves (Sofia) never show the tag.
 
 ### Profile
-- [ ] Add and remove photos. Check the minimum: sign-up allows 1 photo, but
-      the Profile screen says "min 3 required" and blocks deleting below 3.
-      Decide which is right.
+- [ ] Add and remove photos: up to 8; deleting is blocked at 3 (the minimum),
+      with a lock icon on each photo.
 - [ ] Match note saves (max 150 characters).
 - [ ] Get Verified flow runs. It's a placeholder that approves automatically.
 - [ ] Level, streak and Priority (level 5+) badges show correctly.
@@ -175,6 +175,7 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Sign-up saves the profile to the server; signing in on another device
       shows the same profile and photos.
 - [ ] Photo upload works, and other people can see your photos.
+- [ ] Server rejects profiles with fewer than 3 photos.
 - [ ] Server rejects: age under 18 or over 120, bad birthday format, invalid
       coordinates, over-long name/bio/occupation, more than 9 photos or 20
       interests.

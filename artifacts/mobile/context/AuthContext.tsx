@@ -284,7 +284,11 @@ const DEMO_PROFILE: AuthUser = {
   gender: "Non-binary",
   lookingFor: ["Everyone"],
   bio: "Just exploring the app in demo mode.",
-  images: ["https://randomuser.me/api/portraits/lego/1.jpg"],
+  images: [
+    "https://randomuser.me/api/portraits/lego/1.jpg",
+    "https://randomuser.me/api/portraits/lego/2.jpg",
+    "https://randomuser.me/api/portraits/lego/3.jpg",
+  ],
   interests: ["Music", "Hiking", "Coffee"],
   occupation: "Designer",
   homeCity: MOCK_HOME_CITY,

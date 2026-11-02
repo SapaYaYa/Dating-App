@@ -27,9 +27,9 @@ import { useReplyStatus } from "@/context/ReplyStatusContext";
 import { useCommunity } from "@/context/CommunityContext";
 import { useColors } from "@/hooks/useColors";
 import { PROFILE_QUESTIONS } from "@/constants/mockData";
+import { PHOTO_RULES } from "@/constants/photos";
 
-const MAX_PHOTOS = 8;
-const MIN_PHOTOS = 3;
+const { MAX_PHOTOS, MIN_PHOTOS } = PHOTO_RULES;
 const SCREEN_W = Dimensions.get("window").width;
 const GRID_PAD = 20;
 const GRID_GAP = 8;
