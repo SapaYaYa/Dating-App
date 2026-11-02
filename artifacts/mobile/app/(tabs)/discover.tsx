@@ -22,7 +22,9 @@ import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useCommunity } from "@/context/CommunityContext";
 import { useColors } from "@/hooks/useColors";
+import { matchesDiscoverFilters } from "@/utils/discoverFilters";
 import { getHiddenProfileIds } from "@/utils/hiddenProfiles";
+import { formatDistanceLimit, getDistanceUnit, isAtMaxDistance } from "@/utils/units";
 
 const { width: W, height: H } = Dimensions.get("window");
 // Height of the pass/like row, set by the like button.
@@ -102,7 +104,9 @@ export default function DiscoverScreen() {
     });
   }, [communityLoaded, blocksLoaded, sharedBoardsWith]);
 
-  const topProfile = profiles[0];
+  // The deck keeps everyone not yet swiped; filters decide who's shown.
+  const visibleProfiles = profiles.filter((p) => matchesDiscoverFilters(p, activeFilters));
+  const topProfile = visibleProfiles[0];
 
   const handleSwipeRight = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
@@ -117,13 +121,14 @@ export default function DiscoverScreen() {
       Animated.spring(matchAnim, { toValue: 1, useNativeDriver: true, friction: 5 }).start();
     }
     setLastPassedProfile(null);
-    setProfiles((prev) => prev.slice(1));
+    if (topProfile) setProfiles((prev) => prev.filter((p) => p.id !== topProfile.id));
   };
 
   const handleSwipeLeft = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    if (topProfile) setLastPassedProfile(topProfile);
-    setProfiles((prev) => prev.slice(1));
+    if (!topProfile) return;
+    setLastPassedProfile(topProfile);
+    setProfiles((prev) => prev.filter((p) => p.id !== topProfile.id));
   };
 
   const handleRewind = () => {
@@ -194,16 +199,33 @@ export default function DiscoverScreen() {
               Loading profiles…
             </Text>
           </View>
-        ) : profiles.length === 0 ? (
+        ) : visibleProfiles.length === 0 ? (
           <View style={styles.emptyState}>
-            <Feather name="heart" size={48} color={colors.border} />
-            <Text style={[styles.emptyTitle, { color: colors.foreground }]}>You're all caught up</Text>
-            <Text style={[styles.emptySubtitle, { color: colors.mutedForeground }]}>
-              Check back soon for new people near you
+            <Feather name="map-pin" size={44} color={colors.border} />
+            <Text style={[styles.emptyTitle, { color: colors.foreground }]}>
+              No one new within {formatDistanceLimit(activeFilters.maxDistance, getDistanceUnit())}
             </Text>
+            {!isAtMaxDistance(activeFilters.maxDistance, getDistanceUnit()) ? (
+              <>
+                <Text style={[styles.emptySubtitle, { color: colors.mutedForeground }]}>
+                  Expand your distance to see more people.
+                </Text>
+                <TouchableOpacity
+                  onPress={() => setShowFilter(true)}
+                  style={[styles.expandBtn, { backgroundColor: colors.primary }]}
+                  activeOpacity={0.85}
+                >
+                  <Text style={[styles.expandBtnText, { color: colors.primaryForeground }]}>Expand distance</Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <Text style={[styles.emptySubtitle, { color: colors.mutedForeground }]}>
+                Check back soon for new people near you.
+              </Text>
+            )}
           </View>
         ) : (
-          profiles.slice(0, 3).map((profile, index) => (
+          visibleProfiles.slice(0, 3).map((profile, index) => (
             <SwipeCard
               key={profile.id}
               profile={profile}
@@ -219,7 +241,7 @@ export default function DiscoverScreen() {
         )}
       </View>
 
-      {blocksLoaded && profiles.length > 0 && (
+      {blocksLoaded && visibleProfiles.length > 0 && (
         <View style={[styles.actions, { bottom: actionsBottom, paddingHorizontal: 40 }]}>
           {canRewind ? (
             <TouchableOpacity
@@ -252,7 +274,7 @@ export default function DiscoverScreen() {
         </View>
       )}
 
-      {blocksLoaded && profiles.length > 0 && topProfile && (
+      {blocksLoaded && visibleProfiles.length > 0 && topProfile && (
         <TouchableOpacity
           style={[styles.profileTap, { bottom: cardBottom + 16, right: 20 }]}
           onPress={() => router.push(`/profile/${topProfile.id}`)}
@@ -392,6 +414,15 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
   },
+  expandBtn: {
+    marginTop: 8,
+    height: 48,
+    paddingHorizontal: 24,
+    borderRadius: 14,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  expandBtnText: { fontSize: 15, fontWeight: "600" },
   emptySubtitle: {
     fontSize: 15,
     textAlign: "center",

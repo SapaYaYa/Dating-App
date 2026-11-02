@@ -22,7 +22,7 @@ import { MOCK_PROFILES } from "@/constants/mockData";
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
 import { isProfileHidden } from "@/utils/hiddenProfiles";
-import { formatDistance } from "@/utils/distance";
+import { formatProfileDistance } from "@/utils/discoverFilters";
 import ReportModal, { hasReported } from "@/components/ReportModal";
 
 const { width: W } = Dimensions.get("window");
@@ -144,7 +144,7 @@ export default function ProfileDetailScreen() {
               )}
               <View style={styles.distanceRow}>
                 <Feather name="map-pin" size={13} color="rgba(255,255,255,0.75)" />
-                <Text style={styles.distanceText}>{formatDistance(profile.distance)}</Text>
+                <Text style={styles.distanceText}>{formatProfileDistance(profile)}</Text>
               </View>
               {alreadyReported && (
                 <View style={styles.reportedBadge}>

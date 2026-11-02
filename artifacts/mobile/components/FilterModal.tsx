@@ -23,6 +23,14 @@ import {
   type LookingForOption,
   toggleLookingForSelection,
 } from "@/constants/lookingFor";
+import {
+  MAX_DISTANCE_RULE,
+  distanceRange,
+  formatDistanceLimit,
+  getDistanceUnit,
+  milesToUnit,
+  unitToMiles,
+} from "@/utils/units";
 
 const { height: SCREEN_H } = Dimensions.get("window");
 const THUMB = 28;
@@ -37,6 +45,7 @@ export interface DiscoverFilters {
   lookingFor: string[];
   ageMin: number;
   ageMax: number;
+  /** In miles; shown in the user's unit. */
   maxDistance: number;
   locationCity: string;
   useCurrentLocation: boolean;
@@ -77,7 +86,7 @@ export const DEFAULT_FILTERS: DiscoverFilters = {
   lookingFor: [...DEFAULT_LOOKING_FOR],
   ageMin: 18,
   ageMax: 40,
-  maxDistance: 50,
+  maxDistance: MAX_DISTANCE_RULE.DEFAULT_MILES,
   locationCity: "",
   useCurrentLocation: false,
   sexualOrientation: [],
@@ -264,7 +273,7 @@ export function getActiveFilterCount(f: DiscoverFilters): number {
   let n = 0;
   if (!f.lookingFor.includes("Everyone") || f.lookingFor.length !== 1) n++;
   if (f.ageMin !== DEFAULT_FILTERS.ageMin || f.ageMax !== DEFAULT_FILTERS.ageMax) n++;
-  if (f.maxDistance !== DEFAULT_FILTERS.maxDistance) n++;
+  if (Math.round(f.maxDistance) !== DEFAULT_FILTERS.maxDistance) n++;
   if (f.useCurrentLocation || f.locationCity) n++;
   if (f.sexualOrientation.length) n++;
   if (f.ethnicity.length) n++;
@@ -554,6 +563,7 @@ export function FilterModal({ visible, filters, onApply, onClose, colors }: Filt
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(SCREEN_H)).current;
   const [local, setLocal] = useState<DiscoverFilters>(filters);
+  const distanceUnit = getDistanceUnit();
   const [locationSearch, setLocationSearch] = useState("");
   const [gpsStatus, setGpsStatus] = useState<"idle" | "loading" | "found" | "denied" | "error">("idle");
   const [gpsCity, setGpsCity] = useState("");
@@ -816,14 +826,25 @@ export function FilterModal({ visible, filters, onApply, onClose, colors }: Filt
               <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Maximum Distance</Text>
               <View style={[styles.valueTag, { backgroundColor: colors.secondary, marginTop: 0 }]}>
                 <Text style={[styles.valueTagText, { color: colors.foreground }]}>
-                  {local.maxDistance >= 100 ? "Anywhere" : `${local.maxDistance} mi`}
+                  {formatDistanceLimit(local.maxDistance, distanceUnit)}
                 </Text>
               </View>
             </View>
-            <SliderControl value={local.maxDistance} min={1} max={100} step={5} onChange={(v) => setLocal((p) => ({ ...p, maxDistance: v }))} colors={colors} />
+            <SliderControl
+              value={milesToUnit(local.maxDistance, distanceUnit)}
+              min={distanceRange(distanceUnit).min}
+              max={distanceRange(distanceUnit).max}
+              step={5}
+              onChange={(v) => setLocal((p) => ({ ...p, maxDistance: unitToMiles(v, distanceUnit) }))}
+              colors={colors}
+            />
             <View style={styles.distanceEndRow}>
-              <Text style={[styles.sliderEndLabel, { color: colors.mutedForeground }]}>1 mi</Text>
-              <Text style={[styles.sliderEndLabel, { color: colors.mutedForeground }]}>Anywhere</Text>
+              <Text style={[styles.sliderEndLabel, { color: colors.mutedForeground }]}>
+                {distanceRange(distanceUnit).min} {distanceUnit}
+              </Text>
+              <Text style={[styles.sliderEndLabel, { color: colors.mutedForeground }]}>
+                {distanceRange(distanceUnit).max} {distanceUnit}
+              </Text>
             </View>
 
             <DealBreakerToggle filterKey="location" dealbreakers={local.dealbreakers} onToggle={toggleDB} colors={colors} />

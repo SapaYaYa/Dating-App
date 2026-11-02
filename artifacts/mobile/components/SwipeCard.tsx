@@ -12,7 +12,7 @@ import {
 } from "react-native";
 
 import { useColors } from "@/hooks/useColors";
-import { formatDistance } from "@/utils/distance";
+import { formatProfileDistance } from "@/utils/discoverFilters";
 import type { Profile } from "@/constants/mockData";
 import { GreatChatPill, hasGreatChatBadge } from "@/components/GreatChatBadge";
 
@@ -148,7 +148,7 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, isTop, index, ma
           <Text style={styles.infoText}>{profile.occupation}</Text>
           <View style={styles.dot} />
           <Feather name="map-pin" size={12} color="rgba(255,255,255,0.75)" />
-          <Text style={styles.infoText}>{formatDistance(profile.distance)}</Text>
+          <Text style={styles.infoText}>{formatProfileDistance(profile)}</Text>
         </View>
 
         {sharedBoard && (
