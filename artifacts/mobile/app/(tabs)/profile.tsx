@@ -91,8 +91,6 @@ export default function ProfileScreen() {
     }
   };
 
-  const profileCompletion = 78;
-
   return (
     <ScrollView
       style={[styles.root, { backgroundColor: colors.background }]}
@@ -201,16 +199,6 @@ export default function ProfileScreen() {
           <Feather name="chevron-right" size={18} color={colors.mutedForeground} />
         </TouchableOpacity>
       )}
-
-      <View style={[styles.completionCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-        <View style={styles.completionHeader}>
-          <Text style={[styles.completionTitle, { color: colors.foreground }]}>Profile Strength</Text>
-          <Text style={[styles.completionPct, { color: colors.primary }]}>{profileCompletion}%</Text>
-        </View>
-        <View style={[styles.completionTrack, { backgroundColor: colors.secondary }]}>
-          <View style={[styles.completionFill, { width: `${profileCompletion}%` as any, backgroundColor: colors.primary }]} />
-        </View>
-      </View>
 
       <SectionCard colors={colors} title="Match Note">
         <View style={styles.matchNoteWrap}>
@@ -431,12 +419,6 @@ const styles = StyleSheet.create({
   verifyCardBody: { flex: 1, gap: 2 },
   verifyCardTitle: { fontSize: 15, fontWeight: "700" },
   verifyCardSub: { fontSize: 13, lineHeight: 18 },
-  completionCard: { borderRadius: 16, padding: 16, borderWidth: 1, gap: 10 },
-  completionHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
-  completionTitle: { fontSize: 14, fontWeight: "600" },
-  completionPct: { fontSize: 14, fontWeight: "700" },
-  completionTrack: { height: 6, borderRadius: 3, overflow: "hidden" },
-  completionFill: { height: "100%", borderRadius: 3 },
   sectionWrap: { gap: 10 },
   sectionTitle: { fontSize: 16, fontWeight: "700" },
   sectionCard: { borderRadius: 16, borderWidth: 1, overflow: "hidden" },

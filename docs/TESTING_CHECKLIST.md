@@ -183,6 +183,7 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] My Prompts shows your 3 answers; Edit prompts opens the editor; Save
       stays disabled until all 3 have answers; saved answers show on Profile.
 - [ ] Get Verified flow runs. It's a placeholder that approves automatically.
+- [ ] There's no Profile Strength score on Profile.
 - [ ] Level, streak and Priority (level 5+) badges show correctly.
 
 ### Challenges
