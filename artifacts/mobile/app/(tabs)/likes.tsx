@@ -1,10 +1,11 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
 import { router, useFocusEffect } from "expo-router";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
-  Animated,
   Image,
+  Modal,
   Platform,
   ScrollView,
   StyleSheet,
@@ -14,336 +15,340 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { MOCK_CITY_PROFILES, MOCK_PROFILES } from "@/constants/mockData";
+import { ProfileScroll } from "@/components/ProfileScroll";
+import { ReportNoteSheet } from "@/components/ReportNoteSheet";
+import { MOCK_CITY_PROFILES, MOCK_PROFILES, type Profile } from "@/constants/mockData";
+import type { LikeTarget } from "@/constants/prompts";
+import { useAuth } from "@/context/AuthContext";
 import { useColors } from "@/hooks/useColors";
-import { getHiddenProfileIds } from "@/utils/hiddenProfiles";
 import { formatProfileDistance } from "@/utils/discoverFilters";
+import { getHiddenProfileIds } from "@/utils/hiddenProfiles";
 
 // Likes come from any distance, including people in other cities.
 const INITIAL_LIKES = [...MOCK_PROFILES, ...MOCK_CITY_PROFILES].filter((p) => p.likesYou);
 const LOCAL_IDS = new Set(MOCK_PROFILES.map((p) => p.id));
 
+// Likes whose note the user reported. Kept on the phone until reports reach
+// the server for review.
+const REPORTED_NOTES_KEY = "spark_reported_like_notes";
+
 export default function LikesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
   const [pendingLikes, setPendingLikes] = useState(INITIAL_LIKES);
-  const [blocksLoaded, setBlocksLoaded] = useState(false);
-  const [matchedName, setMatchedName] = useState("");
-  const [matchedNote, setMatchedNote] = useState("");
-  const [showMatch, setShowMatch] = useState(false);
-  const matchAnim = useRef(new Animated.Value(0)).current;
+  const [loaded, setLoaded] = useState(false);
+  const [open, setOpen] = useState<Profile | null>(null);
+  const [matched, setMatched] = useState<Profile | null>(null);
+  const [reporting, setReporting] = useState<Profile | null>(null);
+  const [notice, setNotice] = useState("");
 
   const topPad = insets.top + (Platform.OS === "web" ? 67 : 0);
   const bottomPad = insets.bottom + (Platform.OS === "web" ? 34 : 0) + 68;
 
+  // Blocked or unmatched people, and likes whose note was reported, are hidden.
   useFocusEffect(
     useCallback(() => {
       let cancelled = false;
-      setBlocksLoaded(false);
-
-      getHiddenProfileIds().then((blockedProfileIds) => {
-        if (cancelled) return;
-        const blocked = new Set(blockedProfileIds);
-        setPendingLikes((profiles) =>
-          profiles.filter((profile) => !blocked.has(profile.id)),
-        );
-        setBlocksLoaded(true);
-      });
-
+      Promise.all([getHiddenProfileIds(), AsyncStorage.getItem(REPORTED_NOTES_KEY).catch(() => null)]).then(
+        ([hiddenIds, rawReported]) => {
+          if (cancelled) return;
+          let reported: string[] = [];
+          try {
+            const parsed: unknown = rawReported ? JSON.parse(rawReported) : [];
+            if (Array.isArray(parsed)) reported = parsed.filter((x): x is string => typeof x === "string");
+          } catch {}
+          setPendingLikes((likes) => likes.filter((p) => !hiddenIds.includes(p.id) && !reported.includes(p.id)));
+          setLoaded(true);
+        },
+      );
       return () => {
         cancelled = true;
       };
     }, []),
   );
 
-  const handleLikeBack = (profileId: string, name: string, note?: string) => {
+  useEffect(() => {
+    if (!notice) return;
+    const t = setTimeout(() => setNotice(""), 4000);
+    return () => clearTimeout(t);
+  }, [notice]);
+
+  const remove = (id: string) => setPendingLikes((prev) => prev.filter((p) => p.id !== id));
+
+  const likeBack = (profile: Profile) => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-    setPendingLikes((prev) => prev.filter((p) => p.id !== profileId));
-    setMatchedName(name);
-    setMatchedNote(note ?? "");
-    setShowMatch(true);
-    Animated.spring(matchAnim, { toValue: 1, useNativeDriver: true, friction: 5 }).start();
+    remove(profile.id);
+    setOpen(null);
+    setMatched(profile);
   };
 
-  const handlePass = (profileId: string) => {
+  const pass = (profile: Profile) => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    setPendingLikes((prev) => prev.filter((p) => p.id !== profileId));
+    remove(profile.id);
+    setOpen(null);
   };
 
-  const dismissMatch = () => {
-    Animated.timing(matchAnim, { toValue: 0, duration: 200, useNativeDriver: true }).start(() => {
-      setShowMatch(false);
-      matchAnim.setValue(0);
-    });
+  const reportNote = async (profile: Profile) => {
+    setReporting(null);
+    remove(profile.id);
+    setNotice(`Thanks. We'll review ${profile.name}'s note, and it's hidden for you.`);
+    try {
+      const raw = await AsyncStorage.getItem(REPORTED_NOTES_KEY);
+      const list: string[] = raw ? JSON.parse(raw) : [];
+      await AsyncStorage.setItem(REPORTED_NOTES_KEY, JSON.stringify([...list, profile.id]));
+    } catch {}
   };
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { paddingTop: topPad + 12 }]}>
         <Text style={[styles.title, { color: colors.foreground }]}>Likes You</Text>
-        {blocksLoaded && pendingLikes.length > 0 && (
+        {loaded && pendingLikes.length > 0 && (
           <View style={[styles.countBadge, { backgroundColor: colors.accent }]}>
             <Text style={styles.countText}>{pendingLikes.length}</Text>
           </View>
         )}
       </View>
 
-      {!blocksLoaded ? (
+      {notice ? (
+        <View style={[styles.notice, { backgroundColor: colors.secondary }]} accessibilityLiveRegion="polite">
+          <Text style={[styles.noticeText, { color: colors.foreground }]}>{notice}</Text>
+        </View>
+      ) : null}
+
+      {!loaded ? (
         <View style={styles.emptyState}>
-          <Text style={[styles.emptySub, { color: colors.mutedForeground }]}>
-            Loading likes…
-          </Text>
+          <Text style={[styles.emptySub, { color: colors.mutedForeground }]}>Loading likes…</Text>
         </View>
       ) : pendingLikes.length === 0 ? (
         <View style={styles.emptyState}>
           <Feather name="heart" size={52} color={colors.border} />
           <Text style={[styles.emptyTitle, { color: colors.foreground }]}>No new likes yet</Text>
           <Text style={[styles.emptySub, { color: colors.mutedForeground }]}>
-            When someone likes your profile you'll see them here
+            When someone likes one of your photos or answers, you'll see it here
           </Text>
         </View>
       ) : (
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={[styles.grid, { paddingBottom: bottomPad }]}
+          contentContainerStyle={[styles.list, { paddingBottom: bottomPad + 16 }]}
         >
           <Text style={[styles.subtitle, { color: colors.mutedForeground }]}>
-            {pendingLikes.length} {pendingLikes.length === 1 ? "person" : "people"} liked your profile — like back to match!
+            Tap someone to see their profile, then like back to match.
           </Text>
-          <View style={styles.gridRow}>
-            {pendingLikes.map((profile) => (
-              <View
-                key={profile.id}
-                style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
-              >
-                <TouchableOpacity
-                  activeOpacity={0.92}
-                  onPress={() => router.push(`/profile/${profile.id}`)}
-                >
-                  <Image source={{ uri: profile.images[0] }} style={styles.photo} />
-                  {profile.verified && (
-                    <View style={styles.verifiedBadge}>
-                      <Feather name="check-circle" size={12} color="#fff" />
-                    </View>
-                  )}
-                  {profile.likeNote && (
-                    <View style={[styles.noteWrap, { backgroundColor: "rgba(0,0,0,0.55)" }]}>
-                      <Feather name="heart" size={10} color={colors.accent} />
-                      <Text style={styles.noteText} numberOfLines={2}>
-                        "{profile.likeNote}"
-                      </Text>
-                    </View>
-                  )}
-                </TouchableOpacity>
-
-                <View style={styles.info}>
-                  <Text style={[styles.name, { color: colors.foreground }]}>
-                    {profile.name}, {profile.age}
-                  </Text>
-                  <Text style={[styles.distance, { color: colors.mutedForeground }]} numberOfLines={1}>
-                    Lives in {profile.homeCity}
-                    {LOCAL_IDS.has(profile.id) ? ` · ${formatProfileDistance(profile)}` : ""}
-                  </Text>
+          {pendingLikes.map((profile) => (
+            <View key={profile.id} style={[styles.card, { borderColor: colors.border }]}>
+              <TouchableOpacity onPress={() => setOpen(profile)} activeOpacity={0.8} style={styles.cardTap}>
+                <View style={styles.who}>
+                  <Image source={{ uri: profile.images[0] }} style={styles.avatar} />
+                  <View style={styles.whoText}>
+                    <Text style={[styles.name, { color: colors.foreground }]}>
+                      {profile.name}, {profile.age}
+                    </Text>
+                    <Text style={[styles.where, { color: colors.mutedForeground }]} numberOfLines={1}>
+                      Lives in {profile.homeCity}
+                      {LOCAL_IDS.has(profile.id) ? ` · ${formatProfileDistance(profile)}` : ""}
+                    </Text>
+                  </View>
                 </View>
-
-                <View style={styles.actions}>
-                  <TouchableOpacity
-                    style={[styles.actionBtn, styles.passBtn, { backgroundColor: colors.secondary, borderColor: colors.border }]}
-                    onPress={() => handlePass(profile.id)}
-                    activeOpacity={0.8}
-                  >
-                    <Feather name="x" size={20} color={colors.mutedForeground} />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.actionBtn, styles.likeBtn, { backgroundColor: colors.accent }]}
-                    onPress={() => handleLikeBack(profile.id, profile.name, profile.matchNote)}
-                    activeOpacity={0.8}
-                  >
-                    <Feather name="heart" size={20} color="#fff" />
+                <LikedItem target={profile.likedTarget} images={user?.images ?? []} prompts={user?.prompts ?? []} />
+              </TouchableOpacity>
+              {profile.likeNote ? (
+                <View style={[styles.note, { backgroundColor: colors.card }]}>
+                  <Text style={[styles.noteText, { color: colors.foreground }]}>{profile.likeNote}</Text>
+                  <TouchableOpacity onPress={() => setReporting(profile)} style={styles.reportLink}>
+                    <Text style={[styles.reportText, { color: colors.mutedForeground }]}>Report note</Text>
                   </TouchableOpacity>
                 </View>
-              </View>
-            ))}
-          </View>
+              ) : null}
+            </View>
+          ))}
         </ScrollView>
       )}
 
-      {showMatch && (
-        <Animated.View
-          style={[
-            styles.matchOverlay,
-            {
-              opacity: matchAnim,
-              transform: [
-                { scale: matchAnim.interpolate({ inputRange: [0, 1], outputRange: [0.85, 1] }) },
-              ],
-            },
-          ]}
-        >
+      {/* Their full profile, opened from a like. Covers the tab bar so the actions stay visible. */}
+      <Modal visible={!!open} animationType="slide" onRequestClose={() => setOpen(null)}>
+        {open && (
+          <View style={[styles.root, { backgroundColor: colors.background }]}>
+            <View style={[styles.detailHeader, { paddingTop: topPad + 8 }]}>
+              <TouchableOpacity onPress={() => setOpen(null)} style={styles.backBtn} accessibilityLabel="Back to likes">
+                <Feather name="arrow-left" size={22} color={colors.foreground} />
+              </TouchableOpacity>
+              <Text style={[styles.detailTitle, { color: colors.foreground }]}>{open.name}</Text>
+            </View>
+            <ScrollView contentContainerStyle={[styles.detailScroll, { paddingBottom: insets.bottom + 120 }]}>
+              <View style={[styles.likedCard, { backgroundColor: colors.accent + "14" }]}>
+                <LikedItem target={open.likedTarget} images={user?.images ?? []} prompts={user?.prompts ?? []} large />
+                {open.likeNote ? (
+                  <View style={[styles.likedNote, { backgroundColor: colors.background }]}>
+                    <Text style={[styles.noteText, { color: colors.foreground }]}>{open.likeNote}</Text>
+                  </View>
+                ) : null}
+              </View>
+              <ProfileScroll profile={open} hideDistance={!LOCAL_IDS.has(open.id)} />
+            </ScrollView>
+            <View
+              style={[
+                styles.detailActions,
+                { backgroundColor: colors.background, borderTopColor: colors.border, paddingBottom: insets.bottom + 20 },
+              ]}
+            >
+              <TouchableOpacity
+                onPress={() => pass(open)}
+                style={[styles.passBtn, { borderColor: colors.border }]}
+                accessibilityLabel={`Pass on ${open.name}`}
+              >
+                <Feather name="x" size={24} color={colors.mutedForeground} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => likeBack(open)}
+                style={[styles.likeBackBtn, { backgroundColor: colors.accent }]}
+                activeOpacity={0.85}
+              >
+                <Feather name="heart" size={18} color="#fff" />
+                <Text style={styles.likeBackText}>Like back</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+      </Modal>
+
+      <Modal transparent visible={!!matched} animationType="fade" onRequestClose={() => setMatched(null)}>
+        <View style={styles.matchOverlay}>
           <View style={[styles.matchCard, { backgroundColor: colors.card }]}>
             <View style={[styles.matchIconWrap, { backgroundColor: colors.accent + "18" }]}>
               <Feather name="heart" size={36} color={colors.accent} />
             </View>
             <Text style={[styles.matchTitle, { color: colors.foreground }]}>It's a Match!</Text>
             <Text style={[styles.matchSub, { color: colors.mutedForeground }]}>
-              You and {matchedName} both liked each other
+              You and {matched?.name} liked each other
             </Text>
-            {matchedNote ? (
+            {matched?.matchNote ? (
               <View style={[styles.matchNoteCard, { backgroundColor: colors.secondary }]}>
-                <Text style={[styles.matchNoteText, { color: colors.foreground }]}>"{matchedNote}"</Text>
+                <Text style={[styles.matchNoteText, { color: colors.foreground }]}>"{matched.matchNote}"</Text>
               </View>
             ) : null}
             <TouchableOpacity
               style={[styles.matchBtn, { backgroundColor: colors.primary }]}
               onPress={() => {
-                dismissMatch();
+                setMatched(null);
                 router.push("/(tabs)/matches");
               }}
-              activeOpacity={0.85}
             >
-              <Text style={[styles.matchBtnText, { color: colors.primaryForeground }]}>
-                Send a Message
-              </Text>
+              <Text style={[styles.matchBtnText, { color: colors.primaryForeground }]}>Send Message</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={dismissMatch} style={{ marginTop: 12 }}>
-              <Text style={[styles.matchKeep, { color: colors.mutedForeground }]}>
-                Keep browsing
-              </Text>
+            <TouchableOpacity onPress={() => setMatched(null)} style={styles.matchSkip}>
+              <Text style={[styles.matchSkipText, { color: colors.mutedForeground }]}>Back to Likes</Text>
             </TouchableOpacity>
           </View>
-        </Animated.View>
-      )}
+        </View>
+      </Modal>
+
+      <ReportNoteSheet
+        name={reporting?.name ?? null}
+        onReport={() => reporting && reportNote(reporting)}
+        onClose={() => setReporting(null)}
+      />
+    </View>
+  );
+}
+
+/** Which of your photos or answers they liked. */
+function LikedItem({
+  target,
+  images,
+  prompts,
+  large,
+}: {
+  target?: LikeTarget;
+  images: string[];
+  prompts: { question: string; answer: string }[];
+  large?: boolean;
+}) {
+  const colors = useColors();
+  if (!target) return null;
+  const prompt = target.kind === "prompt" ? prompts[target.index] : undefined;
+  const photo = target.kind === "photo" ? images[target.index] : undefined;
+  return (
+    <View style={[styles.liked, large && styles.likedLarge]}>
+      {photo ? <Image source={{ uri: photo }} style={large ? styles.likedPhotoLarge : styles.likedPhoto} /> : null}
+      <View style={styles.likedText}>
+        <Text style={[styles.likedLabel, { color: colors.destructive }]}>
+          {target.kind === "photo" ? "LIKED YOUR PHOTO" : "LIKED YOUR ANSWER"}
+        </Text>
+        {prompt ? (
+          <>
+            <Text style={[styles.likedQuestion, { color: colors.mutedForeground }]}>{prompt.question}</Text>
+            <Text style={[styles.likedAnswer, { color: colors.foreground }]}>{prompt.answer}</Text>
+          </>
+        ) : null}
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   root: { flex: 1 },
-  header: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    paddingHorizontal: 20,
-    paddingBottom: 16,
-  },
+  header: { flexDirection: "row", alignItems: "center", gap: 10, paddingHorizontal: 20, paddingBottom: 8 },
   title: { fontSize: 28, fontWeight: "800" },
-  countBadge: {
-    minWidth: 26,
-    height: 26,
-    borderRadius: 13,
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 8,
-  },
+  countBadge: { minWidth: 26, height: 26, borderRadius: 13, paddingHorizontal: 8, alignItems: "center", justifyContent: "center" },
   countText: { color: "#fff", fontSize: 13, fontWeight: "700" },
-  subtitle: { fontSize: 13, marginBottom: 16, lineHeight: 18 },
-  grid: { padding: 16, gap: 12 },
-  gridRow: { flexDirection: "row", flexWrap: "wrap", gap: 12 },
-  card: {
-    width: "47%",
-    borderRadius: 16,
-    overflow: "hidden",
-    borderWidth: 1,
-  },
-  photo: { width: "100%", height: 200, resizeMode: "cover" },
-  verifiedBadge: {
+  notice: { marginHorizontal: 16, marginBottom: 8, borderRadius: 12, padding: 12 },
+  noticeText: { fontSize: 14, lineHeight: 20 },
+  subtitle: { fontSize: 14, marginBottom: 4 },
+  list: { paddingHorizontal: 16, gap: 12 },
+  card: { borderWidth: 1, borderRadius: 18, padding: 14, gap: 12 },
+  cardTap: { gap: 12 },
+  who: { flexDirection: "row", alignItems: "center", gap: 12 },
+  avatar: { width: 48, height: 48, borderRadius: 24 },
+  whoText: { flex: 1, gap: 2 },
+  name: { fontSize: 16, fontWeight: "700" },
+  where: { fontSize: 13 },
+  liked: { flexDirection: "row", gap: 10, alignItems: "center" },
+  likedLarge: { flexDirection: "column", alignItems: "stretch" },
+  likedPhoto: { width: 64, height: 80, borderRadius: 10 },
+  likedPhotoLarge: { width: "100%", height: 160, borderRadius: 12 },
+  likedText: { flex: 1, gap: 3 },
+  likedLabel: { fontSize: 12, fontWeight: "700", letterSpacing: 0.3 },
+  likedQuestion: { fontSize: 13 },
+  likedAnswer: { fontSize: 15, fontWeight: "600" },
+  note: { borderRadius: 14, padding: 12, gap: 4 },
+  noteText: { fontSize: 15, lineHeight: 21 },
+  reportLink: { alignSelf: "flex-start", height: 32, justifyContent: "center" },
+  reportText: { fontSize: 13, fontWeight: "600" },
+  emptyState: { flex: 1, alignItems: "center", justifyContent: "center", gap: 12, paddingHorizontal: 40 },
+  emptyTitle: { fontSize: 20, fontWeight: "700" },
+  emptySub: { fontSize: 15, textAlign: "center", lineHeight: 22 },
+  detailHeader: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 10, paddingBottom: 8 },
+  backBtn: { width: 44, height: 44, alignItems: "center", justifyContent: "center" },
+  detailTitle: { fontSize: 18, fontWeight: "700" },
+  detailScroll: { paddingHorizontal: 16, gap: 14 },
+  likedCard: { borderRadius: 18, padding: 14, gap: 10 },
+  likedNote: { borderRadius: 12, padding: 12 },
+  detailActions: {
     position: "absolute",
-    top: 10,
-    right: 10,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: "rgba(0,0,0,0.5)",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  noteWrap: {
-    position: "absolute",
-    bottom: 0,
     left: 0,
     right: 0,
+    bottom: 0,
     flexDirection: "row",
-    gap: 4,
-    alignItems: "flex-start",
-    padding: 8,
-  },
-  noteText: {
-    color: "#fff",
-    fontSize: 10,
-    fontStyle: "italic",
-    flex: 1,
-    lineHeight: 14,
-  },
-  info: { padding: 10, paddingBottom: 6 },
-  name: { fontSize: 14, fontWeight: "700" },
-  distance: { fontSize: 11, marginTop: 2 },
-  actions: {
-    flexDirection: "row",
-    gap: 8,
-    padding: 10,
-    paddingTop: 0,
-  },
-  actionBtn: {
-    flex: 1,
-    height: 40,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  passBtn: { borderWidth: 1 },
-  likeBtn: {},
-  emptyState: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
     gap: 12,
-    paddingHorizontal: 40,
+    paddingHorizontal: 20,
+    paddingTop: 14,
+    borderTopWidth: StyleSheet.hairlineWidth,
   },
-  emptyTitle: { fontSize: 22, fontWeight: "700", textAlign: "center" },
-  emptySub: { fontSize: 14, textAlign: "center", lineHeight: 20 },
-  matchOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.75)",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: 32,
-  },
-  matchCard: {
-    width: "100%",
-    borderRadius: 24,
-    padding: 28,
-    alignItems: "center",
-    gap: 8,
-  },
-  matchIconWrap: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 8,
-  },
-  matchTitle: { fontSize: 28, fontWeight: "800", letterSpacing: -0.5 },
-  matchSub: { fontSize: 15, textAlign: "center", lineHeight: 22 },
-  matchNoteCard: {
-    borderRadius: 12,
-    padding: 14,
-    width: "100%",
-    alignItems: "center",
-  },
-  matchNoteText: {
-    fontSize: 14,
-    fontStyle: "italic",
-    textAlign: "center",
-    lineHeight: 20,
-  },
-  matchBtn: {
-    marginTop: 16,
-    width: "100%",
-    paddingVertical: 16,
-    borderRadius: 14,
-    alignItems: "center",
-  },
-  matchBtnText: { fontSize: 16, fontWeight: "700" },
-  matchKeep: { fontSize: 14 },
+  passBtn: { width: 56, height: 56, borderRadius: 28, borderWidth: 1, alignItems: "center", justifyContent: "center" },
+  likeBackBtn: { flex: 1, height: 56, borderRadius: 28, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 },
+  likeBackText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  matchOverlay: { flex: 1, backgroundColor: "rgba(0,0,0,0.6)", alignItems: "center", justifyContent: "center", padding: 24 },
+  matchCard: { width: "100%", borderRadius: 24, padding: 24, alignItems: "center", gap: 10 },
+  matchIconWrap: { width: 72, height: 72, borderRadius: 36, alignItems: "center", justifyContent: "center" },
+  matchTitle: { fontSize: 28, fontWeight: "800" },
+  matchSub: { fontSize: 15, textAlign: "center" },
+  matchNoteCard: { borderRadius: 12, padding: 14, width: "100%" },
+  matchNoteText: { fontSize: 14, fontStyle: "italic", textAlign: "center", lineHeight: 20 },
+  matchBtn: { marginTop: 8, width: "100%", height: 50, borderRadius: 14, alignItems: "center", justifyContent: "center" },
+  matchBtnText: { fontSize: 16, fontWeight: "600" },
+  matchSkip: { height: 44, alignItems: "center", justifyContent: "center" },
+  matchSkipText: { fontSize: 15 },
 });

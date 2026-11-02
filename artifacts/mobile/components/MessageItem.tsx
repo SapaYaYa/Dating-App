@@ -42,8 +42,8 @@ export function MessageItem({ match, onPress }: Props) {
         </View>
 
         <View style={styles.row}>
-          {match.hasIceBreaker ? (
-            <Text style={[styles.iceBreaker, { color: colors.accent }]}>Send an ice-breaker</Text>
+          {!match.lastMessage ? (
+            <Text style={[styles.sayHi, { color: colors.accent }]}>Say hi</Text>
           ) : (
             <Text
               numberOfLines={1}
@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: 8,
   },
-  iceBreaker: {
+  sayHi: {
     fontSize: 14,
     fontWeight: "500",
   },

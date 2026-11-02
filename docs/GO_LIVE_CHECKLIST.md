@@ -32,6 +32,21 @@ These screens still run on sample data (`MOCK_*` in
 - [ ] **Photos:** add a photo upload service. Photos are currently saved as
       file paths on the user's phone, which no one else can open.
 
+## Scroll Discover, likes and prompts
+
+- [ ] Store prompts on the server (3 per profile, question from the list,
+      answer up to 150 characters) and require them when a profile is
+      created. The API has no prompts field yet.
+- [ ] Store likes on the server with what was liked (which photo or which
+      answer) and the optional note (up to 140 characters). Today likes and
+      notes aren't sent anywhere.
+- [ ] Load real likes into the Likes tab, including what was liked and the
+      note.
+- [ ] Send note reports, with their reason, to your team for review; keep
+      the reported like hidden for the reporter on every device.
+- [ ] Hide likes and notes from people the user has blocked or unmatched,
+      including ones sent before the block.
+
 ## Match notes
 
 - [ ] Store each user's match note (up to 150 characters) on the server.

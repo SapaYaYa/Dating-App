@@ -20,6 +20,8 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { PHOTO_RULES } from "@/constants/photos";
+import { PROMPT_RULES, promptsComplete, type PromptAnswer } from "@/constants/prompts";
+import { PromptsEditor, emptyPrompts } from "@/components/PromptsEditor";
 import { DrumRollPicker } from "@/components/DrumRollPicker";
 import {
   DEFAULT_LOOKING_FOR,
@@ -81,7 +83,7 @@ function clerkErrorDetails(error: unknown, fallback: string): {
   };
 }
 
-const FORM_STEPS = 5;
+const FORM_STEPS = 6;
 // Sign-up asks for exactly the minimum; more can be added later on Profile.
 const MIN_PHOTOS = PHOTO_RULES.MIN_PHOTOS;
 const MAX_PHOTOS = PHOTO_RULES.MIN_PHOTOS;
@@ -129,6 +131,7 @@ export default function RegisterScreen() {
 
   const [bio, setBio] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
+  const [prompts, setPrompts] = useState<PromptAnswer[]>(emptyPrompts);
 
   const BIO_MAX = 150;
 
@@ -189,6 +192,7 @@ export default function RegisterScreen() {
         lookingFor,
         bio,
         images: photos.filter(Boolean),
+        prompts,
         interests: [],
         occupation: "",
       };
@@ -352,15 +356,17 @@ export default function RegisterScreen() {
     if (step === 2) return lookingFor.length > 0;
     if (step === 3) return email.trim().length > 0 && password.trim().length >= 8;
     if (step === 4) return true;
+    if (step === 5) return promptsComplete(prompts);
     return photos.filter(Boolean).length >= MIN_PHOTOS;
   };
 
-  const stepTitles = ["Let's start", "Show me", "Your account", "About you", "Show yourself"];
+  const stepTitles = ["Let's start", "Show me", "Your account", "About you", "Your prompts", "Show yourself"];
   const stepSubs = [
     "Your name, birthday & gender",
     "Choose the gender identities you want in your card stack",
     "Email address and password",
     "Write a short bio (optional)",
+    "Pick 3 prompts and answer them. They're what people like and start conversations with.",
     `Add ${PHOTO_RULES.MIN_PHOTOS} photos to show who you are. You can add up to ${PHOTO_RULES.MAX_PHOTOS} later on your profile.`,
   ];
 
@@ -714,6 +720,15 @@ export default function RegisterScreen() {
           )}
 
           {step === 5 && (
+            <View style={styles.fields}>
+              <PromptsEditor value={prompts} onChange={setPrompts} />
+              <Text style={[styles.photoHint, { color: colors.mutedForeground, textAlign: "center" }]}>
+                {prompts.filter((p) => p.question && p.answer.trim()).length} of {PROMPT_RULES.COUNT} answered
+              </Text>
+            </View>
+          )}
+
+          {step === 6 && (
             <View style={styles.fields}>
               <View style={styles.photoGrid}>
                 {Array.from({ length: MAX_PHOTOS }).map((_, i) => {

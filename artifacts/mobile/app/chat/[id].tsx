@@ -5,7 +5,6 @@ import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import React, {
   useCallback,
   useEffect,
-  useMemo,
   useRef,
   useState,
 } from "react";
@@ -23,7 +22,7 @@ import {
 import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { MOCK_CHAT_MESSAGES, MOCK_MATCHES, ICE_BREAKERS, type ChatMessage } from "@/constants/mockData";
+import { MOCK_CHAT_MESSAGES, MOCK_MATCHES, type ChatMessage } from "@/constants/mockData";
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
 import { blockProfile } from "@/utils/blocks";
@@ -73,15 +72,9 @@ export default function ChatScreen() {
   const match = MOCK_MATCHES.find((m) => m.id === id);
   const initialMessages: ChatMessage[] = MOCK_CHAT_MESSAGES[id ?? ""] ?? [];
 
-  const randomIceBreakers = useMemo(() => {
-    const shuffled = [...ICE_BREAKERS].sort(() => Math.random() - 0.5);
-    return shuffled.slice(0, 3);
-  }, []);
-
   // The list is inverted, so it needs newest-first; sample chats are oldest-first.
   const [messages, setMessages] = useState<ChatMessage[]>(() => [...initialMessages].reverse());
   const [input, setInput] = useState("");
-  const [showIceBreakers, setShowIceBreakers] = useState(messages.length === 0);
   const [reportModalVisible, setReportModalVisible] = useState(false);
   const [optionsVisible, setOptionsVisible] = useState(false);
   const [alreadyReported, setAlreadyReported] = useState(false);
@@ -295,7 +288,6 @@ export default function ChatScreen() {
     setRecordingDuration(0);
     setPreviewPlaying(false);
     setVoiceState("idle");
-    setShowIceBreakers(false);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     addPoints(5);
   };
@@ -348,7 +340,6 @@ export default function ChatScreen() {
     };
     setMessages((prev) => [newMsg, ...prev]);
     setInput("");
-    setShowIceBreakers(false);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     addPoints(10);
   };
@@ -452,21 +443,20 @@ export default function ChatScreen() {
                 onRate={handleRate}
                 onSkip={handleSkipRating}
               />
-            ) : showIceBreakers && match ? (
-              <View style={styles.iceBreakers}>
-                <Text style={[styles.iceBreakerTitle, { color: colors.mutedForeground }]}>
-                  Break the ice with {match.profile.name}
-                </Text>
-                {randomIceBreakers.map((ib, i) => (
-                  <TouchableOpacity
-                    key={i}
-                    onPress={() => send(ib)}
-                    style={[styles.ibChip, { backgroundColor: colors.secondary, borderColor: colors.border }]}
-                    activeOpacity={0.8}
-                  >
-                    <Text style={[styles.ibText, { color: colors.foreground }]}>{ib}</Text>
-                  </TouchableOpacity>
-                ))}
+            ) : messages.length === 0 && match ? (
+              // Until the first message: their match note, if they wrote one.
+              <View style={styles.chatStart}>
+                {match.profile.matchNote ? (
+                  <View style={[styles.matchNoteCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
+                    <Text style={[styles.matchNoteLabel, { color: colors.mutedForeground }]}>
+                      {match.profile.name}'s match note
+                    </Text>
+                    <Text style={[styles.matchNoteBody, { color: colors.foreground }]}>
+                      "{match.profile.matchNote}"
+                    </Text>
+                  </View>
+                ) : null}
+                <Text style={[styles.sayHi, { color: colors.mutedForeground }]}>Say hi to {match.profile.name}</Text>
               </View>
             ) : null
           }
@@ -652,10 +642,11 @@ const styles = StyleSheet.create({
   headerSub: { fontSize: 12 },
   iconBtn: { width: 38, height: 38, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   messageList: { paddingHorizontal: 16, paddingTop: 12 },
-  iceBreakers: { gap: 10, marginBottom: 16 },
-  iceBreakerTitle: { fontSize: 13, textAlign: "center", marginBottom: 4 },
-  ibChip: { borderRadius: 12, padding: 14, borderWidth: 1 },
-  ibText: { fontSize: 14, lineHeight: 20 },
+  chatStart: { gap: 12, marginBottom: 16 },
+  matchNoteCard: { borderRadius: 16, borderWidth: 1, padding: 16, gap: 6 },
+  matchNoteLabel: { fontSize: 12, fontWeight: "700", letterSpacing: 0.3 },
+  matchNoteBody: { fontSize: 16, lineHeight: 23, fontWeight: "600" },
+  sayHi: { fontSize: 13, textAlign: "center" },
   msgRow: { flexDirection: "row", marginBottom: 8, alignItems: "flex-end", gap: 8 },
   msgRowOwn: { justifyContent: "flex-end" },
   msgRowOther: { justifyContent: "flex-start" },

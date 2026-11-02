@@ -26,8 +26,8 @@ import { useApp } from "@/context/AppContext";
 import { useReplyStatus } from "@/context/ReplyStatusContext";
 import { useCommunity } from "@/context/CommunityContext";
 import { useColors } from "@/hooks/useColors";
-import { PROFILE_QUESTIONS } from "@/constants/mockData";
 import { PHOTO_RULES } from "@/constants/photos";
+import { promptsComplete } from "@/constants/prompts";
 
 const { MAX_PHOTOS, MIN_PHOTOS } = PHOTO_RULES;
 const SCREEN_W = Dimensions.get("window").width;
@@ -35,11 +35,6 @@ const GRID_PAD = 20;
 const GRID_GAP = 8;
 const PHOTO_SIZE = (SCREEN_W - GRID_PAD * 2 - GRID_GAP * 2) / 3;
 
-const SCHEDULED_QUESTIONS = [
-  { question: PROFILE_QUESTIONS[0], daysLeft: 0, answer: "Farmers market then cooking something new" },
-  { question: PROFILE_QUESTIONS[3], daysLeft: 3, answer: "" },
-  { question: PROFILE_QUESTIONS[6], daysLeft: 7, answer: "" },
-];
 
 export default function ProfileScreen() {
   const colors = useColors();
@@ -290,30 +285,23 @@ export default function ProfileScreen() {
         </View>
       </View>
 
-      <SectionCard colors={colors} title="Scheduled Questions">
-        {SCHEDULED_QUESTIONS.map((sq, i) => (
-          <View key={i} style={[styles.questionItem, { borderBottomColor: colors.border, borderBottomWidth: i < 2 ? 1 : 0 }]}>
-            <View style={styles.questionHeader}>
-              <Text style={[styles.questionText, { color: colors.foreground }]} numberOfLines={1}>
-                {sq.question}
-              </Text>
-              {sq.daysLeft === 0 ? (
-                <View style={[styles.activeBadge, { backgroundColor: colors.green + "22" }]}>
-                  <Text style={[styles.activeBadgeText, { color: colors.green }]}>Active</Text>
-                </View>
-              ) : (
-                <Text style={[styles.daysLeft, { color: colors.mutedForeground }]}>in {sq.daysLeft}d</Text>
-              )}
-            </View>
-            {sq.answer ? (
-              <Text style={[styles.answerText, { color: colors.mutedForeground }]} numberOfLines={1}>
-                {sq.answer}
-              </Text>
-            ) : (
-              <Text style={[styles.answerPlaceholder, { color: colors.border }]}>Tap to add your answer...</Text>
-            )}
+      <SectionCard colors={colors} title="My Prompts">
+        {(user?.prompts ?? []).filter((p) => p.question).map((p, i, arr) => (
+          <View key={p.question} style={[styles.questionItem, { borderBottomColor: colors.border, borderBottomWidth: i < arr.length - 1 ? 1 : 0 }]}>
+            <Text style={[styles.questionText, { color: colors.mutedForeground }]}>{p.question}</Text>
+            <Text style={[styles.promptAnswer, { color: colors.foreground }]}>{p.answer}</Text>
           </View>
         ))}
+        <TouchableOpacity
+          onPress={() => router.push("/prompts")}
+          style={[styles.editPrompts, { borderTopColor: colors.border }]}
+          activeOpacity={0.7}
+        >
+          <Feather name="edit-2" size={14} color={colors.foreground} />
+          <Text style={[styles.editPromptsText, { color: colors.foreground }]}>
+            {promptsComplete(user?.prompts) ? "Edit prompts" : "Add your 3 prompts"}
+          </Text>
+        </TouchableOpacity>
       </SectionCard>
 
       <SectionCard colors={colors} title="My Interests">
@@ -520,6 +508,9 @@ const styles = StyleSheet.create({
   questionItem: { padding: 14, gap: 4 },
   questionHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   questionText: { fontSize: 14, fontWeight: "600", flex: 1 },
+  promptAnswer: { fontSize: 15, lineHeight: 21 },
+  editPrompts: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, height: 48, borderTopWidth: 1 },
+  editPromptsText: { fontSize: 14, fontWeight: "600" },
   activeBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
   activeBadgeText: { fontSize: 11, fontWeight: "600" },
   daysLeft: { fontSize: 11 },

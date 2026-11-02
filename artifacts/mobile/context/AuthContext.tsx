@@ -5,6 +5,7 @@ import React, { createContext, useCallback, useContext, useEffect, useState } fr
 import { Platform } from "react-native";
 
 import { MOCK_HOME_CITY } from "@/constants/mockData";
+import type { PromptAnswer } from "@/constants/prompts";
 
 export type VerificationStatus = "none" | "pending" | "verified";
 
@@ -27,6 +28,8 @@ export interface AuthUser {
   longitude?: number;
   /** Where they're based, "City, ST". Changeable once a month. */
   homeCity?: string;
+  /** 3 prompt answers, chosen at sign-up and editable on Profile. */
+  prompts?: PromptAnswer[];
   homeCityChangedAt?: number;
 }
 
@@ -207,6 +210,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         occupation: profile?.occupation ?? "",
         matchNote: profile?.matchNote,
         homeCity: profile?.homeCity,
+        prompts: profile?.prompts,
         homeCityChangedAt: profile?.homeCityChangedAt,
         verificationStatus,
       }
@@ -292,6 +296,11 @@ const DEMO_PROFILE: AuthUser = {
   interests: ["Music", "Hiking", "Coffee"],
   occupation: "Designer",
   homeCity: MOCK_HOME_CITY,
+  prompts: [
+    { question: "My ideal Sunday is...", answer: "A slow coffee and a long walk with no plans." },
+    { question: "I geek out on...", answer: "Film cameras and finding the best bagel in town." },
+    { question: "A perfect first date...", answer: "Sunrise hike, then pancakes we definitely earned." },
+  ],
 };
 
 // Stands in for AuthProvider when DEMO_MODE is on: no Clerk, no API calls.

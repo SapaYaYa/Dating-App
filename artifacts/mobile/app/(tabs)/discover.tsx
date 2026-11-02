@@ -4,8 +4,8 @@ import { router, useFocusEffect } from "expo-router";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   Animated,
-  Dimensions,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
@@ -15,8 +15,10 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { FilterModal, DEFAULT_FILTERS, DiscoverFilters, getActiveFilterCount } from "@/components/FilterModal";
 import { SlowToReplyNotice, hasSlowToReplyBadge } from "@/components/SlowToReplyNotice";
-import { SwipeCard } from "@/components/SwipeCard";
+import { LikePanel } from "@/components/LikePanel";
+import { ProfileScroll } from "@/components/ProfileScroll";
 import { normalizeLookingFor } from "@/constants/lookingFor";
+import type { LikeTarget } from "@/constants/prompts";
 import { MOCK_CITY_DECKS, MOCK_CITY_PROFILES, MOCK_PROFILES, type Profile } from "@/constants/mockData";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
@@ -27,9 +29,6 @@ import { matchesDiscoverFilters } from "@/utils/discoverFilters";
 import { getHiddenProfileIds } from "@/utils/hiddenProfiles";
 import { formatDistanceLimit, getDistanceUnit, isAtMaxDistance } from "@/utils/units";
 
-const { width: W, height: H } = Dimensions.get("window");
-// Height of the pass/like row, set by the like button.
-const ACTIONS_HEIGHT = 68;
 
 export default function DiscoverScreen() {
   const colors = useColors();
@@ -49,7 +48,6 @@ export default function DiscoverScreen() {
   const [matchedSlowToReply, setMatchedSlowToReply] = useState(false);
   const matchAnim = useRef(new Animated.Value(0)).current;
   const [showFilter, setShowFilter] = useState(false);
-  const [cardAreaHeight, setCardAreaHeight] = useState<number | undefined>(undefined);
   const [activeFilters, setActiveFilters] = useState<DiscoverFilters>(DEFAULT_FILTERS);
   const filterPreferenceInitialized = useRef(false);
   const filterCount = getActiveFilterCount(activeFilters);
@@ -159,27 +157,49 @@ export default function DiscoverScreen() {
   const visibleProfiles = profiles.filter((p) => matchesDiscoverFilters(p, activeFilters));
   const topProfile = visibleProfiles[0];
 
-  const handleSwipeRight = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    const succeeded = useLike();
-    if (!succeeded) return;
-    const matched = Math.random() > 0.6;
-    if (matched && topProfile) {
-      setMatchedName(topProfile.name);
-      setMatchedNote(topProfile.matchNote ?? "");
-      setMatchedSlowToReply(hasSlowToReplyBadge(topProfile.badges));
-      setShowMatch(true);
-      Animated.spring(matchAnim, { toValue: 1, useNativeDriver: true, friction: 5 }).start();
-    }
-    setLastPassedProfile(null);
-    if (topProfile) setProfiles((prev) => prev.filter((p) => p.id !== topProfile.id));
+  // Discover is one profile at a time, scrolled. A heart on a photo or
+  // answer opens the like panel; X passes.
+  const scrollRef = useRef<ScrollView>(null);
+  const [likeTarget, setLikeTarget] = useState<LikeTarget | null>(null);
+  const [toast, setToast] = useState("");
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const showToast = (message: string) => {
+    setToast(message);
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    toastTimer.current = setTimeout(() => setToast(""), 1800);
   };
 
-  const handleSwipeLeft = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  const moveOn = (profile: Profile) => {
+    setProfiles((prev) => prev.filter((p) => p.id !== profile.id));
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  };
+
+  // The note goes to the server with the like once likes are stored there.
+  const handleSendLike = (_note: string) => {
     if (!topProfile) return;
+    const liked = topProfile;
+    setLikeTarget(null);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    if (!useLike()) return;
+    setLastPassedProfile(null);
+    moveOn(liked);
+    if (Math.random() > 0.6) {
+      setMatchedName(liked.name);
+      setMatchedNote(liked.matchNote ?? "");
+      setMatchedSlowToReply(hasSlowToReplyBadge(liked.badges));
+      setShowMatch(true);
+      Animated.spring(matchAnim, { toValue: 1, useNativeDriver: true, friction: 5 }).start();
+    } else {
+      showToast(`Like sent to ${liked.name}`);
+    }
+  };
+
+  const handlePass = () => {
+    if (!topProfile) return;
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
     setLastPassedProfile(topProfile);
-    setProfiles((prev) => prev.filter((p) => p.id !== topProfile.id));
+    moveOn(topProfile);
   };
 
   const handleRewind = () => {
@@ -187,6 +207,7 @@ export default function DiscoverScreen() {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setProfiles((prev) => [lastPassedProfile, ...prev]);
     setLastPassedProfile(null);
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
   };
 
   const dismissMatch = () => {
@@ -198,9 +219,6 @@ export default function DiscoverScreen() {
 
   const topPad = insets.top + (Platform.OS === "web" ? 67 : 0);
   const bottomPad = insets.bottom + (Platform.OS === "web" ? 34 : 0) + 68;
-  // The pass/like row sits just above the tab bar; the card area ends above it.
-  const actionsBottom = bottomPad + 12;
-  const cardBottom = actionsBottom + ACTIONS_HEIGHT + 12;
 
   const isLegend = level >= 5;
   const canRewind = level >= 4 && lastPassedProfile !== null;
@@ -212,6 +230,7 @@ export default function DiscoverScreen() {
           style={[styles.iconBtn, { backgroundColor: colors.secondary }]}
           onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setShowFilter(true); }}
           activeOpacity={0.8}
+          accessibilityLabel="Filters"
         >
           <Feather name="sliders" size={18} color={filterCount > 0 ? colors.accent : colors.foreground} />
           {filterCount > 0 && (
@@ -252,17 +271,21 @@ export default function DiscoverScreen() {
         </TouchableOpacity>
       )}
 
-      <View
-        style={[styles.cardArea, { marginBottom: cardBottom }]}
-        onLayout={(e) => setCardAreaHeight(e.nativeEvent.layout.height)}
-      >
+      {dailyLikes === 0 && (
+        <View style={[styles.lowLikesBar, { backgroundColor: colors.gold }]}>
+          <Feather name="zap" size={14} color="#fff" />
+          <Text style={styles.lowLikesText}>Out of likes — complete a challenge to earn more!</Text>
+        </View>
+      )}
+
+      <View style={styles.content}>
         {!blocksLoaded ? (
           <View style={styles.emptyState}>
             <Text style={[styles.emptySubtitle, { color: colors.mutedForeground }]}>
               Loading profiles…
             </Text>
           </View>
-        ) : visibleProfiles.length === 0 ? (
+        ) : !topProfile ? (
           <View style={styles.emptyState}>
             <Feather name="map-pin" size={44} color={colors.border} />
             <Text style={[styles.emptyTitle, { color: colors.foreground }]}>
@@ -289,63 +312,60 @@ export default function DiscoverScreen() {
             )}
           </View>
         ) : (
-          visibleProfiles.slice(0, 3).map((profile, index) => (
-            <SwipeCard
-              key={profile.id}
-              profile={profile}
-              isTop={index === 0}
-              index={index}
-              onSwipeLeft={handleSwipeLeft}
-              onSwipeRight={handleSwipeRight}
-              sharedBoard={sharedBoardsWith(profile)[0]}
-              // Leave room for the stacked cards peeking out below.
-              maxHeight={cardAreaHeight !== undefined ? cardAreaHeight - 24 : undefined}
+          <ScrollView
+            // A new ScrollView per person, so each profile starts at the top.
+            key={topProfile.id}
+            ref={scrollRef}
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={[styles.scroll, { paddingBottom: bottomPad + 96 }]}
+          >
+            <ProfileScroll
+              profile={topProfile}
+              sharedBoard={sharedBoardsWith(topProfile)[0]}
+              onLike={setLikeTarget}
             />
-          ))
+          </ScrollView>
         )}
       </View>
 
-      {blocksLoaded && visibleProfiles.length > 0 && (
-        <View style={[styles.actions, { bottom: actionsBottom, paddingHorizontal: 40 }]}>
-          {canRewind ? (
-            <TouchableOpacity
-              onPress={handleRewind}
-              style={[styles.actionBtn, styles.rewindBtn, { backgroundColor: colors.secondary }]}
-              activeOpacity={0.8}
-            >
-              <Feather name="rotate-ccw" size={20} color={colors.gold} />
-            </TouchableOpacity>
-          ) : (
-            <View style={styles.rewindPlaceholder} />
-          )}
-
+      {blocksLoaded && topProfile && (
+        <View style={[styles.floatingActions, { bottom: bottomPad + 16 }]}>
           <TouchableOpacity
-            onPress={handleSwipeLeft}
-            style={[styles.actionBtn, styles.passBtn, { backgroundColor: colors.secondary }]}
+            onPress={handlePass}
+            style={[styles.passBtn, { backgroundColor: colors.background, borderColor: colors.border }]}
             activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={`Pass on ${topProfile.name}`}
           >
             <Feather name="x" size={26} color={colors.mutedForeground} />
           </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={handleSwipeRight}
-            style={[styles.actionBtn, styles.likeBtn, { backgroundColor: colors.accent }]}
-            activeOpacity={0.8}
-            disabled={dailyLikes === 0}
-          >
-            <Feather name="heart" size={26} color="#fff" />
-          </TouchableOpacity>
+          {canRewind && (
+            <TouchableOpacity
+              onPress={handleRewind}
+              style={[styles.rewindBtn, { backgroundColor: colors.background, borderColor: colors.border }]}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Bring back the last person you passed"
+            >
+              <Feather name="rotate-ccw" size={20} color={colors.gold} />
+            </TouchableOpacity>
+          )}
         </View>
       )}
 
-      {blocksLoaded && visibleProfiles.length > 0 && topProfile && (
-        <TouchableOpacity
-          style={[styles.profileTap, { bottom: cardBottom + 16, right: 20 }]}
-          onPress={() => router.push(`/profile/${topProfile.id}`)}
-        >
-          <Feather name="info" size={16} color={colors.mutedForeground} />
-        </TouchableOpacity>
-      )}
+      {toast ? (
+        <View style={[styles.toast, { backgroundColor: colors.primary }]} accessibilityLiveRegion="polite">
+          <Text style={[styles.toastText, { color: colors.primaryForeground }]}>{toast}</Text>
+        </View>
+      ) : null}
+
+      <LikePanel
+        profile={likeTarget ? topProfile ?? null : null}
+        target={likeTarget}
+        likesLeft={dailyLikes}
+        onSend={handleSendLike}
+        onClose={() => setLikeTarget(null)}
+      />
 
       {showMatch && (
         <Animated.View
@@ -377,19 +397,13 @@ export default function DiscoverScreen() {
                 <Text style={[styles.matchBtnText, { color: colors.primaryForeground }]}>Send Message</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={dismissMatch} style={styles.matchSkip}>
-                <Text style={[styles.matchSkipText, { color: colors.mutedForeground }]}>Keep Swiping</Text>
+                <Text style={[styles.matchSkipText, { color: colors.mutedForeground }]}>Keep Browsing</Text>
               </TouchableOpacity>
             </View>
           </View>
         </Animated.View>
       )}
 
-      {dailyLikes === 0 && (
-        <View style={[styles.lowLikesBar, { backgroundColor: colors.gold, bottom: cardBottom }]}>
-          <Feather name="zap" size={14} color="#fff" />
-          <Text style={styles.lowLikesText}>Out of likes — complete a challenge to earn more!</Text>
-        </View>
-      )}
 
       <FilterModal
         visible={showFilter}
@@ -464,11 +478,8 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: "700",
   },
-  cardArea: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
+  content: { flex: 1, justifyContent: "center" },
+  scroll: { paddingHorizontal: 16, paddingTop: 4 },
   emptyState: {
     alignItems: "center",
     gap: 12,
@@ -504,49 +515,44 @@ const styles = StyleSheet.create({
     textAlign: "center",
     lineHeight: 22,
   },
-  actions: {
+  floatingActions: {
     position: "absolute",
-    left: 0,
-    right: 0,
+    left: 20,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    gap: 16,
-  },
-  actionBtn: {
-    alignItems: "center",
-    justifyContent: "center",
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  rewindBtn: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-  },
-  rewindPlaceholder: {
-    width: 48,
-    height: 48,
+    gap: 12,
   },
   passBtn: {
     width: 60,
     height: 60,
     borderRadius: 30,
-  },
-  likeBtn: {
-    width: ACTIONS_HEIGHT,
-    height: ACTIONS_HEIGHT,
-    borderRadius: ACTIONS_HEIGHT / 2,
-  },
-  profileTap: {
-    position: "absolute",
-    width: 36,
-    height: 36,
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.14,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 5,
   },
+  rewindBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    borderWidth: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 3,
+  },
+  toast: {
+    position: "absolute",
+    alignSelf: "center",
+    top: 130,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  toastText: { fontSize: 14, fontWeight: "600" },
   matchOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(0,0,0,0.75)",
@@ -605,9 +611,8 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   lowLikesBar: {
-    position: "absolute",
-    left: 16,
-    right: 16,
+    marginHorizontal: 16,
+    marginBottom: 8,
     flexDirection: "row",
     alignItems: "center",
     gap: 8,

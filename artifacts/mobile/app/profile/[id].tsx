@@ -1,13 +1,10 @@
 import { Feather } from "@expo/vector-icons";
 import * as Haptics from "expo-haptics";
-import { LinearGradient } from "expo-linear-gradient";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import React, { useCallback, useEffect, useState } from "react";
 import {
   ActionSheetIOS,
   Alert,
-  Dimensions,
-  Image,
   Platform,
   ScrollView,
   StyleSheet,
@@ -17,15 +14,12 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { GreatChatPill, hasGreatChatBadge } from "@/components/GreatChatBadge";
+import { ProfileScroll } from "@/components/ProfileScroll";
 import { MOCK_CITY_PROFILES, MOCK_PROFILES } from "@/constants/mockData";
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
 import { isProfileHidden } from "@/utils/hiddenProfiles";
-import { formatProfileDistance } from "@/utils/discoverFilters";
 import ReportModal, { hasReported } from "@/components/ReportModal";
-
-const { width: W } = Dimensions.get("window");
 
 export default function ProfileDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
@@ -127,107 +121,22 @@ export default function ProfileDetailScreen() {
         )}
       </TouchableOpacity>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: bottomPad + 100 }}>
-        <View style={styles.photoSection}>
-          <Image source={{ uri: profile.images[0] }} style={styles.mainPhoto} />
-          <LinearGradient colors={["transparent", "rgba(0,0,0,0.75)"]} style={styles.photoGradient}>
-            <View style={styles.basicInfo}>
-              <View style={styles.nameRow}>
-                <Text style={styles.profileName}>{profile.name}, {profile.age}</Text>
-                {profile.verified && <Feather name="check-circle" size={18} color="#fff" />}
-              </View>
-              <Text style={styles.profileOccupation}>{profile.occupation}</Text>
-              {hasGreatChatBadge(profile.badges) && (
-                <View style={styles.greatChatRow}>
-                  <GreatChatPill />
-                </View>
-              )}
-              <View style={styles.distanceRow}>
-                <Feather name="home" size={13} color="rgba(255,255,255,0.75)" />
-                <Text style={styles.distanceText}>Lives in {profile.homeCity}</Text>
-              </View>
-              <View style={styles.distanceRow}>
-                <Feather name="map-pin" size={13} color="rgba(255,255,255,0.75)" />
-                <Text style={styles.distanceText}>{formatProfileDistance(profile)}</Text>
-              </View>
-              {alreadyReported && (
-                <View style={styles.reportedBadge}>
-                  <Feather name="flag" size={11} color="rgba(255,255,255,0.6)" />
-                  <Text style={styles.reportedText}>Reported</Text>
-                </View>
-              )}
-            </View>
-          </LinearGradient>
-        </View>
-
-        <View style={[styles.content, { backgroundColor: colors.background }]}>
-          <View style={[styles.spotifyCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <View style={styles.spotifyRow}>
-              <View style={[styles.spotifyIcon, { backgroundColor: colors.spotify + "22" }]}>
-                <Feather name="music" size={16} color={colors.spotify} />
-              </View>
-              <View>
-                <Text style={[styles.spotifyLabel, { color: colors.mutedForeground }]}>Listening now</Text>
-                <Text style={[styles.spotifyTrack, { color: colors.foreground }]}>
-                  {profile.spotify.song}
-                </Text>
-                <Text style={[styles.spotifyArtist, { color: colors.mutedForeground }]}>
-                  {profile.spotify.artist}
-                </Text>
-              </View>
-            </View>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingTop: insets.top + (Platform.OS === "web" ? 67 : 16) + 52,
+          paddingHorizontal: 16,
+          paddingBottom: bottomPad + 40,
+          gap: 12,
+        }}
+      >
+        {alreadyReported && (
+          <View style={[styles.reportedNote, { backgroundColor: colors.secondary }]}>
+            <Feather name="flag" size={12} color={colors.mutedForeground} />
+            <Text style={[styles.reportedNoteText, { color: colors.mutedForeground }]}>You reported this profile</Text>
           </View>
-
-          <View style={[styles.bioCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.sectionLabel, { color: colors.mutedForeground }]}>About</Text>
-            <Text style={[styles.bioText, { color: colors.foreground }]}>{profile.bio}</Text>
-          </View>
-
-          <View style={styles.questionsSection}>
-            {profile.profileQuestions.map((pq, i) => (
-              <View key={i} style={[styles.questionCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-                <Text style={[styles.questionLabel, { color: colors.mutedForeground }]}>{pq.question}</Text>
-                <Text style={[styles.questionAnswer, { color: colors.foreground }]}>{pq.answer}</Text>
-              </View>
-            ))}
-          </View>
-
-          <View style={[styles.interestsCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.sectionLabel, { color: colors.mutedForeground }]}>Interests</Text>
-            <View style={styles.tagsWrap}>
-              {profile.interests.map((tag) => (
-                <View key={tag} style={[styles.tag, { backgroundColor: colors.secondary }]}>
-                  <Text style={[styles.tagText, { color: colors.foreground }]}>{tag}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-
-          <View style={[styles.instagramCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <View style={styles.igHeader}>
-              <Feather name="instagram" size={16} color={colors.foreground} />
-              <Text style={[styles.igUsername, { color: colors.foreground }]}>{profile.instagram.username}</Text>
-              <Text style={[styles.igPosts, { color: colors.mutedForeground }]}>· {profile.instagram.posts} posts</Text>
-            </View>
-            <View style={styles.igGrid}>
-              {[1, 2, 3, 4, 5, 6].map((n) => (
-                <View key={n} style={[styles.igCell, { backgroundColor: colors.secondary }]}>
-                  <Feather name="image" size={20} color={colors.border} />
-                </View>
-              ))}
-            </View>
-          </View>
-
-          <View style={[styles.iceBreakerCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
-            <Text style={[styles.sectionLabel, { color: colors.mutedForeground }]}>Ask me about...</Text>
-            {profile.iceBreakers.map((ib, i) => (
-              <View key={i} style={[styles.ibItem, { borderBottomColor: colors.border, borderBottomWidth: i < profile.iceBreakers.length - 1 ? 1 : 0 }]}>
-                <Feather name="message-circle" size={14} color={colors.mutedForeground} />
-                <Text style={[styles.ibText, { color: colors.foreground }]}>{ib}</Text>
-              </View>
-            ))}
-          </View>
-        </View>
+        )}
+        <ProfileScroll profile={profile} />
       </ScrollView>
 
       <View style={[styles.actionBar, { backgroundColor: colors.background, borderTopColor: colors.border, paddingBottom: bottomPad + 12 }]}>
@@ -264,6 +173,8 @@ export default function ProfileDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  reportedNote: { flexDirection: "row", alignItems: "center", gap: 6, alignSelf: "flex-start", borderRadius: 12, paddingHorizontal: 10, paddingVertical: 5 },
+  reportedNoteText: { fontSize: 12, fontWeight: "600" },
   root: { flex: 1 },
   backBtn: {
     position: "absolute",
@@ -287,58 +198,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  photoSection: { height: W * 1.2, position: "relative" },
-  mainPhoto: { width: "100%", height: "100%", resizeMode: "cover" },
-  photoGradient: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    right: 0,
-    padding: 24,
-    paddingBottom: 32,
-  },
-  basicInfo: { gap: 4 },
-  nameRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  greatChatRow: { flexDirection: "row", marginTop: 4 },
-  profileName: { color: "#fff", fontSize: 28, fontWeight: "700" },
-  profileOccupation: { color: "rgba(255,255,255,0.85)", fontSize: 16 },
-  distanceRow: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 2 },
-  distanceText: { color: "rgba(255,255,255,0.75)", fontSize: 13 },
-  reportedBadge: { flexDirection: "row", alignItems: "center", gap: 4, marginTop: 4 },
-  reportedText: { color: "rgba(255,255,255,0.6)", fontSize: 12 },
-  content: { padding: 16, gap: 12 },
-  spotifyCard: { borderRadius: 16, padding: 16, borderWidth: 1 },
-  spotifyRow: { flexDirection: "row", alignItems: "center", gap: 12 },
-  spotifyIcon: { width: 44, height: 44, borderRadius: 12, alignItems: "center", justifyContent: "center" },
-  spotifyLabel: { fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 },
-  spotifyTrack: { fontSize: 15, fontWeight: "600", marginTop: 2 },
-  spotifyArtist: { fontSize: 13 },
-  bioCard: { borderRadius: 16, padding: 16, borderWidth: 1, gap: 8 },
-  sectionLabel: { fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 },
-  bioText: { fontSize: 15, lineHeight: 22 },
-  questionsSection: { gap: 10 },
-  questionCard: { borderRadius: 16, padding: 16, borderWidth: 1, gap: 6 },
-  questionLabel: { fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5 },
-  questionAnswer: { fontSize: 16, fontWeight: "500", lineHeight: 22 },
-  interestsCard: { borderRadius: 16, padding: 16, borderWidth: 1, gap: 12 },
-  tagsWrap: { flexDirection: "row", flexWrap: "wrap", gap: 8 },
-  tag: { paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20 },
-  tagText: { fontSize: 13, fontWeight: "500" },
-  instagramCard: { borderRadius: 16, padding: 16, borderWidth: 1, gap: 12 },
-  igHeader: { flexDirection: "row", alignItems: "center", gap: 6 },
-  igUsername: { fontSize: 14, fontWeight: "600" },
-  igPosts: { fontSize: 13 },
-  igGrid: { flexDirection: "row", flexWrap: "wrap", gap: 4 },
-  igCell: {
-    width: (W - 64) / 3,
-    height: (W - 64) / 3,
-    borderRadius: 8,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  iceBreakerCard: { borderRadius: 16, padding: 16, borderWidth: 1, gap: 0 },
-  ibItem: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 12 },
-  ibText: { fontSize: 14, flex: 1 },
   actionBar: {
     position: "absolute",
     bottom: 0,

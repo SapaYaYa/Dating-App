@@ -80,13 +80,6 @@ export default function MatchesScreen() {
                     ) : hasGreatChatBadge(match.profile.badges) ? (
                       <GreatChatDot size={24} />
                     ) : null}
-                    {match.hasIceBreaker &&
-                      !hasSlowToReplyBadge(match.profile.badges) &&
-                      !hasGreatChatBadge(match.profile.badges) && (
-                      <View style={[styles.iceBreakerDot, { backgroundColor: colors.accent }]}>
-                        <Feather name="message-circle" size={8} color="#fff" />
-                      </View>
-                    )}
                   </View>
                   <Text style={[styles.newMatchName, { color: colors.foreground }]} numberOfLines={1}>
                     {match.profile.name}
@@ -138,18 +131,6 @@ const styles = StyleSheet.create({
   newMatchItem: { alignItems: "center", width: 72, gap: 6 },
   avatarWrap: { position: "relative" },
   newMatchAvatar: { width: 68, height: 68, borderRadius: 34 },
-  iceBreakerDot: {
-    position: "absolute",
-    bottom: 2,
-    right: 2,
-    width: 18,
-    height: 18,
-    borderRadius: 9,
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#fff",
-  },
   newMatchName: { fontSize: 12, fontWeight: "600", textAlign: "center" },
   matchNoteText: { fontSize: 10, textAlign: "center" },
 });

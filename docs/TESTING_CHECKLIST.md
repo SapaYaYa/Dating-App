@@ -19,7 +19,10 @@ private/incognito window to start fresh. To test kilometers, set your phone
 
 ### Sign-up and sign-in (real app only, needs your Clerk key; not in the preview)
 - [ ] Register: name (max 50 characters), birthday, gender, Show Me, email,
-      password, bio, photos.
+      password, bio, prompts, photos (6 steps).
+- [ ] Prompts step: pick 3 different prompts and answer each (max 150
+      characters); Continue stays disabled until all 3 are answered; Change
+      swaps a prompt.
 - [ ] Under 18 can't continue; exactly 18 today can.
 - [ ] Photos: exactly 3 required at sign-up; Continue stays disabled until
       all 3 are added, and the hint counts how many are left.
@@ -29,19 +32,23 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Reset password flow.
 - [ ] Sign out returns to the login screen.
 
-### Discover
-- [ ] Cards show name, age, occupation, distance, "Lives in City, ST",
-      interests and a profile question.
-- [ ] Like and pass buttons sit fully above the tab bar, on small and large
-      screens; the card never covers the Spark header.
-- [ ] Swipe right/left and the buttons do the same thing.
-- [ ] Likes counter goes down with each like; at 0, the like button is
-      disabled and the "Out of likes" bar appears.
+### Discover (scroll)
+- [ ] One person at a time as a scrolling profile: first photo with name and
+      age, then the basics card, then answers and photos alternating.
+- [ ] Basics card: Great Chat, Verified and "Both in ..." tags; Lives in,
+      distance, job, song, bio and interests.
+- [ ] Every photo and every answer has a heart; there's no swiping.
+- [ ] A heart opens the like panel showing that photo or answer, with an
+      optional note (140 characters, counter) and Send like. The button says
+      "Send like with note" when there's a note. Cancel sends nothing.
+- [ ] Sending a like moves to the next person, starting at the top, with a
+      "Like sent to ..." message; the likes counter goes down.
+- [ ] At 0 likes: the "Out of likes" bar shows and Send like is disabled.
+- [ ] X passes to the next person; nothing in the profile is hidden behind
+      it for long (you can scroll past it).
 - [ ] "It's a Match!" pop-up appears on a match; Send Message and Keep
-      Swiping both work.
-- [ ] Rewind appears at level 4+ and brings back the last passed card.
-- [ ] Info button opens the full profile, including for people from another
-      city.
+      Browsing both work.
+- [ ] Rewind appears at level 4+ and brings back the last passed person.
 - [ ] Blocked and unmatched people never appear.
 
 ### Discover filters and distance
@@ -70,9 +77,18 @@ private/incognito window to start fresh. To test kilometers, set your phone
       City and state only.
 
 ### Likes
-- [ ] Likes show "Lives in City, ST", plus distance for local people.
-- [ ] A like from another city (Maya, Brooklyn) is mixed in with local likes.
-- [ ] Like back makes a match; pass removes them.
+- [ ] Each like shows who, "Lives in City, ST" (plus distance for local
+      people), what they liked ("Liked your photo" with that photo, or "Liked
+      your answer" with that answer) and their note if any.
+- [ ] A like from another city (Maya, Brooklyn) is mixed in with local likes,
+      with no distance.
+- [ ] Tapping a like opens their full profile with what they liked at the
+      top; X and Like back are fully visible (no tab bar over them).
+- [ ] Like back shows "It's a Match!"; X removes them.
+- [ ] Report note: a reason is required before Report note works; Cancel
+      reports nothing; after reporting, the like disappears with a thank-you
+      message and stays gone after leaving and coming back.
+- [ ] Notes from someone you block afterwards disappear with their like.
 
 ### Matches and chat
 - [ ] New Matches row and Conversations list show the right people.
@@ -80,7 +96,11 @@ private/incognito window to start fresh. To test kilometers, set your phone
       matches; neither on others.
 - [ ] Messages read oldest at the top, newest at the bottom; a sent message
       appears at the bottom.
-- [ ] Ice-breakers show in an empty chat and send when tapped.
+- [ ] No ice-breakers anywhere (chat, profiles, Matches).
+- [ ] A new match's empty chat shows their match note card ("Luna's match
+      note") and "Say hi to Luna"; both disappear once the first message is
+      sent. Without a note, only "Say hi to ...".
+- [ ] A conversation row with no messages says "Say hi".
 - [ ] Voice messages: record, preview, send, play back (phone only).
 - [ ] Message length limit is enforced.
 
@@ -158,6 +178,8 @@ private/incognito window to start fresh. To test kilometers, set your phone
       there after leaving and coming back.
 - [ ] Sample match notes show in the "It's a Match!" pop-up (Discover and
       Likes) and under New Matches.
+- [ ] My Prompts shows your 3 answers; Edit prompts opens the editor; Save
+      stays disabled until all 3 have answers; saved answers show on Profile.
 - [ ] Get Verified flow runs. It's a placeholder that approves automatically.
 - [ ] Level, streak and Priority (level 5+) badges show correctly.
 
@@ -203,7 +225,11 @@ private/incognito window to start fresh. To test kilometers, set your phone
 
 ### Likes, matches and chat
 - [ ] A like reaches the other person's Likes from any distance, mixed in
-      with local likes.
+      with local likes, showing which photo or answer was liked and the note.
+- [ ] Prompts save on the server and show to others; a profile can't be
+      created without 3 answered prompts.
+- [ ] Note reports (with their reason) reach your team; the reported like
+      stays hidden on every device.
 - [ ] Liking back creates a match for both people.
 - [ ] Your match note reaches the person you matched with: it shows in
       their match pop-up and under New Matches.
