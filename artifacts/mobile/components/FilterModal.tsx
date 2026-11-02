@@ -31,6 +31,8 @@ import {
   milesToUnit,
   unitToMiles,
 } from "@/utils/units";
+import { LOCATION_RULE, formatChangeDate, nextChangeAllowedAt } from "@/constants/location";
+import type { BrowseCityChange } from "@/utils/browseCity";
 
 const { height: SCREEN_H } = Dimensions.get("window");
 const THUMB = 28;
@@ -150,7 +152,7 @@ const OPTS = {
   piercings: ["None", "A few", "Multiple"],
 };
 
-const US_CITIES = [
+export const US_CITIES = [
   "Albuquerque, NM", "Atlanta, GA", "Austin, TX", "Baltimore, MD", "Baton Rouge, LA",
   "Boston, MA", "Buffalo, NY", "Charlotte, NC", "Chicago, IL", "Cincinnati, OH",
   "Columbus, OH", "Dallas, TX", "Denver, CO", "Detroit, MI", "Durham, NC",
@@ -557,14 +559,20 @@ interface FilterModalProps {
   onApply: (f: DiscoverFilters) => void;
   onClose: () => void;
   colors: any;
+  /** The last city the user chose to browse; another city is allowed once a week. */
+  lastBrowseCityChange?: BrowseCityChange | null;
 }
 
-export function FilterModal({ visible, filters, onApply, onClose, colors }: FilterModalProps) {
+export function FilterModal({ visible, filters, onApply, onClose, colors, lastBrowseCityChange }: FilterModalProps) {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(SCREEN_H)).current;
   const [local, setLocal] = useState<DiscoverFilters>(filters);
   const distanceUnit = getDistanceUnit();
   const [locationSearch, setLocationSearch] = useState("");
+  const [cityLockNotice, setCityLockNotice] = useState("");
+  const browseCityLockedUntil = lastBrowseCityChange
+    ? nextChangeAllowedAt(lastBrowseCityChange.changedAt, LOCATION_RULE.BROWSE_CITY_CHANGE_DAYS)
+    : null;
   const [gpsStatus, setGpsStatus] = useState<"idle" | "loading" | "found" | "denied" | "error">("idle");
   const [gpsCity, setGpsCity] = useState("");
 
@@ -772,6 +780,7 @@ export function FilterModal({ visible, filters, onApply, onClose, colors }: Filt
                     value={locationSearch}
                     onChangeText={(t) => {
                       setLocationSearch(t);
+                      setCityLockNotice("");
                       if (local.locationCity) setLocal((p) => ({ ...p, locationCity: "" }));
                     }}
                     autoCapitalize="words"
@@ -795,10 +804,23 @@ export function FilterModal({ visible, filters, onApply, onClose, colors }: Filt
                   </View>
                 ) : locationSearch.length > 0 ? (
                   <View style={styles.cityList}>
+                    {cityLockNotice ? (
+                      <Text style={[styles.cityLockNotice, { color: colors.destructive }]}>{cityLockNotice}</Text>
+                    ) : null}
                     {filteredLocationCities.slice(0, 8).map((city) => (
                       <TouchableOpacity
                         key={city}
                         onPress={() => {
+                          // Once a week, a different city; the same city again is fine.
+                          if (browseCityLockedUntil && lastBrowseCityChange && city !== lastBrowseCityChange.city) {
+                            setCityLockNotice(
+                              `You can browse a new city again on ${formatChangeDate(browseCityLockedUntil)}. ` +
+                                `Until then you can pick ${lastBrowseCityChange.city} or use your location.`,
+                            );
+                            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+                            return;
+                          }
+                          setCityLockNotice("");
                           setLocal((p) => ({ ...p, locationCity: city }));
                           setLocationSearch("");
                           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -1116,6 +1138,7 @@ const styles = StyleSheet.create({
   cityRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 10, borderBottomWidth: 1 },
   cityText: { fontSize: 14 },
   cityEmpty: { fontSize: 13, paddingVertical: 12, textAlign: "center" },
+  cityLockNotice: { fontSize: 13, lineHeight: 18, paddingVertical: 10 },
   // Toggles
   toggleRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 2 },
   toggleIcon: { width: 34, height: 34, borderRadius: 10, alignItems: "center", justifyContent: "center" },

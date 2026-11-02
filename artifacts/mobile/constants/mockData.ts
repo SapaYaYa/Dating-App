@@ -3,6 +3,8 @@ import type { ProfileBadge } from "@/constants/replyBadge";
 export interface Profile {
   id: string;
   name: string;
+  /** Where they're based, "City, ST". Shown on cards, profiles and Likes. */
+  homeCity: string;
   age: number;
   distance: string;
   occupation: string;
@@ -109,6 +111,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "1",
     name: "Emma",
+    homeCity: "Atlanta, GA",
     age: 24,
     distance: "2 mi away",
     occupation: "Software Engineer",
@@ -128,6 +131,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "2",
     name: "Jake",
+    homeCity: "Decatur, GA",
     age: 27,
     distance: "5 mi away",
     occupation: "Photographer",
@@ -149,6 +153,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "3",
     name: "Sofia",
+    homeCity: "Atlanta, GA",
     age: 22,
     distance: "1 mi away",
     occupation: "Art Student",
@@ -170,6 +175,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "4",
     name: "Marcus",
+    homeCity: "Atlanta, GA",
     age: 29,
     distance: "3 mi away",
     occupation: "Executive Chef",
@@ -191,6 +197,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "5",
     name: "Ava",
+    homeCity: "Marietta, GA",
     age: 25,
     distance: "4 mi away",
     occupation: "Yoga Instructor",
@@ -209,6 +216,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "6",
     name: "Liam",
+    homeCity: "Atlanta, GA",
     age: 26,
     distance: "6 mi away",
     occupation: "Musician",
@@ -227,6 +235,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "7",
     name: "Zara",
+    homeCity: "Decatur, GA",
     age: 23,
     distance: "2 mi away",
     occupation: "UX Designer",
@@ -248,6 +257,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "8",
     name: "Noah",
+    homeCity: "Atlanta, GA",
     age: 28,
     distance: "8 mi away",
     occupation: "Emergency Doctor",
@@ -266,6 +276,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "9",
     name: "Mia",
+    homeCity: "Atlanta, GA",
     age: 24,
     distance: "3 mi away",
     occupation: "Travel Blogger",
@@ -285,6 +296,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "10",
     name: "Ethan",
+    homeCity: "Marietta, GA",
     age: 30,
     distance: "7 mi away",
     occupation: "Startup Founder",
@@ -303,6 +315,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "11",
     name: "Luna",
+    homeCity: "Atlanta, GA",
     age: 22,
     distance: "1 mi away",
     occupation: "Actress",
@@ -324,6 +337,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "12",
     name: "Kai",
+    homeCity: "Atlanta, GA",
     age: 27,
     distance: "9 mi away",
     occupation: "Marine Biologist",
@@ -342,6 +356,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "13",
     name: "Jade",
+    homeCity: "Decatur, GA",
     age: 25,
     distance: "4 mi away",
     occupation: "Pediatric Nurse",
@@ -360,6 +375,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "14",
     name: "Finn",
+    homeCity: "Atlanta, GA",
     age: 28,
     distance: "5 mi away",
     occupation: "Architect",
@@ -378,6 +394,7 @@ export const MOCK_PROFILES: Profile[] = [
   {
     id: "15",
     name: "Aria",
+    homeCity: "Atlanta, GA",
     age: 23,
     distance: "2 mi away",
     occupation: "Professional Dancer",
@@ -814,3 +831,115 @@ export const MOCK_BOARD_POSTS: BoardPost[] = [
     comments: [{ id: "c7", authorId: "6", text: "Electric Feel. No notes.", time: "5h ago" }],
   },
 ];
+
+// People in other cities, for browsing another city in Discover. Their
+// distances are measured from their own city.
+export const MOCK_CITY_PROFILES: Profile[] = [
+  {
+    id: "ny1",
+    name: "Maya",
+    homeCity: "Brooklyn, NY",
+    age: 27,
+    distance: "3 mi away",
+    occupation: "Product Designer",
+    bio: "Bodega coffee, long walks over the bridge, and gallery openings I pretend to understand.",
+    images: ["https://randomuser.me/api/portraits/women/21.jpg"],
+    interests: ["Art", "Coffee", "Travel"],
+    spotify: { song: "Electric Love", artist: "BØRNS" },
+    instagram: { posts: 120, username: "@maya" },
+    profileQuestions: [{ question: "My ideal Sunday is...", answer: "Flea market, then a slice" }],
+    iceBreakers: ["Best slice in the city?"],
+    verified: true,
+    likesYou: true,
+    likeNote: "Your hiking photos are amazing. Visiting NYC soon?",
+  },
+  {
+    id: "ny2",
+    name: "Daniel",
+    homeCity: "New York, NY",
+    age: 29,
+    distance: "2 mi away",
+    occupation: "Chef",
+    bio: "I cook for a living and still burn toast at home.",
+    images: ["https://randomuser.me/api/portraits/men/41.jpg"],
+    interests: ["Cooking", "Wine", "Music"],
+    spotify: { song: "Redbone", artist: "Childish Gambino" },
+    instagram: { posts: 120, username: "@daniel" },
+    profileQuestions: [{ question: "I'm known for...", answer: "Hosting dinner for twelve in a tiny apartment" }],
+    iceBreakers: ["What would you cook for me?"],
+    verified: true,
+  },
+  {
+    id: "ny3",
+    name: "Priya",
+    homeCity: "Queens, NY",
+    age: 26,
+    distance: "6 mi away",
+    occupation: "Data Analyst",
+    bio: "Subway-map nerd. Will plan our whole weekend in a spreadsheet.",
+    images: ["https://randomuser.me/api/portraits/women/52.jpg"],
+    interests: ["Reading", "Hiking", "Coffee"],
+    spotify: { song: "Good Days", artist: "SZA" },
+    instagram: { posts: 120, username: "@priya" },
+    profileQuestions: [{ question: "A perfect date...", answer: "Trying a new neighborhood's food" }],
+    iceBreakers: ["Favorite neighborhood?"],
+    verified: true,
+  },
+  {
+    id: "ny4",
+    name: "Chris",
+    homeCity: "Jersey City, NJ",
+    age: 30,
+    distance: "8 mi away",
+    occupation: "Architect",
+    bio: "I notice the buildings so you don't have to.",
+    images: ["https://randomuser.me/api/portraits/men/63.jpg"],
+    interests: ["Architecture", "Photography", "Film"],
+    spotify: { song: "Nights", artist: "Frank Ocean" },
+    instagram: { posts: 120, username: "@chris" },
+    profileQuestions: [{ question: "Two truths and a lie...", answer: "I've lived in 4 countries, I can't swim, I love jazz" }],
+    iceBreakers: ["Which is the lie?"],
+    verified: true,
+  },
+  {
+    id: "la1",
+    name: "Sienna",
+    homeCity: "Los Angeles, CA",
+    age: 25,
+    distance: "4 mi away",
+    occupation: "Screenwriter",
+    bio: "Writing rom-coms, hoping for some research material.",
+    images: ["https://randomuser.me/api/portraits/women/36.jpg"],
+    interests: ["Film", "Writing", "Yoga"],
+    spotify: { song: "Sunflower", artist: "Post Malone" },
+    instagram: { posts: 120, username: "@sienna" },
+    profileQuestions: [{ question: "My simple pleasure...", answer: "Sunset at the beach after work" }],
+    iceBreakers: ["Favorite movie line?"],
+    verified: true,
+  },
+  {
+    id: "la2",
+    name: "Mateo",
+    homeCity: "Santa Monica, CA",
+    age: 28,
+    distance: "7 mi away",
+    occupation: "Surf Instructor",
+    bio: "Early mornings in the water, late nights at taco trucks.",
+    images: ["https://randomuser.me/api/portraits/men/52.jpg"],
+    interests: ["Surfing", "Outdoors", "Travel"],
+    spotify: { song: "Island in the Sun", artist: "Weezer" },
+    instagram: { posts: 120, username: "@mateo" },
+    profileQuestions: [{ question: "I'm looking for...", answer: "Someone who'll try anything once" }],
+    iceBreakers: ["Ever tried surfing?"],
+    verified: true,
+  },
+];
+
+/** Which sample people show up when browsing each city (its metro area). */
+export const MOCK_CITY_DECKS: Record<string, string[]> = {
+  "New York, NY": ["ny1", "ny2", "ny3", "ny4"],
+  "Los Angeles, CA": ["la1", "la2"],
+};
+
+/** The sample user's home city. */
+export const MOCK_HOME_CITY = "Atlanta, GA";

@@ -14,12 +14,14 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { MOCK_PROFILES } from "@/constants/mockData";
+import { MOCK_CITY_PROFILES, MOCK_PROFILES } from "@/constants/mockData";
 import { useColors } from "@/hooks/useColors";
 import { getHiddenProfileIds } from "@/utils/hiddenProfiles";
-import { formatDistance } from "@/utils/distance";
+import { formatProfileDistance } from "@/utils/discoverFilters";
 
-const INITIAL_LIKES = MOCK_PROFILES.filter((p) => p.likesYou);
+// Likes come from any distance, including people in other cities.
+const INITIAL_LIKES = [...MOCK_PROFILES, ...MOCK_CITY_PROFILES].filter((p) => p.likesYou);
+const LOCAL_IDS = new Set(MOCK_PROFILES.map((p) => p.id));
 
 export default function LikesScreen() {
   const colors = useColors();
@@ -138,8 +140,9 @@ export default function LikesScreen() {
                   <Text style={[styles.name, { color: colors.foreground }]}>
                     {profile.name}, {profile.age}
                   </Text>
-                  <Text style={[styles.distance, { color: colors.mutedForeground }]}>
-                    {formatDistance(profile.distance)}
+                  <Text style={[styles.distance, { color: colors.mutedForeground }]} numberOfLines={1}>
+                    Lives in {profile.homeCity}
+                    {LOCAL_IDS.has(profile.id) ? ` · ${formatProfileDistance(profile)}` : ""}
                   </Text>
                 </View>
 

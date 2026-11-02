@@ -17,11 +17,12 @@ import { FilterModal, DEFAULT_FILTERS, DiscoverFilters, getActiveFilterCount } f
 import { SlowToReplyNotice, hasSlowToReplyBadge } from "@/components/SlowToReplyNotice";
 import { SwipeCard } from "@/components/SwipeCard";
 import { normalizeLookingFor } from "@/constants/lookingFor";
-import { MOCK_PROFILES, type Profile } from "@/constants/mockData";
+import { MOCK_CITY_DECKS, MOCK_CITY_PROFILES, MOCK_PROFILES, type Profile } from "@/constants/mockData";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useCommunity } from "@/context/CommunityContext";
 import { useColors } from "@/hooks/useColors";
+import { getLastBrowseCityChange, recordBrowseCityChange, type BrowseCityChange } from "@/utils/browseCity";
 import { matchesDiscoverFilters } from "@/utils/discoverFilters";
 import { getHiddenProfileIds } from "@/utils/hiddenProfiles";
 import { formatDistanceLimit, getDistanceUnit, isAtMaxDistance } from "@/utils/units";
@@ -52,6 +53,45 @@ export default function DiscoverScreen() {
   const [activeFilters, setActiveFilters] = useState<DiscoverFilters>(DEFAULT_FILTERS);
   const filterPreferenceInitialized = useRef(false);
   const filterCount = getActiveFilterCount(activeFilters);
+  const [lastBrowseCityChange, setLastBrowseCityChange] = useState<BrowseCityChange | null>(null);
+
+  // Browsing another city: a city picked in filters that isn't where the user
+  // lives. Distances on that deck are measured from the chosen city.
+  const browseCity =
+    !activeFilters.useCurrentLocation &&
+    activeFilters.locationCity &&
+    activeFilters.locationCity !== user?.homeCity
+      ? activeFilters.locationCity
+      : null;
+  const browseCityRef = useRef(browseCity);
+  browseCityRef.current = browseCity;
+
+  const deckFor = (city: string | null) =>
+    city
+      ? MOCK_CITY_PROFILES.filter((p) => (MOCK_CITY_DECKS[city] ?? []).includes(p.id))
+      : MOCK_PROFILES;
+
+  // Board-mates move up the local deck, in their existing order.
+  const boostOrder = useCallback(
+    (list: Profile[]) => [
+      ...list.filter((p) => sharedBoardsWith(p).length > 0),
+      ...list.filter((p) => sharedBoardsWith(p).length === 0),
+    ],
+    [sharedBoardsWith],
+  );
+
+  const handleApplyFilters = (next: DiscoverFilters) => {
+    const nextCity =
+      !next.useCurrentLocation && next.locationCity && next.locationCity !== user?.homeCity
+        ? next.locationCity
+        : null;
+    // Only a different city counts toward the once-a-week limit.
+    if (nextCity && nextCity !== lastBrowseCityChange?.city) {
+      setLastBrowseCityChange({ city: nextCity, changedAt: Date.now() });
+      recordBrowseCityChange(nextCity).catch(() => {});
+    }
+    setActiveFilters(next);
+  };
 
   useEffect(() => {
     if (authLoading || !user || filterPreferenceInitialized.current) return;
@@ -67,6 +107,9 @@ export default function DiscoverScreen() {
     useCallback(() => {
       let cancelled = false;
       setBlocksLoaded(false);
+      getLastBrowseCityChange().then((change) => {
+        if (!cancelled) setLastBrowseCityChange(change);
+      });
 
       getHiddenProfileIds().then((blockedProfileIds) => {
         if (cancelled) return;
@@ -75,7 +118,7 @@ export default function DiscoverScreen() {
         setProfiles((currentProfiles) => {
           if (!profileStateInitialized.current) {
             profileStateInitialized.current = true;
-            return MOCK_PROFILES.filter((profile) => !blocked.has(profile.id));
+            return deckFor(browseCityRef.current).filter((profile) => !blocked.has(profile.id));
           }
           return currentProfiles.filter((profile) => !blocked.has(profile.id));
         });
@@ -97,12 +140,20 @@ export default function DiscoverScreen() {
   useEffect(() => {
     if (boostApplied.current || !communityLoaded || !blocksLoaded) return;
     boostApplied.current = true;
-    setProfiles((current) => {
-      const shared = current.filter((p) => sharedBoardsWith(p).length > 0);
-      const rest = current.filter((p) => sharedBoardsWith(p).length === 0);
-      return [...shared, ...rest];
+    if (!browseCityRef.current) setProfiles((current) => boostOrder(current));
+  }, [communityLoaded, blocksLoaded, boostOrder]);
+
+  // Switching city swaps the deck; coming back home restores the local one.
+  const previousBrowseCity = useRef(browseCity);
+  useEffect(() => {
+    if (previousBrowseCity.current === browseCity) return;
+    previousBrowseCity.current = browseCity;
+    getHiddenProfileIds().then((hiddenIds) => {
+      const deck = deckFor(browseCity).filter((p) => !hiddenIds.includes(p.id));
+      setProfiles(browseCity ? deck : boostOrder(deck));
+      setLastPassedProfile(null);
     });
-  }, [communityLoaded, blocksLoaded, sharedBoardsWith]);
+  }, [browseCity]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // The deck keeps everyone not yet swiped; filters decide who's shown.
   const visibleProfiles = profiles.filter((p) => matchesDiscoverFilters(p, activeFilters));
@@ -189,6 +240,18 @@ export default function DiscoverScreen() {
         </View>
       </View>
 
+      {browseCity && (
+        <TouchableOpacity
+          onPress={() => setShowFilter(true)}
+          style={[styles.browsingPill, { backgroundColor: colors.secondary }]}
+          accessibilityRole="button"
+          accessibilityLabel={`Browsing ${browseCity}. Change location`}
+        >
+          <Feather name="navigation" size={12} color={colors.foreground} />
+          <Text style={[styles.browsingText, { color: colors.foreground }]}>Browsing {browseCity}</Text>
+        </TouchableOpacity>
+      )}
+
       <View
         style={[styles.cardArea, { marginBottom: cardBottom }]}
         onLayout={(e) => setCardAreaHeight(e.nativeEvent.layout.height)}
@@ -204,6 +267,7 @@ export default function DiscoverScreen() {
             <Feather name="map-pin" size={44} color={colors.border} />
             <Text style={[styles.emptyTitle, { color: colors.foreground }]}>
               No one new within {formatDistanceLimit(activeFilters.maxDistance, getDistanceUnit())}
+              {browseCity ? ` of ${browseCity}` : ""}
             </Text>
             {!isAtMaxDistance(activeFilters.maxDistance, getDistanceUnit()) ? (
               <>
@@ -330,7 +394,8 @@ export default function DiscoverScreen() {
       <FilterModal
         visible={showFilter}
         filters={activeFilters}
-        onApply={(f) => setActiveFilters(f)}
+        onApply={handleApplyFilters}
+        lastBrowseCityChange={lastBrowseCityChange}
         onClose={() => setShowFilter(false)}
         colors={colors}
       />
@@ -414,6 +479,17 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
   },
+  browsingPill: {
+    flexDirection: "row",
+    alignItems: "center",
+    alignSelf: "center",
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 14,
+    marginBottom: 8,
+  },
+  browsingText: { fontSize: 13, fontWeight: "600" },
   expandBtn: {
     marginTop: 8,
     height: 48,

@@ -4,6 +4,8 @@ import { setAuthTokenGetter } from "@workspace/api-client-react";
 import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { Platform } from "react-native";
 
+import { MOCK_HOME_CITY } from "@/constants/mockData";
+
 export type VerificationStatus = "none" | "pending" | "verified";
 
 export interface AuthUser {
@@ -23,6 +25,9 @@ export interface AuthUser {
   verificationStatus?: VerificationStatus;
   latitude?: number;
   longitude?: number;
+  /** Where they're based, "City, ST". Changeable once a month. */
+  homeCity?: string;
+  homeCityChangedAt?: number;
 }
 
 interface AuthContextType {
@@ -201,6 +206,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         interests: profile?.interests ?? [],
         occupation: profile?.occupation ?? "",
         matchNote: profile?.matchNote,
+        homeCity: profile?.homeCity,
+        homeCityChangedAt: profile?.homeCityChangedAt,
         verificationStatus,
       }
     : null;
@@ -280,6 +287,7 @@ const DEMO_PROFILE: AuthUser = {
   images: ["https://randomuser.me/api/portraits/lego/1.jpg"],
   interests: ["Music", "Hiking", "Coffee"],
   occupation: "Designer",
+  homeCity: MOCK_HOME_CITY,
 };
 
 // Stands in for AuthProvider when DEMO_MODE is on: no Clerk, no API calls.

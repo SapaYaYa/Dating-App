@@ -355,6 +355,7 @@ export default function ProfileScreen() {
       <SectionCard colors={colors} title="Account">
         {[
           { icon: "edit-2", label: "Edit Profile" },
+          { icon: "home", label: "Home city", detail: user?.homeCity ?? "Not set", onPress: () => router.push("/home-city") },
           { icon: "bell", label: "Notifications", toggle: true, value: notificationsOn, onToggle: () => setNotificationsOn(!notificationsOn) },
           // Off: your boards aren't shown on Discover cards or used to boost
           // people, in either direction.
@@ -366,6 +367,7 @@ export default function ProfileScreen() {
             <TouchableOpacity
               style={styles.menuRow}
               activeOpacity={0.7}
+              onPress={item.onPress}
             >
               <View style={[styles.menuIcon, { backgroundColor: colors.secondary }]}>
                 <Feather name={item.icon as any} size={16} color={colors.foreground} />
@@ -379,7 +381,12 @@ export default function ProfileScreen() {
                   thumbColor="#fff"
                 />
               ) : (
-                <Feather name="chevron-right" size={16} color={colors.mutedForeground} />
+                <>
+                  {item.detail ? (
+                    <Text style={[styles.menuDetail, { color: colors.mutedForeground }]}>{item.detail}</Text>
+                  ) : null}
+                  <Feather name="chevron-right" size={16} color={colors.mutedForeground} />
+                </>
               )}
             </TouchableOpacity>
             {i < arr.length - 1 && <View style={[styles.divider, { backgroundColor: colors.border }]} />}
@@ -394,7 +401,7 @@ export default function ProfileScreen() {
         <View style={styles.privacyInfoBody}>
           <Text style={[styles.privacyInfoTitle, { color: colors.foreground }]}>Location Privacy</Text>
           <Text style={[styles.privacyInfoSub, { color: colors.mutedForeground }]}>
-            Your exact location is never shared — other users only see an approximate distance.
+            Your exact location is never shared. Other users see your city and an approximate distance.
           </Text>
         </View>
       </View>
@@ -536,6 +543,7 @@ const styles = StyleSheet.create({
   divider: { height: 1, marginHorizontal: 14 },
   menuRow: { flexDirection: "row", alignItems: "center", padding: 14, gap: 12 },
   menuIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center" },
+  menuDetail: { fontSize: 13, marginRight: 4 },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: "500" },
   menuSub: { fontSize: 12, marginTop: 1 },
   connectBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },

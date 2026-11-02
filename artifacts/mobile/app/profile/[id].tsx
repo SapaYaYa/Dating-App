@@ -18,7 +18,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { GreatChatPill, hasGreatChatBadge } from "@/components/GreatChatBadge";
-import { MOCK_PROFILES } from "@/constants/mockData";
+import { MOCK_CITY_PROFILES, MOCK_PROFILES } from "@/constants/mockData";
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
 import { isProfileHidden } from "@/utils/hiddenProfiles";
@@ -38,7 +38,7 @@ export default function ProfileDetailScreen() {
   const [blockStatusLoaded, setBlockStatusLoaded] = useState(false);
   const [isBlocked, setIsBlocked] = useState(false);
 
-  const profile = MOCK_PROFILES.find((p) => p.id === id) ?? MOCK_PROFILES[0];
+  const profile = [...MOCK_PROFILES, ...MOCK_CITY_PROFILES].find((p) => p.id === id) ?? MOCK_PROFILES[0];
   const bottomPad = insets.bottom + (Platform.OS === "web" ? 34 : 0);
 
   useEffect(() => {
@@ -142,6 +142,10 @@ export default function ProfileDetailScreen() {
                   <GreatChatPill />
                 </View>
               )}
+              <View style={styles.distanceRow}>
+                <Feather name="home" size={13} color="rgba(255,255,255,0.75)" />
+                <Text style={styles.distanceText}>Lives in {profile.homeCity}</Text>
+              </View>
               <View style={styles.distanceRow}>
                 <Feather name="map-pin" size={13} color="rgba(255,255,255,0.75)" />
                 <Text style={styles.distanceText}>{formatProfileDistance(profile)}</Text>

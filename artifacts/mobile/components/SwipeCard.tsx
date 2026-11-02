@@ -150,6 +150,10 @@ export function SwipeCard({ profile, onSwipeLeft, onSwipeRight, isTop, index, ma
           <Feather name="map-pin" size={12} color="rgba(255,255,255,0.75)" />
           <Text style={styles.infoText}>{formatProfileDistance(profile)}</Text>
         </View>
+        <View style={styles.infoRow}>
+          <Feather name="home" size={12} color="rgba(255,255,255,0.75)" />
+          <Text style={styles.infoText}>Lives in {profile.homeCity}</Text>
+        </View>
 
         {sharedBoard && (
           <View style={styles.sharedBoard}>
