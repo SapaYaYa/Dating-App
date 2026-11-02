@@ -35,7 +35,6 @@ const GRID_PAD = 20;
 const GRID_GAP = 8;
 const PHOTO_SIZE = (SCREEN_W - GRID_PAD * 2 - GRID_GAP * 2) / 3;
 
-
 export default function ProfileScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -46,8 +45,6 @@ export default function ProfileScreen() {
   const scheme = useColorScheme();
   const [notificationsOn, setNotificationsOn] = useState(true);
   const [matchNote, setMatchNote] = useState(user?.matchNote ?? "");
-  const [spotifyConnected, setSpotifyConnected] = useState(true);
-  const [instagramConnected, setInstagramConnected] = useState(false);
 
   const topPad = insets.top + (Platform.OS === "web" ? 67 : 0);
   const bottomPad = insets.bottom + (Platform.OS === "web" ? 34 : 0) + 68;
@@ -213,9 +210,6 @@ export default function ProfileScreen() {
         <View style={[styles.completionTrack, { backgroundColor: colors.secondary }]}>
           <View style={[styles.completionFill, { width: `${profileCompletion}%` as any, backgroundColor: colors.primary }]} />
         </View>
-        <Text style={[styles.completionHint, { color: colors.mutedForeground }]}>
-          Add Instagram to boost visibility
-        </Text>
       </View>
 
       <SectionCard colors={colors} title="Match Note">
@@ -318,28 +312,6 @@ export default function ProfileScreen() {
         </View>
       </SectionCard>
 
-      <SectionCard colors={colors} title="Connections">
-        <ToggleRow
-          icon="music"
-          iconColor={colors.spotify}
-          label="Spotify"
-          sublabel={spotifyConnected ? "Connected · Currently playing" : "Show what you're listening to"}
-          connected={spotifyConnected}
-          onToggle={() => setSpotifyConnected(!spotifyConnected)}
-          colors={colors}
-        />
-        <View style={[styles.divider, { backgroundColor: colors.border }]} />
-        <ToggleRow
-          icon="instagram"
-          iconColor={colors.foreground}
-          label="Instagram"
-          sublabel={instagramConnected ? "Connected · 342 posts" : "Show your Instagram grid"}
-          connected={instagramConnected}
-          onToggle={() => setInstagramConnected(!instagramConnected)}
-          colors={colors}
-        />
-      </SectionCard>
-
       <SectionCard colors={colors} title="Account">
         {[
           { icon: "edit-2", label: "Edit Profile" },
@@ -413,31 +385,6 @@ function SectionCard({ colors, title, children }: { colors: any; title: string; 
   );
 }
 
-function ToggleRow({ icon, iconColor, label, sublabel, connected, onToggle, colors }: any) {
-  return (
-    <View style={styles.toggleRow}>
-      <View style={[styles.menuIcon, { backgroundColor: colors.secondary }]}>
-        <Feather name={icon} size={16} color={iconColor} />
-      </View>
-      <View style={{ flex: 1 }}>
-        <Text style={[styles.menuLabel, { color: colors.foreground }]}>{label}</Text>
-        <Text style={[styles.menuSub, { color: colors.mutedForeground }]}>{sublabel}</Text>
-      </View>
-      <TouchableOpacity
-        onPress={onToggle}
-        style={[
-          styles.connectBtn,
-          { backgroundColor: connected ? colors.green + "22" : colors.secondary },
-        ]}
-      >
-        <Text style={[styles.connectText, { color: connected ? colors.green : colors.foreground }]}>
-          {connected ? "Connected" : "Connect"}
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
-
 const styles = StyleSheet.create({
   root: { flex: 1 },
   scroll: { paddingHorizontal: 20, gap: 16 },
@@ -463,20 +410,9 @@ const styles = StyleSheet.create({
   },
   userNameRow: { flexDirection: "row", alignItems: "center", gap: 6 },
   userName: { fontSize: 22, fontWeight: "700" },
-  userOccupation: { fontSize: 14 },
   badgesRow: { flexDirection: "row", gap: 8, marginTop: 4 },
   badge: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 20 },
   badgeText: { fontSize: 12, fontWeight: "600" },
-  statsCard: {
-    flexDirection: "row",
-    borderRadius: 16,
-    padding: 20,
-    borderWidth: 1,
-  },
-  statItem: { flex: 1, alignItems: "center", gap: 2 },
-  statValue: { fontSize: 20, fontWeight: "800" },
-  statLabel: { fontSize: 11 },
-  statDivider: { width: 1, height: 40, alignSelf: "center" },
   verifyCard: {
     flexDirection: "row",
     alignItems: "center",
@@ -501,21 +437,14 @@ const styles = StyleSheet.create({
   completionPct: { fontSize: 14, fontWeight: "700" },
   completionTrack: { height: 6, borderRadius: 3, overflow: "hidden" },
   completionFill: { height: "100%", borderRadius: 3 },
-  completionHint: { fontSize: 12 },
   sectionWrap: { gap: 10 },
   sectionTitle: { fontSize: 16, fontWeight: "700" },
   sectionCard: { borderRadius: 16, borderWidth: 1, overflow: "hidden" },
   questionItem: { padding: 14, gap: 4 },
-  questionHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   questionText: { fontSize: 14, fontWeight: "600", flex: 1 },
   promptAnswer: { fontSize: 15, lineHeight: 21 },
   editPrompts: { flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8, height: 48, borderTopWidth: 1 },
   editPromptsText: { fontSize: 14, fontWeight: "600" },
-  activeBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 20 },
-  activeBadgeText: { fontSize: 11, fontWeight: "600" },
-  daysLeft: { fontSize: 11 },
-  answerText: { fontSize: 13 },
-  answerPlaceholder: { fontSize: 13, fontStyle: "italic" },
   interestsWrap: { flexDirection: "row", flexWrap: "wrap", gap: 8, padding: 14 },
   interestChip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 20 },
   interestText: { fontSize: 13, fontWeight: "500" },
@@ -530,15 +459,11 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   addText: { fontSize: 13 },
-  toggleRow: { flexDirection: "row", alignItems: "center", padding: 14, gap: 12 },
   divider: { height: 1, marginHorizontal: 14 },
   menuRow: { flexDirection: "row", alignItems: "center", padding: 14, gap: 12 },
   menuIcon: { width: 36, height: 36, borderRadius: 10, alignItems: "center", justifyContent: "center" },
   menuDetail: { fontSize: 13, marginRight: 4 },
   menuLabel: { flex: 1, fontSize: 15, fontWeight: "500" },
-  menuSub: { fontSize: 12, marginTop: 1 },
-  connectBtn: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20 },
-  connectText: { fontSize: 12, fontWeight: "600" },
   photoGridHeader: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   photoGridSub: { fontSize: 12 },
   photoGrid: { flexDirection: "row", flexWrap: "wrap", gap: GRID_GAP },

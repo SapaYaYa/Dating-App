@@ -12,8 +12,6 @@ export interface Profile {
   bio: string;
   images: string[];
   interests: string[];
-  spotify: { song: string; artist: string };
-  instagram: { posts: number; username: string };
   /** Their 3 prompt answers, shown between photos in Discover. */
   prompts: PromptAnswer[];
   verified: boolean;
@@ -124,8 +122,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/women/50.jpg",
     ],
     interests: ["Coffee", "Cooking", "Dogs", "Travel", "Yoga"],
-    spotify: { song: "Levitating", artist: "Dua Lipa" },
-    instagram: { posts: 342, username: "@emma.creates" },
     prompts: [
       { question: "My ideal Sunday is...", answer: "Farmers market then cooking something new" },
       { question: "My love language is...", answer: "Acts of service and quality time" },
@@ -148,8 +144,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/men/38.jpg",
     ],
     interests: ["Photography", "Travel", "Music", "Outdoors", "Film"],
-    spotify: { song: "Golden Hour", artist: "JVKE" },
-    instagram: { posts: 512, username: "@jakeshootsfilm" },
     prompts: [
       { question: "A perfect date for me...", answer: "Sunset picnic with vinyl records playing" },
       { question: "My biggest passion is...", answer: "Capturing moments before they're gone" },
@@ -175,8 +169,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/women/23.jpg",
     ],
     interests: ["Art", "Museums", "Coffee", "Indie Music", "Books"],
-    spotify: { song: "Motion Sickness", artist: "Phoebe Bridgers" },
-    instagram: { posts: 187, username: "@sofia.paints" },
     prompts: [
       { question: "Two truths and a lie...", answer: "I speak 3 languages, own 7 plants, hate coffee (lie!)" },
       { question: "I'm looking for...", answer: "Someone who will visit galleries and share playlists with me" },
@@ -201,8 +193,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/men/81.jpg",
     ],
     interests: ["Cooking", "Wine", "Travel", "Jazz", "Fitness"],
-    spotify: { song: "Good Life", artist: "OneRepublic" },
-    instagram: { posts: 894, username: "@chefmarcus" },
     prompts: [
       { question: "My superpower is...", answer: "Making anyone feel at home with food" },
       { question: "The way to my heart is...", answer: "Appreciate the meal I cooked you" },
@@ -228,8 +218,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/women/74.jpg",
     ],
     interests: ["Yoga", "Hiking", "Meditation", "Health", "Nature"],
-    spotify: { song: "Sunrise", artist: "Norah Jones" },
-    instagram: { posts: 421, username: "@ava.mindful" },
     prompts: [
       { question: "I'm weirdly good at...", answer: "Headstands and parallel parking" },
       { question: "Ideal weekend...", answer: "Hiking a new trail, then soaking in the views" },
@@ -251,8 +239,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/men/17.jpg",
     ],
     interests: ["Music", "Songwriting", "Vinyl", "Concerts", "Coffee"],
-    spotify: { song: "Electric Feel", artist: "MGMT" },
-    instagram: { posts: 256, username: "@liamplaysmusic" },
     prompts: [
       { question: "Song that defines me...", answer: "Changes weekly honestly" },
       { question: "First date idea...", answer: "Record store, then live music" },
@@ -274,8 +260,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/women/96.jpg",
     ],
     interests: ["Design", "Ceramics", "Plants", "Architecture", "Coffee"],
-    spotify: { song: "Blinding Lights", artist: "The Weeknd" },
-    instagram: { posts: 378, username: "@zara.designs" },
     prompts: [
       { question: "I'm known for...", answer: "Having too many plants and strong opinions on fonts" },
       { question: "My simple pleasure...", answer: "Finding a perfect color palette in nature" },
@@ -301,8 +285,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/men/51.jpg",
     ],
     interests: ["Wine", "Travel", "Reading", "Cooking", "Cycling"],
-    spotify: { song: "Budapest", artist: "George Ezra" },
-    instagram: { posts: 143, username: "@dr.noah.adventures" },
     prompts: [
       { question: "Best advice I've received...", answer: "Say yes to things that make you nervous" },
       { question: "I'm reading...", answer: "The Midnight Library and loving every page" },
@@ -324,8 +306,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/women/69.jpg",
     ],
     interests: ["Travel", "Photography", "Street Food", "Writing", "Languages"],
-    spotify: { song: "Wanderlust", artist: "Ryn Weaver" },
-    instagram: { posts: 1240, username: "@mia.wanders" },
     prompts: [
       { question: "Next destination on my list...", answer: "Japan in cherry blossom season" },
       { question: "I can't live without...", answer: "My camera and a window seat" },
@@ -348,8 +328,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/men/28.jpg",
     ],
     interests: ["Startups", "Running", "Books", "Coffee", "Podcasts"],
-    spotify: { song: "Empire State of Mind", artist: "Jay-Z" },
-    instagram: { posts: 89, username: "@ethan.builds" },
     prompts: [
       { question: "My 5-year plan...", answer: "Exit one startup, start another, travel more" },
       { question: "I admire people who...", answer: "Do scary things anyway" },
@@ -371,8 +349,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/women/32.jpg",
     ],
     interests: ["Theatre", "Film", "Reading", "Yoga", "Coffee"],
-    spotify: { song: "The Night We Met", artist: "Lord Huron" },
-    instagram: { posts: 567, username: "@luna.acts" },
     prompts: [
       { question: "The last thing that made me cry...", answer: "A dog commercial, obviously" },
       { question: "I could talk about...", answer: "Character motivation for hours" },
@@ -398,8 +374,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/men/65.jpg",
     ],
     interests: ["Ocean", "Diving", "Science", "Hiking", "Photography"],
-    spotify: { song: "Into the Deep", artist: "Ludovico Einaudi" },
-    instagram: { posts: 234, username: "@kai.deep.sea" },
     prompts: [
       { question: "Most amazing thing I've seen...", answer: "A whale shark in the wild. Life-changing." },
       { question: "My unpopular opinion...", answer: "The ocean is more interesting than outer space" },
@@ -421,8 +395,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/women/18.jpg",
     ],
     interests: ["Pottery", "Kids", "Cooking", "Running", "Art"],
-    spotify: { song: "Lover", artist: "Taylor Swift" },
-    instagram: { posts: 298, username: "@jade.creates" },
     prompts: [
       { question: "I'm basically a...", answer: "Human golden retriever" },
       { question: "Guilty pleasure...", answer: "Reality TV and premium ice cream at 11pm" },
@@ -444,8 +416,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/men/94.jpg",
     ],
     interests: ["Architecture", "Chess", "Baking", "Museums", "Jazz"],
-    spotify: { song: "Take Five", artist: "Dave Brubeck Quartet" },
-    instagram: { posts: 167, username: "@finn.arch" },
     prompts: [
       { question: "My most controversial take...", answer: "Comic Sans has its place and I'll die on this hill" },
       { question: "I'm happiest when...", answer: "There's fresh bread in the oven" },
@@ -467,8 +437,6 @@ export const MOCK_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/women/39.jpg",
     ],
     interests: ["Dance", "Music", "Fitness", "Fashion", "Film"],
-    spotify: { song: "Savage", artist: "Megan Thee Stallion" },
-    instagram: { posts: 1089, username: "@aria.moves" },
     prompts: [
       { question: "I feel most alive when...", answer: "On stage with the lights on" },
       { question: "Dealbreaker for me...", answer: "Someone who says they have no rhythm" },
@@ -886,8 +854,6 @@ export const MOCK_CITY_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/women/27.jpg",
     ],
     interests: ["Art", "Coffee", "Travel"],
-    spotify: { song: "Electric Love", artist: "BØRNS" },
-    instagram: { posts: 120, username: "@maya" },
     prompts: [
       { question: "My ideal Sunday is...", answer: "Flea market, then a slice" },
       { question: "My unpopular opinion...", answer: "Breakfast for dinner beats dinner for dinner." },
@@ -912,8 +878,6 @@ export const MOCK_CITY_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/men/47.jpg",
     ],
     interests: ["Cooking", "Wine", "Music"],
-    spotify: { song: "Redbone", artist: "Childish Gambino" },
-    instagram: { posts: 120, username: "@daniel" },
     prompts: [
       { question: "I'm known for...", answer: "Hosting dinner for twelve in a tiny apartment" },
       { question: "Together, we could...", answer: "Find the best tacos in the city, one place at a time." },
@@ -935,8 +899,6 @@ export const MOCK_CITY_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/women/58.jpg",
     ],
     interests: ["Reading", "Hiking", "Coffee"],
-    spotify: { song: "Good Days", artist: "SZA" },
-    instagram: { posts: 120, username: "@priya" },
     prompts: [
       { question: "A perfect date...", answer: "Trying a new neighborhood's food" },
       { question: "My go-to karaoke song...", answer: "Anything I can get the whole room singing." },
@@ -958,8 +920,6 @@ export const MOCK_CITY_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/men/69.jpg",
     ],
     interests: ["Architecture", "Photography", "Film"],
-    spotify: { song: "Nights", artist: "Frank Ocean" },
-    instagram: { posts: 120, username: "@chris" },
     prompts: [
       { question: "Two truths and a lie...", answer: "I've lived in 4 countries, I can't swim, I love jazz" },
       { question: "I geek out on...", answer: "Maps. Old ones, new ones, the ones in airports." },
@@ -981,8 +941,6 @@ export const MOCK_CITY_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/women/42.jpg",
     ],
     interests: ["Film", "Writing", "Yoga"],
-    spotify: { song: "Sunflower", artist: "Post Malone" },
-    instagram: { posts: 120, username: "@sienna" },
     prompts: [
       { question: "My simple pleasure...", answer: "Sunset at the beach after work" },
       { question: "My simple pleasures...", answer: "Clean sheets, a good playlist and the first sip of coffee." },
@@ -1004,8 +962,6 @@ export const MOCK_CITY_PROFILES: Profile[] = [
       "https://randomuser.me/api/portraits/men/58.jpg",
     ],
     interests: ["Surfing", "Outdoors", "Travel"],
-    spotify: { song: "Island in the Sun", artist: "Weezer" },
-    instagram: { posts: 120, username: "@mateo" },
     prompts: [
       { question: "I'm looking for...", answer: "Someone who'll try anything once" },
       { question: "My unpopular opinion...", answer: "Breakfast for dinner beats dinner for dinner." },

@@ -370,23 +370,6 @@ export default function LoginScreen() {
                 <Text style={[styles.loginText, { color: colors.primaryForeground }]}>Sign In</Text>
               )}
             </TouchableOpacity>
-
-            <View style={styles.divider}>
-              <View style={[styles.line, { backgroundColor: colors.border }]} />
-              <Text style={[styles.orText, { color: colors.mutedForeground }]}>or continue with</Text>
-              <View style={[styles.line, { backgroundColor: colors.border }]} />
-            </View>
-
-            <View style={styles.socialRow}>
-              <TouchableOpacity style={[styles.socialBtn, { backgroundColor: colors.secondary, borderColor: colors.border }]}>
-                <Feather name="music" size={18} color={colors.spotify} />
-                <Text style={[styles.socialText, { color: colors.foreground }]}>Spotify</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.socialBtn, { backgroundColor: colors.secondary, borderColor: colors.border }]}>
-                <Feather name="instagram" size={18} color={colors.foreground} />
-                <Text style={[styles.socialText, { color: colors.foreground }]}>Instagram</Text>
-              </TouchableOpacity>
-            </View>
           </View>
 
           <View style={styles.registerRow}>
@@ -443,21 +426,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   loginText: { fontSize: 16, fontWeight: "700" },
-  divider: { flexDirection: "row", alignItems: "center", gap: 10 },
-  line: { flex: 1, height: 1 },
-  orText: { fontSize: 12 },
-  socialRow: { flexDirection: "row", gap: 10 },
-  socialBtn: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    paddingVertical: 12,
-    borderRadius: 12,
-    borderWidth: 1,
-  },
-  socialText: { fontSize: 13, fontWeight: "600" },
   registerRow: {
     flexDirection: "row",
     alignItems: "center",

@@ -142,6 +142,15 @@ These screens still run on sample data (`MOCK_*` in
 - [ ] Hide blocked and unmatched people in boards on the server, not just
       on the phone.
 
+## On hold
+
+- [ ] **Music (theme song or top artists):** on hold. Spotify limits new
+      apps to a few test users and no longer gives song previews; Apple's
+      free iTunes Search API has previews but its terms say they're for
+      promoting songs in Apple's store, which needs a legal review. Revisit
+      when there's legal help.
+- [ ] **Instagram:** not planned for now.
+
 ## Quality
 
 - [ ] Add automated tests. The project has none; at minimum cover the two

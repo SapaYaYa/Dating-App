@@ -27,7 +27,8 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Photos: exactly 3 required at sign-up; Continue stays disabled until
       all 3 are added, and the hint counts how many are left.
 - [ ] Email verification code: correct code, wrong code, resend.
-- [ ] Sign in with email and password; wrong password message.
+- [ ] Sign in with email and password; wrong password message. No Spotify or
+      Instagram sign-in buttons.
 - [ ] Second-factor email code at sign-in, if prompted.
 - [ ] Reset password flow.
 - [ ] Sign out returns to the login screen.
@@ -36,7 +37,8 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] One person at a time as a scrolling profile: first photo with name and
       age, then the basics card, then answers and photos alternating.
 - [ ] Basics card: Great Chat, Verified and "Both in ..." tags; Lives in,
-      distance, job, song, bio and interests.
+      distance, job, bio and interests. No song, Spotify or Instagram
+      anywhere (music is on hold).
 - [ ] Every photo and every answer has a heart; there's no swiping.
 - [ ] A heart opens the like panel showing that photo or answer, with an
       optional note (140 characters, counter) and Send like. The button says

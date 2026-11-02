@@ -109,7 +109,6 @@ export function ProfileScroll({ profile, sharedBoard, onLike, hideDistance }: Pr
             <Row icon="home" text={`Lives in ${profile.homeCity}`} />
             {!hideDistance && <Row icon="map-pin" text={formatProfileDistance(profile)} />}
             <Row icon="briefcase" text={profile.occupation} />
-            <Row icon="music" text={`${profile.spotify.song} — ${profile.spotify.artist}`} />
             {profile.bio ? (
               <Text style={[styles.bio, { color: colors.foreground }]}>{profile.bio}</Text>
             ) : null}
