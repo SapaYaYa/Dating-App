@@ -32,6 +32,15 @@ These screens still run on sample data (`MOCK_*` in
 - [ ] **Photos:** add a photo upload service. Photos are currently saved as
       file paths on the user's phone, which no one else can open.
 
+## Match notes
+
+- [ ] Store each user's match note (up to 150 characters) on the server.
+      Today it's saved only on the user's phone, so no match ever sees it.
+- [ ] Send a person's match note only to people they've matched with, never
+      in Discover or to anyone else.
+- [ ] Show real match notes in the "It's a Match!" pop-ups (Discover and
+      Likes) and under New Matches, instead of the sample text.
+
 ## Discover distance
 
 - [ ] Load Discover from `GET /profiles` and apply every filter on the server

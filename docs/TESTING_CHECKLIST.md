@@ -154,7 +154,10 @@ private/incognito window to start fresh. To test kilometers, set your phone
 ### Profile
 - [ ] Add and remove photos: up to 8; deleting is blocked at 3 (the minimum),
       with a lock icon on each photo.
-- [ ] Match note saves (max 150 characters).
+- [ ] Match note saves when you tap away (max 150 characters) and is still
+      there after leaving and coming back.
+- [ ] Sample match notes show in the "It's a Match!" pop-up (Discover and
+      Likes) and under New Matches.
 - [ ] Get Verified flow runs. It's a placeholder that approves automatically.
 - [ ] Level, streak and Priority (level 5+) badges show correctly.
 
@@ -202,6 +205,10 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] A like reaches the other person's Likes from any distance, mixed in
       with local likes.
 - [ ] Liking back creates a match for both people.
+- [ ] Your match note reaches the person you matched with: it shows in
+      their match pop-up and under New Matches.
+- [ ] Your match note never shows to someone you haven't matched with
+      (Discover, Likes, full profile).
 - [ ] Messages send and arrive in real time on both phones.
 
 ### Safety
