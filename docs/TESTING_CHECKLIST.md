@@ -105,6 +105,7 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] A conversation row with no messages says "Say hi".
 - [ ] Voice messages: record, preview, send, play back (phone only).
 - [ ] Message length limit is enforced.
+- [ ] Sending a text or voice message doesn't change your points (XP).
 
 ### Report, block and unmatch
 - [ ] Chat "..." menu shows Report, Block and Unmatch on iOS, Android and web.

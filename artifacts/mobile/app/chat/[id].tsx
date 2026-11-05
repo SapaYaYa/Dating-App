@@ -23,7 +23,6 @@ import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { MOCK_CHAT_MESSAGES, MOCK_MATCHES, type ChatMessage } from "@/constants/mockData";
-import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
 import { blockProfile } from "@/utils/blocks";
 import { isProfileHidden } from "@/utils/hiddenProfiles";
@@ -67,7 +66,6 @@ export default function ChatScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { addPoints } = useApp();
 
   const match = MOCK_MATCHES.find((m) => m.id === id);
   const initialMessages: ChatMessage[] = MOCK_CHAT_MESSAGES[id ?? ""] ?? [];
@@ -289,7 +287,6 @@ export default function ChatScreen() {
     setPreviewPlaying(false);
     setVoiceState("idle");
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    addPoints(5);
   };
 
   const toggleMsgPlayback = async (msgId: string, uri: string) => {
@@ -341,7 +338,6 @@ export default function ChatScreen() {
     setMessages((prev) => [newMsg, ...prev]);
     setInput("");
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    addPoints(10);
   };
 
   const handleMoreOptions = () => {
