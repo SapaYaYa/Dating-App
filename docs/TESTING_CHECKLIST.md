@@ -219,8 +219,7 @@ private/incognito window to start fresh. To test kilometers, set your phone
       use up a daily ad.
 - [ ] Extra likes: +3 likes per ad, 3 ads a day. Watching from the like panel
       reopens it with your note still there.
-- [ ] Double a challenge: after completing one, "Watch ad for +N more" doubles
-      its likes. Offered once a day; "No thanks" closes it.
+- [ ] Completing a challenge gives its likes with no offer to double them.
 - [ ] Discover shows a "Sponsored" card after every 15 profiles (liked or
       passed), even when out of likes; Continue moves on.
 - [ ] Boards show a "Sponsored" post after every 15 posts.
@@ -266,12 +265,20 @@ private/incognito window to start fresh. To test kilometers, set your phone
 ### Ads
 - [ ] Real ads play in the phone app (iPhone and Android) and pay out in the
       AdMob dashboard.
-- [ ] Rewards (likes, undo, double challenge, city skip) are granted by the
-      server only after AdMob's "ad finished" message, never from the phone.
-- [ ] The server enforces the limits: 3 extra-likes ads, 5 undo ads and 1
-      challenge double a day; 1 city skip a week; repeated "ad finished"
-      messages count once.
-- [ ] Likes left come from the server and match on every device.
+- [ ] Rewards (likes, undo, city skip) are granted by the server only after
+      AdMob's "ad finished" message, never from the phone.
+- [ ] The server enforces the limits: 3 extra-likes ads and 5 undo ads a
+      day; 1 city skip a week; repeated "ad finished" messages count once.
+- [ ] Likes left come from the server and match on every device; sending a
+      like at 0 is refused even if the phone shows more.
+- [ ] Daily likes and ad limits reset at midnight in your own time zone.
+- [ ] Free undo and the 6th daily like follow the level the server has (level
+      1 for everyone until challenges are real).
+- [ ] Browsing a new city within a week is refused by the server unless both
+      city-skip ads finished; going home is always allowed; the browse city
+      and its lock are the same on another device.
+- [ ] Development only: with `ADS_TEST_MODE=1` on the server, the fake ads
+      grant rewards; without it, they don't.
 - [ ] Ads are non-personalized; no profile details or location are sent to
       the ad network.
 - [ ] Europe/UK: the consent screen shows before any ad.

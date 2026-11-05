@@ -27,7 +27,12 @@ import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useCommunity } from "@/context/CommunityContext";
 import { useColors } from "@/hooks/useColors";
-import { getLastBrowseCityChange, recordBrowseCityChange, type BrowseCityChange } from "@/utils/browseCity";
+import {
+  getLastBrowseCityChange,
+  recordBrowseCityChange,
+  syncBrowseCity,
+  type BrowseCityChange,
+} from "@/utils/browseCity";
 import { matchesDiscoverFilters } from "@/utils/discoverFilters";
 import { getHiddenProfileIds } from "@/utils/hiddenProfiles";
 import { formatDistanceLimit, getDistanceUnit, isAtMaxDistance } from "@/utils/units";
@@ -36,7 +41,7 @@ import { formatDistanceLimit, getDistanceUnit, isAtMaxDistance } from "@/utils/u
 export default function DiscoverScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { dailyLikes, useLike, level, earnLikes } = useApp();
+  const { dailyLikes, useLike, level, earnLikes, allowance } = useApp();
   const { left: adsLeft, watchRewardedAd } = useAds();
   const { user, isLoading: authLoading } = useAuth();
 
@@ -82,7 +87,7 @@ export default function DiscoverScreen() {
     [sharedBoardsWith],
   );
 
-  const handleApplyFilters = (next: DiscoverFilters) => {
+  const handleApplyFilters = (next: DiscoverFilters, skipSessionId?: string) => {
     const nextCity =
       !next.useCurrentLocation && next.locationCity && next.locationCity !== user?.homeCity
         ? next.locationCity
@@ -90,7 +95,10 @@ export default function DiscoverScreen() {
     // Only a different city counts toward the once-a-week limit.
     if (nextCity && nextCity !== lastBrowseCityChange?.city) {
       setLastBrowseCityChange({ city: nextCity, changedAt: Date.now() });
-      recordBrowseCityChange(nextCity).catch(() => {});
+      recordBrowseCityChange(nextCity, skipSessionId).catch(() => {});
+    } else if (nextCity !== browseCity) {
+      // Home, or back to the same city: no limit, but keep the server in step.
+      syncBrowseCity(nextCity).catch(() => {});
     }
     setActiveFilters(next);
   };
@@ -198,7 +206,7 @@ export default function DiscoverScreen() {
   const watchLikesAd = async (reopen: LikeTarget | null, note: string) => {
     setLikeTarget(null);
     setPendingNote(note);
-    const earned = await playAd("extraLikes");
+    const { earned } = await playAd("extraLikes");
     if (earned) {
       earnLikes(AD_RULES.EXTRA_LIKES_PER_AD);
       showToast(`+${AD_RULES.EXTRA_LIKES_PER_AD} likes`);
@@ -236,7 +244,7 @@ export default function DiscoverScreen() {
   const handleRewind = async () => {
     if (!lastPassedProfile) return;
     const passed = lastPassedProfile;
-    if (!freeUndo && !(await playAd("undoPass"))) return;
+    if (!freeUndo && !(await playAd("undoPass")).earned) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     setProfiles((prev) => [passed, ...prev.filter((p) => p.id !== passed.id)]);
     setLastPassedProfile(null);
@@ -255,7 +263,7 @@ export default function DiscoverScreen() {
 
   const isLegend = level >= 5;
   // Undo is free from level 4; below that it takes an ad.
-  const freeUndo = level >= AD_RULES.FREE_UNDO_LEVEL;
+  const freeUndo = allowance ? allowance.freeUndo : level >= AD_RULES.FREE_UNDO_LEVEL;
   const canRewind = lastPassedProfile !== null && (freeUndo || adsLeft("undoPass") > 0);
   const likesAdsLeft = adsLeft("extraLikes");
 
@@ -263,8 +271,9 @@ export default function DiscoverScreen() {
   // goes through and starts a new week.
   const handleSkipCityLock = async (next: DiscoverFilters) => {
     setShowFilter(false);
-    if (await playAd("citySkip")) {
-      handleApplyFilters(next);
+    const { earned, sessionId } = await playAd("citySkip");
+    if (earned) {
+      handleApplyFilters(next, sessionId ?? undefined);
       showToast(`Now browsing ${next.locationCity}`);
     }
   };

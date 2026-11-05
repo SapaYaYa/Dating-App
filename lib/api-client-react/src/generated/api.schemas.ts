@@ -171,3 +171,86 @@ export interface ProfileRef {
 export interface ErrorResponse {
   error: string;
 }
+
+export type RewardPlacement =
+  (typeof RewardPlacement)[keyof typeof RewardPlacement];
+
+export const RewardPlacement = {
+  extraLikes: "extraLikes",
+  undoPass: "undoPass",
+  citySkip: "citySkip",
+} as const;
+
+export interface AdsLeft {
+  /** Extra-likes ads left today (3 a day). */
+  extraLikes: number;
+  /** Undo ads left today (5 a day). */
+  undoPass: number;
+  /** City-skip rewards left this week (1 a week). */
+  citySkip: number;
+}
+
+export interface LikeAllowance {
+  likesLeft: number;
+  /** Today's free likes (5, or 6 at level 5+). */
+  dailyLikes: number;
+  /** Likes earned today, e.g. from ads. */
+  extraLikes: number;
+  used: number;
+  level: number;
+  /** True from level 4; undo then needs no ad. */
+  freeUndo: boolean;
+  adsLeft: AdsLeft;
+}
+
+export interface AdSessionInput {
+  placement: RewardPlacement;
+}
+
+export interface AdSession {
+  id: string;
+  placement: RewardPlacement;
+  adsRequired: number;
+  adsCompleted: number;
+  granted: boolean;
+}
+
+export interface BrowseCity {
+  /**
+   * The city browsed now; null means your own area.
+   * @nullable
+   */
+  city: string | null;
+  /**
+   * The last city switched to; picking it again is always allowed.
+   * @nullable
+   */
+  lastCity: string | null;
+  /** @nullable */
+  changedAt: string | null;
+  /**
+   * When a different city is allowed again; null if now.
+   * @nullable
+   */
+  nextChangeAt: string | null;
+  citySkipsLeft: number;
+}
+
+export interface BrowseCityInput {
+  /**
+   * @minLength 1
+   * @maxLength 100
+   * @nullable
+   */
+  city: string | null;
+  /** A granted, unused city-skip ad session, to change city before the week is up. */
+  skipSessionId?: string;
+}
+
+export type GetLikeAllowanceParams = {
+  /**
+   * IANA time zone, e.g. America/New_York.
+   * @maxLength 64
+   */
+  timeZone?: string;
+};

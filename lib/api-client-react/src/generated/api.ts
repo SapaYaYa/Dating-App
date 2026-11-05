@@ -17,8 +17,14 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  AdSession,
+  AdSessionInput,
+  BrowseCity,
+  BrowseCityInput,
   ErrorResponse,
+  GetLikeAllowanceParams,
   HealthStatus,
+  LikeAllowance,
   Profile,
   ProfileInput,
   ProfileList,
@@ -612,4 +618,608 @@ export const useUnmatchProfile = <
   TContext
 > => {
   return useMutation(getUnmatchProfileMutationOptions(options));
+};
+
+/**
+ * Today's likes and rewarded-ad limits. "Today" is in the person's time zone; pass it to update it (daily likes and ad limits reset at midnight there).
+
+ * @summary Likes left today
+ */
+export const getGetLikeAllowanceUrl = (params?: GetLikeAllowanceParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/likes/allowance?${stringifiedParams}`
+    : `/api/likes/allowance`;
+};
+
+export const getLikeAllowance = async (
+  params?: GetLikeAllowanceParams,
+  options?: RequestInit,
+): Promise<LikeAllowance> => {
+  return customFetch<LikeAllowance>(getGetLikeAllowanceUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetLikeAllowanceQueryKey = (
+  params?: GetLikeAllowanceParams,
+) => {
+  return [`/api/likes/allowance`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetLikeAllowanceQueryOptions = <
+  TData = Awaited<ReturnType<typeof getLikeAllowance>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  params?: GetLikeAllowanceParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLikeAllowance>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetLikeAllowanceQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getLikeAllowance>>
+  > = ({ signal }) => getLikeAllowance(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getLikeAllowance>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetLikeAllowanceQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getLikeAllowance>>
+>;
+export type GetLikeAllowanceQueryError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Likes left today
+ */
+
+export function useGetLikeAllowance<
+  TData = Awaited<ReturnType<typeof getLikeAllowance>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  params?: GetLikeAllowanceParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getLikeAllowance>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetLikeAllowanceQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Use one of today's likes
+ */
+export const getSpendLikeUrl = () => {
+  return `/api/likes/spend`;
+};
+
+export const spendLike = async (
+  options?: RequestInit,
+): Promise<LikeAllowance> => {
+  return customFetch<LikeAllowance>(getSpendLikeUrl(), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getSpendLikeMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof spendLike>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof spendLike>>,
+  TError,
+  void,
+  TContext
+> => {
+  const mutationKey = ["spendLike"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof spendLike>>,
+    void
+  > = () => {
+    return spendLike(requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SpendLikeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof spendLike>>
+>;
+
+export type SpendLikeMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Use one of today's likes
+ */
+export const useSpendLike = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof spendLike>>,
+    TError,
+    void,
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof spendLike>>,
+  TError,
+  void,
+  TContext
+> => {
+  return useMutation(getSpendLikeMutationOptions(options));
+};
+
+/**
+ * Call before playing a rewarded ad. Pass the returned id to AdMob as custom_data and the user's ID as user_id. The reward is granted when AdMob reports every ad in the session finished.
+
+ * @summary Start a rewarded ad
+ */
+export const getCreateAdSessionUrl = () => {
+  return `/api/ads/sessions`;
+};
+
+export const createAdSession = async (
+  adSessionInput: AdSessionInput,
+  options?: RequestInit,
+): Promise<AdSession> => {
+  return customFetch<AdSession>(getCreateAdSessionUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(adSessionInput),
+  });
+};
+
+export const getCreateAdSessionMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createAdSession>>,
+    TError,
+    { data: BodyType<AdSessionInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createAdSession>>,
+  TError,
+  { data: BodyType<AdSessionInput> },
+  TContext
+> => {
+  const mutationKey = ["createAdSession"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createAdSession>>,
+    { data: BodyType<AdSessionInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createAdSession(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateAdSessionMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createAdSession>>
+>;
+export type CreateAdSessionMutationBody = BodyType<AdSessionInput>;
+export type CreateAdSessionMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Start a rewarded ad
+ */
+export const useCreateAdSession = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createAdSession>>,
+    TError,
+    { data: BodyType<AdSessionInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createAdSession>>,
+  TError,
+  { data: BodyType<AdSessionInput> },
+  TContext
+> => {
+  return useMutation(getCreateAdSessionMutationOptions(options));
+};
+
+/**
+ * @summary Check whether a rewarded ad's reward was granted
+ */
+export const getGetAdSessionUrl = (sessionId: string) => {
+  return `/api/ads/sessions/${sessionId}`;
+};
+
+export const getAdSession = async (
+  sessionId: string,
+  options?: RequestInit,
+): Promise<AdSession> => {
+  return customFetch<AdSession>(getGetAdSessionUrl(sessionId), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAdSessionQueryKey = (sessionId: string) => {
+  return [`/api/ads/sessions/${sessionId}`] as const;
+};
+
+export const getGetAdSessionQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAdSession>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  sessionId: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAdSession>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAdSessionQueryKey(sessionId);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdSession>>> = ({
+    signal,
+  }) => getAdSession(sessionId, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!sessionId,
+    ...queryOptions,
+  } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAdSession>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAdSessionQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAdSession>>
+>;
+export type GetAdSessionQueryError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Check whether a rewarded ad's reward was granted
+ */
+
+export function useGetAdSession<
+  TData = Awaited<ReturnType<typeof getAdSession>>,
+  TError = ErrorType<ErrorResponse>,
+>(
+  sessionId: string,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getAdSession>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAdSessionQueryOptions(sessionId, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * Only works when the server runs with ADS_TEST_MODE=1 (never in production); otherwise 404. Stands in for AdMob's message while the app plays fake ads.
+
+ * @summary Development only - count one fake ad as finished
+ */
+export const getCompleteTestAdUrl = (sessionId: string) => {
+  return `/api/ads/sessions/${sessionId}/test-complete`;
+};
+
+export const completeTestAd = async (
+  sessionId: string,
+  options?: RequestInit,
+): Promise<AdSession> => {
+  return customFetch<AdSession>(getCompleteTestAdUrl(sessionId), {
+    ...options,
+    method: "POST",
+  });
+};
+
+export const getCompleteTestAdMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof completeTestAd>>,
+    TError,
+    { sessionId: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof completeTestAd>>,
+  TError,
+  { sessionId: string },
+  TContext
+> => {
+  const mutationKey = ["completeTestAd"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof completeTestAd>>,
+    { sessionId: string }
+  > = (props) => {
+    const { sessionId } = props ?? {};
+
+    return completeTestAd(sessionId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CompleteTestAdMutationResult = NonNullable<
+  Awaited<ReturnType<typeof completeTestAd>>
+>;
+
+export type CompleteTestAdMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Development only - count one fake ad as finished
+ */
+export const useCompleteTestAd = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof completeTestAd>>,
+    TError,
+    { sessionId: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof completeTestAd>>,
+  TError,
+  { sessionId: string },
+  TContext
+> => {
+  return useMutation(getCompleteTestAdMutationOptions(options));
+};
+
+/**
+ * @summary The city being browsed in Discover
+ */
+export const getGetBrowseCityUrl = () => {
+  return `/api/browse-city`;
+};
+
+export const getBrowseCity = async (
+  options?: RequestInit,
+): Promise<BrowseCity> => {
+  return customFetch<BrowseCity>(getGetBrowseCityUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetBrowseCityQueryKey = () => {
+  return [`/api/browse-city`] as const;
+};
+
+export const getGetBrowseCityQueryOptions = <
+  TData = Awaited<ReturnType<typeof getBrowseCity>>,
+  TError = ErrorType<ErrorResponse>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getBrowseCity>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetBrowseCityQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getBrowseCity>>> = ({
+    signal,
+  }) => getBrowseCity({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getBrowseCity>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetBrowseCityQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getBrowseCity>>
+>;
+export type GetBrowseCityQueryError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary The city being browsed in Discover
+ */
+
+export function useGetBrowseCity<
+  TData = Awaited<ReturnType<typeof getBrowseCity>>,
+  TError = ErrorType<ErrorResponse>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getBrowseCity>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetBrowseCityQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * A different city is allowed once a week, or early with a granted, unused city-skip ad session. null (your own area) and the same city again are always allowed.
+
+ * @summary Browse another city, or go back to your own area
+ */
+export const getSetBrowseCityUrl = () => {
+  return `/api/browse-city`;
+};
+
+export const setBrowseCity = async (
+  browseCityInput: BrowseCityInput,
+  options?: RequestInit,
+): Promise<BrowseCity> => {
+  return customFetch<BrowseCity>(getSetBrowseCityUrl(), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(browseCityInput),
+  });
+};
+
+export const getSetBrowseCityMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof setBrowseCity>>,
+    TError,
+    { data: BodyType<BrowseCityInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof setBrowseCity>>,
+  TError,
+  { data: BodyType<BrowseCityInput> },
+  TContext
+> => {
+  const mutationKey = ["setBrowseCity"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof setBrowseCity>>,
+    { data: BodyType<BrowseCityInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return setBrowseCity(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SetBrowseCityMutationResult = NonNullable<
+  Awaited<ReturnType<typeof setBrowseCity>>
+>;
+export type SetBrowseCityMutationBody = BodyType<BrowseCityInput>;
+export type SetBrowseCityMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Browse another city, or go back to your own area
+ */
+export const useSetBrowseCity = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof setBrowseCity>>,
+    TError,
+    { data: BodyType<BrowseCityInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof setBrowseCity>>,
+  TError,
+  { data: BodyType<BrowseCityInput> },
+  TContext
+> => {
+  return useMutation(getSetBrowseCityMutationOptions(options));
 };

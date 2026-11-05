@@ -277,3 +277,152 @@ export const UnmatchProfileBody = zod.object({
     .max(unmatchProfileBodyProfileIdMax)
     .describe("ID of the other profile. You cannot block or unmatch yourself."),
 });
+
+/**
+ * Today's likes and rewarded-ad limits. "Today" is in the person's time zone; pass it to update it (daily likes and ad limits reset at midnight there).
+
+ * @summary Likes left today
+ */
+export const getLikeAllowanceQueryTimeZoneMax = 64;
+
+export const GetLikeAllowanceQueryParams = zod.object({
+  timeZone: zod.coerce
+    .string()
+    .max(getLikeAllowanceQueryTimeZoneMax)
+    .optional()
+    .describe("IANA time zone, e.g. America\/New_York."),
+});
+
+export const GetLikeAllowanceResponse = zod.object({
+  likesLeft: zod.number(),
+  dailyLikes: zod
+    .number()
+    .describe("Today's free likes (5, or 6 at level 5+)."),
+  extraLikes: zod.number().describe("Likes earned today, e.g. from ads."),
+  used: zod.number(),
+  level: zod.number(),
+  freeUndo: zod.boolean().describe("True from level 4; undo then needs no ad."),
+  adsLeft: zod.object({
+    extraLikes: zod.number().describe("Extra-likes ads left today (3 a day)."),
+    undoPass: zod.number().describe("Undo ads left today (5 a day)."),
+    citySkip: zod
+      .number()
+      .describe("City-skip rewards left this week (1 a week)."),
+  }),
+});
+
+/**
+ * @summary Use one of today's likes
+ */
+export const SpendLikeResponse = zod.object({
+  likesLeft: zod.number(),
+  dailyLikes: zod
+    .number()
+    .describe("Today's free likes (5, or 6 at level 5+)."),
+  extraLikes: zod.number().describe("Likes earned today, e.g. from ads."),
+  used: zod.number(),
+  level: zod.number(),
+  freeUndo: zod.boolean().describe("True from level 4; undo then needs no ad."),
+  adsLeft: zod.object({
+    extraLikes: zod.number().describe("Extra-likes ads left today (3 a day)."),
+    undoPass: zod.number().describe("Undo ads left today (5 a day)."),
+    citySkip: zod
+      .number()
+      .describe("City-skip rewards left this week (1 a week)."),
+  }),
+});
+
+/**
+ * Call before playing a rewarded ad. Pass the returned id to AdMob as custom_data and the user's ID as user_id. The reward is granted when AdMob reports every ad in the session finished.
+
+ * @summary Start a rewarded ad
+ */
+export const CreateAdSessionBody = zod.object({
+  placement: zod.enum(["extraLikes", "undoPass", "citySkip"]),
+});
+
+/**
+ * @summary Check whether a rewarded ad's reward was granted
+ */
+export const GetAdSessionParams = zod.object({
+  sessionId: zod.coerce.string(),
+});
+
+export const GetAdSessionResponse = zod.object({
+  id: zod.string(),
+  placement: zod.enum(["extraLikes", "undoPass", "citySkip"]),
+  adsRequired: zod.number(),
+  adsCompleted: zod.number(),
+  granted: zod.boolean(),
+});
+
+/**
+ * Only works when the server runs with ADS_TEST_MODE=1 (never in production); otherwise 404. Stands in for AdMob's message while the app plays fake ads.
+
+ * @summary Development only - count one fake ad as finished
+ */
+export const CompleteTestAdParams = zod.object({
+  sessionId: zod.coerce.string(),
+});
+
+export const CompleteTestAdResponse = zod.object({
+  id: zod.string(),
+  placement: zod.enum(["extraLikes", "undoPass", "citySkip"]),
+  adsRequired: zod.number(),
+  adsCompleted: zod.number(),
+  granted: zod.boolean(),
+});
+
+/**
+ * @summary The city being browsed in Discover
+ */
+export const GetBrowseCityResponse = zod.object({
+  city: zod
+    .string()
+    .nullable()
+    .describe("The city browsed now; null means your own area."),
+  lastCity: zod
+    .string()
+    .nullable()
+    .describe("The last city switched to; picking it again is always allowed."),
+  changedAt: zod.coerce.date().nullable(),
+  nextChangeAt: zod.coerce
+    .date()
+    .nullable()
+    .describe("When a different city is allowed again; null if now."),
+  citySkipsLeft: zod.number(),
+});
+
+/**
+ * A different city is allowed once a week, or early with a granted, unused city-skip ad session. null (your own area) and the same city again are always allowed.
+
+ * @summary Browse another city, or go back to your own area
+ */
+export const setBrowseCityBodyCityMax = 100;
+
+export const SetBrowseCityBody = zod.object({
+  city: zod.string().min(1).max(setBrowseCityBodyCityMax).nullable(),
+  skipSessionId: zod
+    .string()
+    .optional()
+    .describe(
+      "A granted, unused city-skip ad session, to change city before the week is up.",
+    ),
+});
+
+export const SetBrowseCityResponse = zod.object({
+  city: zod
+    .string()
+    .nullable()
+    .describe("The city browsed now; null means your own area."),
+  lastCity: zod
+    .string()
+    .nullable()
+    .describe("The last city switched to; picking it again is always allowed."),
+  changedAt: zod.coerce.date().nullable(),
+  nextChangeAt: zod.coerce
+    .date()
+    .nullable()
+    .describe("When a different city is allowed again; null if now."),
+  citySkipsLeft: zod.number(),
+});

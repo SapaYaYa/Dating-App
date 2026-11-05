@@ -11,6 +11,10 @@ Check items off as they're done.
       `POST /unmatches`, reporting (which also blocks), and the discovery list
       hiding blocked and unmatched people in both directions. These were
       only tested without a database.
+- [ ] The same push also creates the likes and ads tables (`user_progress`,
+      `like_allowances`, `ad_sessions`, `ad_views`, `browse_cities`).
+- [ ] Never set `ADS_TEST_MODE=1` on the production server. It lets the app
+      claim ad rewards without AdMob and is only for development.
 - [ ] Make sure production builds never set `EXPO_PUBLIC_DEMO_MODE`. It skips
       sign-in and is only for browser previews.
 
@@ -24,8 +28,15 @@ These screens still run on sample data (`MOCK_*` in
 - [ ] **Matches and chat:** store matches and messages on the server, and
       load them in the app. Both badges depend on this.
 - [ ] **Likes:** load real likes.
-- [ ] **Community and challenges:** decide whether these launch, and wire
-      them to real data if so.
+- [ ] **Community:** decide whether boards launch, and wire them to real data
+      if so.
+- [ ] **Challenges (launching, real):** track each challenge on the server
+      (e.g. a first message before noon, a board post), award its points and
+      likes there, and remove the "Mark Complete" button. Points set the level
+      (free undo at 4+, a 6th daily like at 5+), and the server already
+      stores points in `user_progress`; until challenges are real, everyone
+      on the server is level 1. Needs messages and board posts stored on the
+      server first.
 - [x] **Photo minimum:** the server accepts 3-8 photos, matching sign-up and
       the Profile screen (`artifacts/mobile/constants/photos.ts`), and a new
       profile must include them. Still to test against a real database.
@@ -171,14 +182,23 @@ Rules live in `artifacts/mobile/constants/ads.ts`; the app plays ads through
       match what the ad SDK collects.
 - [ ] Check AdMob's current rules on rewarded ads, including playing 2 ads
       back to back for the city skip.
-- [ ] Server: own each person's daily likes (5, or 6 at level 5+, plus
-      extras), reset daily, and check every like against it.
-- [ ] Server: receive AdMob's signed "ad finished" message (server-side
-      verification), check the signature, count each message once, and only
-      then grant the reward.
-- [ ] Server: enforce the limits (3 extra-likes ads, 5 undo ads and 1
-      challenge double a day; 1 city skip a week) and move the browsing city
-      and its weekly lock to the server.
+- [x] Server: own each person's daily likes (5, or 6 at level 5+, plus
+      extras), reset at midnight in their time zone, and check every like
+      against it (`GET /likes/allowance`, `POST /likes/spend`).
+- [x] Server: receive AdMob's signed "ad finished" message at
+      `/api/ads/admob-callback`, check the signature, count each message
+      once, and only then grant the reward.
+- [x] Server: enforce the limits (3 extra-likes ads and 5 undo ads a day;
+      1 city skip a week) and move the browsing city and its weekly lock to
+      the server (`/browse-city`).
+- [ ] In AdMob, set the server-side verification URL to
+      `https://<api domain>/api/ads/admob-callback` for each rewarded ad unit,
+      and have the app pass the signed-in user's ID as `user_id` and the
+      server's ad session ID as `custom_data`.
+- [ ] Test those three against the production database with real AdMob
+      messages. They were tested on a local database with test signatures.
+- [ ] Time zones: people could move their daily reset a few hours by
+      changing their phone's time zone. Decide whether that matters.
 - [ ] Test the full flow on a real phone with AdMob's test ads before
       switching to real ones.
 - [ ] Later: an ad-free paid subscription that removes sponsored cards and

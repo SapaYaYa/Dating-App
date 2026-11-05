@@ -16,6 +16,15 @@ tags:
     description: User safety reports
   - name: safety
     description: Blocking and unmatching
+  - name: likes
+    description: Daily likes
+  - name: ads
+    description: >
+      Rewarded ads. AdMob's signed "ad finished" message arrives at
+      GET /api/ads/admob-callback (server-side verification); it is called by
+      AdMob, not the app, so it isn't listed here.
+  - name: discover
+    description: Discover settings kept on the server
 paths:
   /healthz:
     get:
@@ -211,6 +220,241 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /likes/allowance:
+    get:
+      operationId: getLikeAllowance
+      tags: [likes]
+      security:
+        - bearerAuth: []
+      summary: Likes left today
+      description: >
+        Today's likes and rewarded-ad limits. "Today" is in the person's time
+        zone; pass it to update it (daily likes and ad limits reset at
+        midnight there).
+      parameters:
+        - name: timeZone
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 64
+          description: IANA time zone, e.g. America/New_York.
+      responses:
+        "200":
+          description: Today's likes
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LikeAllowance"
+        "400":
+          description: Unknown time zone
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /likes/spend:
+    post:
+      operationId: spendLike
+      tags: [likes]
+      security:
+        - bearerAuth: []
+      summary: Use one of today's likes
+      responses:
+        "200":
+          description: Like used; returns what's left
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LikeAllowance"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Out of likes for today
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /ads/sessions:
+    post:
+      operationId: createAdSession
+      tags: [ads]
+      security:
+        - bearerAuth: []
+      summary: Start a rewarded ad
+      description: >
+        Call before playing a rewarded ad. Pass the returned id to AdMob as
+        custom_data and the user's ID as user_id. The reward is granted when
+        AdMob reports every ad in the session finished.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdSessionInput"
+      responses:
+        "201":
+          description: Session started
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdSession"
+        "400":
+          description: Invalid input, or the reward isn't needed (free undo)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Limit reached for today (or this week)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /ads/sessions/{sessionId}:
+    get:
+      operationId: getAdSession
+      tags: [ads]
+      security:
+        - bearerAuth: []
+      summary: Check whether a rewarded ad's reward was granted
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdSession"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /ads/sessions/{sessionId}/test-complete:
+    post:
+      operationId: completeTestAd
+      tags: [ads]
+      security:
+        - bearerAuth: []
+      summary: Development only - count one fake ad as finished
+      description: >
+        Only works when the server runs with ADS_TEST_MODE=1 (never in
+        production); otherwise 404. Stands in for AdMob's message while the
+        app plays fake ads.
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: The session after counting the ad
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdSession"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Not found (or test mode is off)
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /browse-city:
+    get:
+      operationId: getBrowseCity
+      tags: [discover]
+      security:
+        - bearerAuth: []
+      summary: The city being browsed in Discover
+      responses:
+        "200":
+          description: Browse city and weekly limit
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BrowseCity"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: setBrowseCity
+      tags: [discover]
+      security:
+        - bearerAuth: []
+      summary: Browse another city, or go back to your own area
+      description: >
+        A different city is allowed once a week, or early with a granted,
+        unused city-skip ad session. null (your own area) and the same city
+        again are always allowed.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BrowseCityInput"
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BrowseCity"
+        "400":
+          description: Invalid input or city-skip session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Weekly limit; try again at nextChangeAt
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
 components:
   securitySchemes:
     bearerAuth:
@@ -399,3 +643,90 @@ components:
       properties:
         error:
           type: string
+    RewardPlacement:
+      type: string
+      enum: [extraLikes, undoPass, citySkip]
+    AdsLeft:
+      type: object
+      required: [extraLikes, undoPass, citySkip]
+      properties:
+        extraLikes:
+          type: integer
+          description: Extra-likes ads left today (3 a day).
+        undoPass:
+          type: integer
+          description: Undo ads left today (5 a day).
+        citySkip:
+          type: integer
+          description: City-skip rewards left this week (1 a week).
+    LikeAllowance:
+      type: object
+      required: [likesLeft, dailyLikes, extraLikes, used, level, freeUndo, adsLeft]
+      properties:
+        likesLeft:
+          type: integer
+        dailyLikes:
+          type: integer
+          description: Today's free likes (5, or 6 at level 5+).
+        extraLikes:
+          type: integer
+          description: Likes earned today, e.g. from ads.
+        used:
+          type: integer
+        level:
+          type: integer
+        freeUndo:
+          type: boolean
+          description: True from level 4; undo then needs no ad.
+        adsLeft:
+          $ref: "#/components/schemas/AdsLeft"
+    AdSessionInput:
+      type: object
+      required: [placement]
+      properties:
+        placement:
+          $ref: "#/components/schemas/RewardPlacement"
+    AdSession:
+      type: object
+      required: [id, placement, adsRequired, adsCompleted, granted]
+      properties:
+        id:
+          type: string
+        placement:
+          $ref: "#/components/schemas/RewardPlacement"
+        adsRequired:
+          type: integer
+        adsCompleted:
+          type: integer
+        granted:
+          type: boolean
+    BrowseCity:
+      type: object
+      required: [city, lastCity, changedAt, nextChangeAt, citySkipsLeft]
+      properties:
+        city:
+          type: [string, "null"]
+          description: The city browsed now; null means your own area.
+        lastCity:
+          type: [string, "null"]
+          description: The last city switched to; picking it again is always allowed.
+        changedAt:
+          type: [string, "null"]
+          format: date-time
+        nextChangeAt:
+          type: [string, "null"]
+          format: date-time
+          description: When a different city is allowed again; null if now.
+        citySkipsLeft:
+          type: integer
+    BrowseCityInput:
+      type: object
+      required: [city]
+      properties:
+        city:
+          type: [string, "null"]
+          minLength: 1
+          maxLength: 100
+        skipSessionId:
+          type: string
+          description: A granted, unused city-skip ad session, to change city before the week is up.

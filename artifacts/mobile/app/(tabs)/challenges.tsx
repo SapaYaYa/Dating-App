@@ -1,17 +1,15 @@
 import { Feather } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React from "react";
 import {
   Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ChallengeCard } from "@/components/ChallengeCard";
-import { useAds } from "@/context/AdsContext";
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
 
@@ -22,22 +20,9 @@ export default function ChallengesScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const { totalPoints, level, currentStreak, challenges, completeChallenge, dailyLikes, earnLikes } = useApp();
-  const { left: adsLeft, watchRewardedAd } = useAds();
-  // The likes from the challenge just completed, offered to double with an ad
-  // (once a day).
-  const [justEarned, setJustEarned] = useState<{ title: string; likes: number } | null>(null);
-
-  const complete = (id: string, title: string, likes: number) => {
+  const complete = (id: string, likes: number) => {
     completeChallenge(id);
     earnLikes(likes);
-    setJustEarned(adsLeft("challengeDouble") > 0 ? { title, likes } : null);
-  };
-
-  const doubleReward = async () => {
-    if (!justEarned) return;
-    const { likes } = justEarned;
-    if (await watchRewardedAd("challengeDouble")) earnLikes(likes);
-    setJustEarned(null);
   };
 
   const topPad = insets.top + (Platform.OS === "web" ? 67 : 0);
@@ -117,31 +102,6 @@ export default function ChallengesScreen() {
           </View>
         </View>
 
-        {justEarned && (
-          <View style={[styles.doubleCard, { backgroundColor: colors.card, borderColor: colors.gold }]}>
-            <Text style={[styles.doubleTitle, { color: colors.foreground }]}>
-              {justEarned.title} done: +{justEarned.likes} {justEarned.likes === 1 ? "like" : "likes"}
-            </Text>
-            <Text style={[styles.doubleSub, { color: colors.mutedForeground }]}>
-              Watch a short ad to double it. You can do this once a day.
-            </Text>
-            <View style={styles.doubleRow}>
-              <TouchableOpacity
-                onPress={doubleReward}
-                style={[styles.doubleBtn, { backgroundColor: colors.gold }]}
-                activeOpacity={0.85}
-                accessibilityRole="button"
-              >
-                <Feather name="play-circle" size={16} color="#fff" />
-                <Text style={styles.doubleBtnText}>Watch ad for +{justEarned.likes} more</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setJustEarned(null)} style={styles.doubleSkip} accessibilityRole="button">
-                <Text style={[styles.doubleSkipText, { color: colors.mutedForeground }]}>No thanks</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        )}
-
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
             <Text style={[styles.sectionTitle, { color: colors.foreground }]}>Daily Challenges</Text>
@@ -151,7 +111,7 @@ export default function ChallengesScreen() {
             <ChallengeCard
               key={challenge.id}
               challenge={challenge}
-              onComplete={() => complete(challenge.id, challenge.title, challenge.id === "c3" ? 3 : 1)}
+              onComplete={() => complete(challenge.id, challenge.id === "c3" ? 3 : 1)}
             />
           ))}
         </View>
@@ -166,7 +126,7 @@ export default function ChallengesScreen() {
               key={challenge.id}
               challenge={challenge}
               onComplete={() =>
-                complete(challenge.id, challenge.title, challenge.id === "c6" ? 15 : challenge.id === "c9" ? 1 : 2)
+                complete(challenge.id, challenge.id === "c6" ? 15 : challenge.id === "c9" ? 1 : 2)
               }
             />
           ))}
@@ -178,14 +138,6 @@ export default function ChallengesScreen() {
 }
 
 const styles = StyleSheet.create({
-  doubleCard: { borderRadius: 14, borderWidth: 1.5, padding: 16, gap: 8, marginBottom: 16 },
-  doubleTitle: { fontSize: 16, fontWeight: "700" },
-  doubleSub: { fontSize: 13, lineHeight: 18 },
-  doubleRow: { gap: 6, marginTop: 4 },
-  doubleBtn: { height: 46, borderRadius: 12, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 },
-  doubleBtnText: { color: "#fff", fontSize: 15, fontWeight: "700" },
-  doubleSkip: { height: 36, alignItems: "center", justifyContent: "center" },
-  doubleSkipText: { fontSize: 14, fontWeight: "500" },
   root: { flex: 1 },
   header: {
     flexDirection: "row",

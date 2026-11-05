@@ -1,7 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import { getLikeAllowance, spendLike, type LikeAllowance } from "@workspace/api-client-react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
+import { DEMO_MODE } from "@/constants/demo";
 import { MOCK_CHALLENGES, type Challenge } from "@/constants/mockData";
+import { useAuth } from "@/context/AuthContext";
 
 interface AppContextType {
   dailyLikes: number;
@@ -12,6 +15,10 @@ interface AppContextType {
   currentStreak: number;
   level: number;
   challenges: Challenge[];
+  /** Today's likes and ad limits from the server; null in the preview. */
+  allowance: LikeAllowance | null;
+  /** Reloads likes from the server (no-op in the preview). */
+  refreshLikes: () => Promise<void>;
   useLike: () => boolean;
   earnLikes: (count: number) => void;
   completeChallenge: (id: string) => void;
@@ -27,9 +34,28 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [currentStreak, setCurrentStreak] = useState(5);
   const [challenges, setChallenges] = useState<Challenge[]>(MOCK_CHALLENGES);
 
-  const level = Math.floor(totalPoints / 500) + 1;
-  const maxDailyLikes = level >= 5 ? 6 : 5;
-  const dailyLikes = baseLikes + bonusLikes;
+  // With the server, it owns likes, level and ad limits; the phone only shows
+  // them. The preview (demo mode) keeps everything on the phone.
+  const { user } = useAuth();
+  const [allowance, setAllowance] = useState<LikeAllowance | null>(null);
+
+  const refreshLikes = useCallback(async () => {
+    if (DEMO_MODE || !user) return;
+    try {
+      const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      setAllowance(await getLikeAllowance(timeZone ? { timeZone } : undefined));
+    } catch {
+      // Keep what's shown; the next refresh will catch up.
+    }
+  }, [user?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    refreshLikes();
+  }, [refreshLikes]);
+
+  const level = allowance ? allowance.level : Math.floor(totalPoints / 500) + 1;
+  const maxDailyLikes = allowance ? allowance.dailyLikes : level >= 5 ? 6 : 5;
+  const dailyLikes = allowance ? allowance.likesLeft : baseLikes + bonusLikes;
 
   useEffect(() => {
     AsyncStorage.getItem("app_state").then((stored) => {
@@ -51,6 +77,15 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const useLike = () => {
+    if (allowance) {
+      if (allowance.likesLeft <= 0) return false;
+      // Shown right away; the server has the final say.
+      setAllowance({ ...allowance, likesLeft: allowance.likesLeft - 1, used: allowance.used + 1 });
+      spendLike()
+        .then(setAllowance)
+        .catch(() => refreshLikes());
+      return true;
+    }
     const total = baseLikes + bonusLikes;
     if (total <= 0) return false;
     if (baseLikes > 0) {
@@ -66,6 +101,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   };
 
   const earnLikes = (count: number) => {
+    // With the server, likes are granted there (ads now, real challenges
+    // later); just reload them.
+    if (allowance) {
+      refreshLikes();
+      return;
+    }
     const next = bonusLikes + count;
     setBonusLikes(next);
     saveState(baseLikes, next, totalPoints, currentStreak);
@@ -100,6 +141,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         currentStreak,
         level,
         challenges,
+        allowance,
+        refreshLikes,
         useLike,
         earnLikes,
         completeChallenge,

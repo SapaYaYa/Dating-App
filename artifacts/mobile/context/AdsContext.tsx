@@ -1,34 +1,52 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Feather } from "@expo/vector-icons";
+import { completeTestAd, createAdSession, getAdSession } from "@workspace/api-client-react";
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { AD_RULES, REWARD_RULES, rewardsLeft, type RewardPlacement } from "@/constants/ads";
+import { useApp } from "@/context/AppContext";
 
-// The one place the app plays ads. Today it plays fake ads (the preview has
-// no ad network); the real ad SDK and the server's reward check plug in here.
+// The one place the app plays ads.
+// - Preview (no server): fake ads, with limits counted on the phone.
+// - With the server: the server starts each reward, checks the limits, and
+//   grants the reward only when the ad network reports the ad finished. The
+//   app still plays fake ads until the AdMob SDK is added; in development
+//   the server's test mode stands in for AdMob's message.
 
 const STORAGE_KEY = "spark_ad_rewards";
 
 type RewardLog = Record<RewardPlacement, number[]>;
-const EMPTY_LOG: RewardLog = { extraLikes: [], undoPass: [], challengeDouble: [], citySkip: [] };
+const EMPTY_LOG: RewardLog = { extraLikes: [], undoPass: [], citySkip: [] };
+
+export interface RewardResult {
+  earned: boolean;
+  /** The server's session for the reward (e.g. to spend a city skip); null in the preview. */
+  sessionId: string | null;
+}
 
 interface AdsContextType {
   /** Rewards left for a placement in its current day or week. */
   left: (placement: RewardPlacement) => number;
-  /** Plays the ad(s) for a reward. Resolves true only if they played to the end. */
-  watchRewardedAd: (placement: RewardPlacement) => Promise<boolean>;
+  /** Plays the ad(s) for a reward. `earned` is true only once the reward is granted. */
+  watchRewardedAd: (placement: RewardPlacement) => Promise<RewardResult>;
 }
 
 const AdsContext = createContext<AdsContextType | null>(null);
 
 interface Playing {
   placement: RewardPlacement;
-  resolve: (earned: boolean) => void;
+  adCount: number;
+  sessionId: string | null;
+  resolve: (result: RewardResult) => void;
 }
 
+const wait = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export function AdsProvider({ children }: { children: React.ReactNode }) {
+  const { allowance, refreshLikes } = useApp();
+  const server = allowance !== null;
   const [log, setLog] = useState<RewardLog>(EMPTY_LOG);
   const logRef = useRef(log);
   logRef.current = log;
@@ -49,35 +67,84 @@ export function AdsProvider({ children }: { children: React.ReactNode }) {
       .catch(() => {});
   }, []);
 
-  const left = useCallback((placement: RewardPlacement) => rewardsLeft(placement, log[placement]), [log]);
+  const left = useCallback(
+    (placement: RewardPlacement) =>
+      allowance ? allowance.adsLeft[placement] : rewardsLeft(placement, log[placement]),
+    [allowance, log],
+  );
 
-  const watchRewardedAd = useCallback((placement: RewardPlacement) => {
-    if (rewardsLeft(placement, logRef.current[placement]) <= 0) return Promise.resolve(false);
-    return new Promise<boolean>((resolve) => setPlaying({ placement, resolve }));
-  }, []);
+  const watchRewardedAd = useCallback(
+    async (placement: RewardPlacement): Promise<RewardResult> => {
+      if (!server) {
+        if (rewardsLeft(placement, logRef.current[placement]) <= 0) return { earned: false, sessionId: null };
+        return new Promise<RewardResult>((resolve) =>
+          setPlaying({ placement, adCount: REWARD_RULES[placement].adsPerReward, sessionId: null, resolve }),
+        );
+      }
+      let session;
+      try {
+        session = await createAdSession({ placement });
+      } catch {
+        // Limit reached or offline: show the latest numbers.
+        await refreshLikes();
+        return { earned: false, sessionId: null };
+      }
+      const id = session.id;
+      return new Promise<RewardResult>((resolve) =>
+        setPlaying({ placement, adCount: session.adsRequired, sessionId: id, resolve }),
+      );
+    },
+    [server, refreshLikes],
+  );
 
-  const finish = (earned: boolean) => {
+  // One ad finished. With the real SDK, AdMob tells the server itself; until
+  // then, development servers accept this stand-in (production ignores it).
+  const adFinished = (p: Playing) => {
+    if (p.sessionId) completeTestAd(p.sessionId).catch(() => {});
+  };
+
+  const finish = async (earned: boolean) => {
     if (!playing) return;
-    if (earned) {
-      const now = Date.now();
-      // Keep only the last week; nothing older affects any limit.
-      const keepSince = now - 8 * 24 * 60 * 60 * 1000;
-      const next = {
-        ...logRef.current,
-        [playing.placement]: [...logRef.current[playing.placement].filter((t) => t >= keepSince), now],
-      };
-      setLog(next);
-      AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
-    }
-    playing.resolve(earned);
+    const p = playing;
     setPlaying(null);
+    if (!p.sessionId) {
+      if (earned) {
+        const now = Date.now();
+        // Keep only the last week; nothing older affects any limit.
+        const keepSince = now - 8 * 24 * 60 * 60 * 1000;
+        const next = {
+          ...logRef.current,
+          [p.placement]: [...logRef.current[p.placement].filter((t) => t >= keepSince), now],
+        };
+        setLog(next);
+        AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(next)).catch(() => {});
+      }
+      p.resolve({ earned, sessionId: null });
+      return;
+    }
+    if (!earned) {
+      p.resolve({ earned: false, sessionId: p.sessionId });
+      return;
+    }
+    // The ad network's message can take a moment to reach the server.
+    let granted = false;
+    for (let i = 0; i < 10 && !granted; i++) {
+      try {
+        granted = (await getAdSession(p.sessionId)).granted;
+      } catch {
+        // try again
+      }
+      if (!granted) await wait(700);
+    }
+    await refreshLikes();
+    p.resolve({ earned: granted, sessionId: p.sessionId });
   };
 
   return (
     <AdsContext.Provider value={{ left, watchRewardedAd }}>
       {children}
       {playing && (
-        <FakeRewardedAd adCount={REWARD_RULES[playing.placement].adsPerReward} onDone={finish} />
+        <FakeRewardedAd adCount={playing.adCount} onAdFinished={() => adFinished(playing)} onDone={finish} />
       )}
     </AdsContext.Provider>
   );
@@ -90,7 +157,15 @@ export function useAds() {
 }
 
 /** A stand-in for a real rewarded ad: a countdown per ad, then the reward. */
-function FakeRewardedAd({ adCount, onDone }: { adCount: number; onDone: (earned: boolean) => void }) {
+function FakeRewardedAd({
+  adCount,
+  onAdFinished,
+  onDone,
+}: {
+  adCount: number;
+  onAdFinished: () => void;
+  onDone: (earned: boolean) => void;
+}) {
   const insets = useSafeAreaInsets();
   const [adIndex, setAdIndex] = useState(0);
   const [seconds, setSeconds] = useState<number>(AD_RULES.FAKE_AD_SECONDS);
@@ -102,9 +177,13 @@ function FakeRewardedAd({ adCount, onDone }: { adCount: number; onDone: (earned:
     const t = setTimeout(() => {
       if (seconds > 1) setSeconds(seconds - 1);
       else if (adIndex < adCount - 1) {
+        onAdFinished();
         setAdIndex(adIndex + 1);
         setSeconds(AD_RULES.FAKE_AD_SECONDS);
-      } else setSeconds(0);
+      } else {
+        onAdFinished();
+        setSeconds(0);
+      }
     }, 1000);
     return () => clearTimeout(t);
   }, [seconds, adIndex, adCount, confirmLeave, complete]);

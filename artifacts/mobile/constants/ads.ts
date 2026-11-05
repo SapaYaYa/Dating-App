@@ -1,8 +1,9 @@
-// Ad rules. The server enforces the reward limits once it owns likes; the
-// app uses the same numbers to show what's left.
+// Ad rules. The server enforces the reward limits (keep in step with
+// artifacts/api-server/src/lib/rewards.ts); the preview, which has no server,
+// uses these numbers on the phone.
 
 /** Rewarded ads: the person chooses to watch one for a reward. */
-export type RewardPlacement = "extraLikes" | "undoPass" | "challengeDouble" | "citySkip";
+export type RewardPlacement = "extraLikes" | "undoPass" | "citySkip";
 
 export interface RewardRule {
   /** How many rewards per period. */
@@ -16,7 +17,6 @@ export interface RewardRule {
 export const REWARD_RULES: Record<RewardPlacement, RewardRule> = {
   extraLikes: { limit: 3, period: "day", adsPerReward: 1 },
   undoPass: { limit: 5, period: "day", adsPerReward: 1 },
-  challengeDouble: { limit: 1, period: "day", adsPerReward: 1 },
   citySkip: { limit: 1, period: "week", adsPerReward: 2 },
 };
 
