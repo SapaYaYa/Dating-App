@@ -33,6 +33,7 @@ import {
 } from "@/utils/units";
 import { LOCATION_RULE, formatChangeDate, nextChangeAllowedAt } from "@/constants/location";
 import { INTEREST_OPTIONS } from "@/constants/profileFields";
+import { useAuth } from "@/context/AuthContext";
 import type { BrowseCityChange } from "@/utils/browseCity";
 
 const { height: SCREEN_H } = Dimensions.get("window");
@@ -588,7 +589,22 @@ export function FilterModal({
   const browseCityLockedUntil = lastBrowseCityChange
     ? nextChangeAllowedAt(lastBrowseCityChange.changedAt, LOCATION_RULE.BROWSE_CITY_CHANGE_DAYS)
     : null;
-  const [gpsStatus, setGpsStatus] = useState<"idle" | "loading" | "found" | "denied" | "error">("idle");
+  const [gpsStatus, setGpsStatus] = useState<"idle" | "loading" | "found" | "homeCity" | "denied" | "error">("idle");
+  const homeCity = useAuth().user?.homeCity;
+
+  // Without the phone's location (permission denied, or the browser preview),
+  // "Use My Location" falls back to the home city, so people can always get
+  // back to their own area.
+  const fallBackToHomeCity = (failure: "denied" | "error") => {
+    if (homeCity) {
+      setGpsCity(homeCity);
+      setLocal((p) => ({ ...p, useCurrentLocation: true, locationCity: homeCity }));
+      setGpsStatus("homeCity");
+    } else {
+      setGpsStatus(failure);
+      setLocal((p) => ({ ...p, useCurrentLocation: false }));
+    }
+  };
   const [gpsCity, setGpsCity] = useState("");
 
   useEffect(() => {
@@ -612,8 +628,7 @@ export function FilterModal({
       try {
         const { status } = await Location.requestForegroundPermissionsAsync();
         if (status !== "granted") {
-          setGpsStatus("denied");
-          setLocal((p) => ({ ...p, useCurrentLocation: false }));
+          fallBackToHomeCity("denied");
           return;
         }
         const pos = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.Balanced });
@@ -626,12 +641,10 @@ export function FilterModal({
           setLocal((p) => ({ ...p, locationCity: cityName }));
           setGpsStatus("found");
         } else {
-          setGpsStatus("error");
-          setLocal((p) => ({ ...p, useCurrentLocation: false }));
+          fallBackToHomeCity("error");
         }
       } catch {
-        setGpsStatus("error");
-        setLocal((p) => ({ ...p, useCurrentLocation: false }));
+        fallBackToHomeCity("error");
       }
     } else {
       setLocal((p) => ({ ...p, useCurrentLocation: false, locationCity: "" }));
@@ -763,6 +776,7 @@ export function FilterModal({
                 <Text style={[styles.toggleSub, { color: gpsStatus === "denied" || gpsStatus === "error" ? "#FF4057" : colors.mutedForeground }]}>
                   {gpsStatus === "loading" ? "Getting your location…"
                     : gpsStatus === "found" ? gpsCity
+                    : gpsStatus === "homeCity" ? `Couldn't get your location, so using your home city (${gpsCity})`
                     : gpsStatus === "denied" ? "Location permission denied"
                     : gpsStatus === "error" ? "Couldn't get location — try again"
                     : "Detect and use your current city"}
@@ -813,11 +827,20 @@ export function FilterModal({
                   <View style={[styles.selectedCityRow, { backgroundColor: colors.secondary, borderColor: colors.primary }]}>
                     <Feather name="map-pin" size={14} color={colors.primary} />
                     <Text style={[styles.selectedCityText, { color: colors.foreground, flex: 1 }]}>{local.locationCity}</Text>
-                    <TouchableOpacity onPress={() => { setLocal((p) => ({ ...p, locationCity: "" })); setLocationSearch(""); }}>
+                    <TouchableOpacity
+                      onPress={() => { setLocal((p) => ({ ...p, locationCity: "" })); setLocationSearch(""); }}
+                      accessibilityLabel="Clear city and go back to your area"
+                    >
                       <Feather name="x-circle" size={16} color={colors.mutedForeground} />
                     </TouchableOpacity>
                   </View>
-                ) : locationSearch.length > 0 ? (
+                ) : null}
+                {local.locationCity && local.locationCity !== homeCity ? (
+                  <Text style={[styles.cityHint, { color: colors.mutedForeground }]}>
+                    Tap ✕ to go back to your area.
+                  </Text>
+                ) : null}
+                {local.locationCity ? null : locationSearch.length > 0 ? (
                   <View style={styles.cityList}>
                     {cityLockNotice ? (
                       <View>
@@ -1172,6 +1195,7 @@ const styles = StyleSheet.create({
   cityRow: { flexDirection: "row", alignItems: "center", gap: 10, paddingVertical: 10, borderBottomWidth: 1 },
   cityText: { fontSize: 14 },
   cityEmpty: { fontSize: 13, paddingVertical: 12, textAlign: "center" },
+  cityHint: { fontSize: 12, marginTop: 6 },
   cityLockNotice: { fontSize: 13, lineHeight: 18, paddingVertical: 10 },
   citySkipBtn: {
     minHeight: 44,

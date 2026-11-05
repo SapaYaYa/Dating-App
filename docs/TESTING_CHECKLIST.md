@@ -75,6 +75,11 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Pick New York in filters: deck switches to New York people, and
       "Browsing New York, NY" shows at the top. Distances are from New York.
 - [ ] Clearing the city or using your location returns to your local deck.
+- [ ] A picked city that isn't your home city shows "Tap ✕ to go back to
+      your area."
+- [ ] "Use My Location" with location denied or unavailable (always the case
+      in the preview) turns on anyway with "Couldn't get your location, so
+      using your home city (...)" and returns to your local deck.
 - [ ] Picking a different city within a week shows the "browse a new city
       again on ..." message; the same city or your location is still allowed.
 - [ ] That message has "Watch 2 short ads to browse ... now". After both ads
