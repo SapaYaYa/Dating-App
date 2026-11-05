@@ -45,12 +45,16 @@ private/incognito window to start fresh. To test kilometers, set your phone
       "Send like with note" when there's a note. Cancel sends nothing.
 - [ ] Sending a like moves to the next person, starting at the top, with a
       "Like sent to ..." message; the likes counter goes down.
-- [ ] At 0 likes: the "Out of likes" bar shows and Send like is disabled.
+- [ ] At 0 likes: the "Out of likes" bar shows with a "+3 likes" button, and
+      the like panel shows "Watch an ad for +3 likes" instead of Send like.
+      After 3 ads in a day, both say to complete a challenge instead.
 - [ ] X passes to the next person; nothing in the profile is hidden behind
       it for long (you can scroll past it).
 - [ ] "It's a Match!" pop-up appears on a match; Send Message and Keep
       Browsing both work.
-- [ ] Rewind appears at level 4+ and brings back the last passed person.
+- [ ] Undo (the arrow next to X) brings back the last passed person: free at
+      level 4+, and below level 4 it's marked "AD" and plays an ad first
+      (5 a day, then it disappears).
 - [ ] Blocked and unmatched people never appear.
 
 ### Discover filters and distance
@@ -73,6 +77,9 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Clearing the city or using your location returns to your local deck.
 - [ ] Picking a different city within a week shows the "browse a new city
       again on ..." message; the same city or your location is still allowed.
+- [ ] That message has "Watch 2 short ads to browse ... now". After both ads
+      the city changes and a new week starts. Only once a week: next time the
+      message says this week's ad was already used, with no button.
 - [ ] Profile → Home city: change it, then reopening says it's locked for a
       month with the next date.
 - [ ] "Lives in City, ST" appears on cards, full profiles and in Likes.
@@ -200,6 +207,20 @@ private/incognito window to start fresh. To test kilometers, set your phone
       likes and points.
 - [ ] Level goes up with points.
 
+### Ads (fake ads in the preview)
+- [ ] Rewarded ads show "Ad" (or "Ad 1 of 2"), count down 5 seconds each,
+      then "Reward earned · Close" gives the reward.
+- [ ] Closing an ad early asks to confirm; Leave gives no reward and doesn't
+      use up a daily ad.
+- [ ] Extra likes: +3 likes per ad, 3 ads a day. Watching from the like panel
+      reopens it with your note still there.
+- [ ] Double a challenge: after completing one, "Watch ad for +N more" doubles
+      its likes. Offered once a day; "No thanks" closes it.
+- [ ] Discover shows a "Sponsored" card after every 15 profiles (liked or
+      passed), even when out of likes; Continue moves on.
+- [ ] Boards show a "Sponsored" post after every 15 posts.
+- [ ] Daily ad limits reset at midnight; the city skip resets after 7 days.
+
 ### Demo mode (preview only)
 - [ ] Opens signed in as the sample user, Alex.
 - [ ] Sign Out resets the sample profile instead of showing a login screen.
@@ -236,6 +257,19 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Weekly browsing limit and monthly home city limit enforced on the
       server, not just the phone.
 - [ ] City search covers cities worldwide, not just the US list.
+
+### Ads
+- [ ] Real ads play in the phone app (iPhone and Android) and pay out in the
+      AdMob dashboard.
+- [ ] Rewards (likes, undo, double challenge, city skip) are granted by the
+      server only after AdMob's "ad finished" message, never from the phone.
+- [ ] The server enforces the limits: 3 extra-likes ads, 5 undo ads and 1
+      challenge double a day; 1 city skip a week; repeated "ad finished"
+      messages count once.
+- [ ] Likes left come from the server and match on every device.
+- [ ] Ads are non-personalized; no profile details or location are sent to
+      the ad network.
+- [ ] Europe/UK: the consent screen shows before any ad.
 
 ### Likes, matches and chat
 - [ ] A like reaches the other person's Likes from any distance, mixed in

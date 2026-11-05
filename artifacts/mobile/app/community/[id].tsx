@@ -16,6 +16,8 @@ import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { OptionsSheet, type SheetOption } from "@/components/OptionsSheet";
+import { SponsoredCard } from "@/components/SponsoredCard";
+import { AD_RULES, withSponsored } from "@/constants/ads";
 import { BOARD_RULES } from "@/constants/boards";
 import { MOCK_PROFILES, type BoardPost } from "@/constants/mockData";
 import { useAuth } from "@/context/AuthContext";
@@ -261,7 +263,14 @@ export default function BoardScreen() {
             </Text>
           )}
 
-          {posts.map((post) => {
+          {withSponsored(posts, AD_RULES.BOARD_SPONSORED_EVERY).map((post) => {
+            if ("sponsored" in post) {
+              return (
+                <View key={`sponsored-${post.sponsored}`} style={styles.sponsoredWrap}>
+                  <SponsoredCard variant="board" />
+                </View>
+              );
+            }
             const author = authorFor(post.authorId);
             if (!author) return null;
             const showComments = openComments.includes(post.id);
@@ -386,6 +395,7 @@ function AuthorAvatar({ author, size = 34 }: { author: Author; size?: number }) 
 }
 
 const styles = StyleSheet.create({
+  sponsoredWrap: { marginBottom: 12 },
   root: { flex: 1 },
   missing: { alignItems: "center", justifyContent: "center", gap: 10, padding: 24 },
   missingText: { fontSize: 15, textAlign: "center" },

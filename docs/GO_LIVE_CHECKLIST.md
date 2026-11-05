@@ -148,6 +148,42 @@ These screens still run on sample data (`MOCK_*` in
 - [ ] Hide blocked and unmatched people in boards on the server, not just
       on the phone.
 
+## Ads
+
+Rules live in `artifacts/mobile/constants/ads.ts`; the app plays ads through
+`artifacts/mobile/context/AdsContext.tsx`, which shows fake ads today.
+
+- [ ] Create the AdMob account and app, with ad units for rewarded ads and
+      native ads (Discover cards and board posts).
+- [ ] Add the AdMob SDK (`react-native-google-mobile-ads`). It needs a
+      development or store build; it doesn't work in Expo Go or the browser.
+- [ ] Replace the fake ad player and sponsored cards with real AdMob ads,
+      keeping the "Sponsored" label.
+- [ ] Request non-personalized ads only. Send no profile details (gender,
+      Show Me, age, interests) and no location to the ad network.
+- [ ] Block sensitive ad categories in AdMob: dating and personals, gambling,
+      sexual content, and anything else that looks like a scam to users.
+- [ ] Europe and UK: set up a consent screen (Google's consent tool works
+      with AdMob) before any ad is shown.
+- [ ] iPhone: no tracking means no "Allow tracking?" prompt; confirm the
+      SDK is set up that way.
+- [ ] Fill in Apple's privacy labels and Google Play's data safety form to
+      match what the ad SDK collects.
+- [ ] Check AdMob's current rules on rewarded ads, including playing 2 ads
+      back to back for the city skip.
+- [ ] Server: own each person's daily likes (5, or 6 at level 5+, plus
+      extras), reset daily, and check every like against it.
+- [ ] Server: receive AdMob's signed "ad finished" message (server-side
+      verification), check the signature, count each message once, and only
+      then grant the reward.
+- [ ] Server: enforce the limits (3 extra-likes ads, 5 undo ads and 1
+      challenge double a day; 1 city skip a week) and move the browsing city
+      and its weekly lock to the server.
+- [ ] Test the full flow on a real phone with AdMob's test ads before
+      switching to real ones.
+- [ ] Later: an ad-free paid subscription that removes sponsored cards and
+      posts (decide what it does for rewarded ads).
+
 ## On hold
 
 - [ ] **Music (theme song or top artists):** on hold. Spotify limits new

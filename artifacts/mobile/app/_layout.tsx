@@ -20,6 +20,7 @@ import { setBaseUrl } from "@workspace/api-client-react";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { DEMO_MODE } from "@/constants/demo";
 import { AuthProvider, DemoAuthProvider } from "@/context/AuthContext";
+import { AdsProvider } from "@/context/AdsContext";
 import { AppProvider } from "@/context/AppContext";
 import { CommunityProvider } from "@/context/CommunityContext";
 import { ReplyStatusProvider } from "@/context/ReplyStatusContext";
@@ -77,15 +78,17 @@ export default function RootLayout() {
 
   const app = (
     <AppProvider>
-      <ReplyStatusProvider>
-        <CommunityProvider>
-          <GestureHandlerRootView style={{ flex: 1 }}>
-            <KeyboardProvider>
-              <RootLayoutNav />
-            </KeyboardProvider>
-          </GestureHandlerRootView>
-        </CommunityProvider>
-      </ReplyStatusProvider>
+      <AdsProvider>
+        <ReplyStatusProvider>
+          <CommunityProvider>
+            <GestureHandlerRootView style={{ flex: 1 }}>
+              <KeyboardProvider>
+                <RootLayoutNav />
+              </KeyboardProvider>
+            </GestureHandlerRootView>
+          </CommunityProvider>
+        </ReplyStatusProvider>
+      </AdsProvider>
     </AppProvider>
   );
 

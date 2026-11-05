@@ -562,15 +562,29 @@ interface FilterModalProps {
   colors: any;
   /** The last city the user chose to browse; another city is allowed once a week. */
   lastBrowseCityChange?: BrowseCityChange | null;
+  /** Whether this week's ad skip of the city limit is still available. */
+  citySkipAvailable?: boolean;
+  /** Watch ads to browse a new city before the week is up. */
+  onSkipCityLock?: (next: DiscoverFilters) => void;
 }
 
-export function FilterModal({ visible, filters, onApply, onClose, colors, lastBrowseCityChange }: FilterModalProps) {
+export function FilterModal({
+  visible,
+  filters,
+  onApply,
+  onClose,
+  colors,
+  lastBrowseCityChange,
+  citySkipAvailable,
+  onSkipCityLock,
+}: FilterModalProps) {
   const insets = useSafeAreaInsets();
   const slideAnim = useRef(new Animated.Value(SCREEN_H)).current;
   const [local, setLocal] = useState<DiscoverFilters>(filters);
   const distanceUnit = getDistanceUnit();
   const [locationSearch, setLocationSearch] = useState("");
   const [cityLockNotice, setCityLockNotice] = useState("");
+  const [lockedCity, setLockedCity] = useState("");
   const browseCityLockedUntil = lastBrowseCityChange
     ? nextChangeAllowedAt(lastBrowseCityChange.changedAt, LOCATION_RULE.BROWSE_CITY_CHANGE_DAYS)
     : null;
@@ -806,7 +820,24 @@ export function FilterModal({ visible, filters, onApply, onClose, colors, lastBr
                 ) : locationSearch.length > 0 ? (
                   <View style={styles.cityList}>
                     {cityLockNotice ? (
-                      <Text style={[styles.cityLockNotice, { color: colors.destructive }]}>{cityLockNotice}</Text>
+                      <View>
+                        <Text style={[styles.cityLockNotice, { color: colors.destructive }]}>{cityLockNotice}</Text>
+                        {citySkipAvailable && onSkipCityLock && lockedCity ? (
+                          <TouchableOpacity
+                            onPress={() => {
+                              setCityLockNotice("");
+                              setLocationSearch("");
+                              onSkipCityLock({ ...local, useCurrentLocation: false, locationCity: lockedCity });
+                            }}
+                            style={[styles.citySkipBtn, { backgroundColor: colors.gold }]}
+                            activeOpacity={0.85}
+                            accessibilityRole="button"
+                          >
+                            <Feather name="play-circle" size={16} color="#fff" />
+                            <Text style={styles.citySkipText}>Watch 2 short ads to browse {lockedCity} now</Text>
+                          </TouchableOpacity>
+                        ) : null}
+                      </View>
                     ) : null}
                     {filteredLocationCities.slice(0, 8).map((city) => (
                       <TouchableOpacity
@@ -816,8 +847,10 @@ export function FilterModal({ visible, filters, onApply, onClose, colors, lastBr
                           if (browseCityLockedUntil && lastBrowseCityChange && city !== lastBrowseCityChange.city) {
                             setCityLockNotice(
                               `You can browse a new city again on ${formatChangeDate(browseCityLockedUntil)}. ` +
-                                `Until then you can pick ${lastBrowseCityChange.city} or use your location.`,
+                                `Until then you can pick ${lastBrowseCityChange.city} or use your location.` +
+                                (citySkipAvailable ? "" : " You've already used this week's ad to skip the wait."),
                             );
+                            setLockedCity(city);
                             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
                             return;
                           }
@@ -1140,6 +1173,17 @@ const styles = StyleSheet.create({
   cityText: { fontSize: 14 },
   cityEmpty: { fontSize: 13, paddingVertical: 12, textAlign: "center" },
   cityLockNotice: { fontSize: 13, lineHeight: 18, paddingVertical: 10 },
+  citySkipBtn: {
+    minHeight: 44,
+    borderRadius: 12,
+    paddingHorizontal: 14,
+    marginBottom: 8,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  citySkipText: { color: "#fff", fontSize: 14, fontWeight: "700", flexShrink: 1 },
   // Toggles
   toggleRow: { flexDirection: "row", alignItems: "center", gap: 12, paddingVertical: 2 },
   toggleIcon: { width: 34, height: 34, borderRadius: 10, alignItems: "center", justifyContent: "center" },

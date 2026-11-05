@@ -17,9 +17,12 @@ import { FilterModal, DEFAULT_FILTERS, DiscoverFilters, getActiveFilterCount } f
 import { SlowToReplyNotice, hasSlowToReplyBadge } from "@/components/SlowToReplyNotice";
 import { LikePanel } from "@/components/LikePanel";
 import { ProfileScroll } from "@/components/ProfileScroll";
+import { SponsoredCard } from "@/components/SponsoredCard";
+import { AD_RULES, type RewardPlacement } from "@/constants/ads";
 import { normalizeLookingFor } from "@/constants/lookingFor";
 import type { LikeTarget } from "@/constants/prompts";
 import { MOCK_CITY_DECKS, MOCK_CITY_PROFILES, MOCK_PROFILES, type Profile } from "@/constants/mockData";
+import { useAds } from "@/context/AdsContext";
 import { useApp } from "@/context/AppContext";
 import { useAuth } from "@/context/AuthContext";
 import { useCommunity } from "@/context/CommunityContext";
@@ -33,7 +36,8 @@ import { formatDistanceLimit, getDistanceUnit, isAtMaxDistance } from "@/utils/u
 export default function DiscoverScreen() {
   const colors = useColors();
   const insets = useSafeAreaInsets();
-  const { dailyLikes, useLike, level } = useApp();
+  const { dailyLikes, useLike, level, earnLikes } = useApp();
+  const { left: adsLeft, watchRewardedAd } = useAds();
   const { user, isLoading: authLoading } = useAuth();
 
   const [profiles, setProfiles] = useState<Profile[]>([]);
@@ -170,9 +174,36 @@ export default function DiscoverScreen() {
     toastTimer.current = setTimeout(() => setToast(""), 1800);
   };
 
+  // A sponsored card after every 15 profiles liked or passed (also when
+  // that was the last one in the deck).
+  const profilesSeen = useRef(0);
+  const [showSponsored, setShowSponsored] = useState(false);
+
   const moveOn = (profile: Profile) => {
     setProfiles((prev) => prev.filter((p) => p.id !== profile.id));
     scrollRef.current?.scrollTo({ y: 0, animated: false });
+    profilesSeen.current += 1;
+    if (profilesSeen.current % AD_RULES.DISCOVER_SPONSORED_EVERY === 0) setShowSponsored(true);
+  };
+
+  // Ads play full screen, so any open sheet is closed first (phones can't
+  // show two at once).
+  const playAd = (placement: RewardPlacement) =>
+    new Promise((resolve) => setTimeout(resolve, Platform.OS === "web" ? 0 : 400)).then(() =>
+      watchRewardedAd(placement),
+    );
+
+  const [pendingNote, setPendingNote] = useState("");
+
+  const watchLikesAd = async (reopen: LikeTarget | null, note: string) => {
+    setLikeTarget(null);
+    setPendingNote(note);
+    const earned = await playAd("extraLikes");
+    if (earned) {
+      earnLikes(AD_RULES.EXTRA_LIKES_PER_AD);
+      showToast(`+${AD_RULES.EXTRA_LIKES_PER_AD} likes`);
+    }
+    if (reopen) setLikeTarget(reopen);
   };
 
   // The note goes to the server with the like once likes are stored there.
@@ -202,10 +233,12 @@ export default function DiscoverScreen() {
     moveOn(topProfile);
   };
 
-  const handleRewind = () => {
+  const handleRewind = async () => {
     if (!lastPassedProfile) return;
+    const passed = lastPassedProfile;
+    if (!freeUndo && !(await playAd("undoPass"))) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    setProfiles((prev) => [lastPassedProfile, ...prev]);
+    setProfiles((prev) => [passed, ...prev.filter((p) => p.id !== passed.id)]);
     setLastPassedProfile(null);
     scrollRef.current?.scrollTo({ y: 0, animated: false });
   };
@@ -221,7 +254,20 @@ export default function DiscoverScreen() {
   const bottomPad = insets.bottom + (Platform.OS === "web" ? 34 : 0) + 68;
 
   const isLegend = level >= 5;
-  const canRewind = level >= 4 && lastPassedProfile !== null;
+  // Undo is free from level 4; below that it takes an ad.
+  const freeUndo = level >= AD_RULES.FREE_UNDO_LEVEL;
+  const canRewind = lastPassedProfile !== null && (freeUndo || adsLeft("undoPass") > 0);
+  const likesAdsLeft = adsLeft("extraLikes");
+
+  // Browsing another city before the week is up: two ads, then the change
+  // goes through and starts a new week.
+  const handleSkipCityLock = async (next: DiscoverFilters) => {
+    setShowFilter(false);
+    if (await playAd("citySkip")) {
+      handleApplyFilters(next);
+      showToast(`Now browsing ${next.locationCity}`);
+    }
+  };
 
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
@@ -274,7 +320,21 @@ export default function DiscoverScreen() {
       {dailyLikes === 0 && (
         <View style={[styles.lowLikesBar, { backgroundColor: colors.gold }]}>
           <Feather name="zap" size={14} color="#fff" />
-          <Text style={styles.lowLikesText}>Out of likes — complete a challenge to earn more!</Text>
+          <Text style={styles.lowLikesText}>
+            {likesAdsLeft > 0
+              ? "Out of likes. Watch a short ad or complete a challenge to get more."
+              : "Out of likes for today. Complete a challenge to earn more."}
+          </Text>
+          {likesAdsLeft > 0 && (
+            <TouchableOpacity
+              onPress={() => watchLikesAd(null, "")}
+              style={styles.lowLikesBtn}
+              accessibilityRole="button"
+              accessibilityLabel={`Watch an ad for ${AD_RULES.EXTRA_LIKES_PER_AD} likes`}
+            >
+              <Text style={[styles.lowLikesBtnText, { color: colors.gold }]}>+{AD_RULES.EXTRA_LIKES_PER_AD} likes</Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
 
@@ -285,6 +345,14 @@ export default function DiscoverScreen() {
               Loading profiles…
             </Text>
           </View>
+        ) : showSponsored ? (
+          <ScrollView
+            key="sponsored"
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={[styles.scroll, { paddingBottom: bottomPad + 96 }]}
+          >
+            <SponsoredCard variant="discover" />
+          </ScrollView>
         ) : !topProfile ? (
           <View style={styles.emptyState}>
             <Feather name="map-pin" size={44} color={colors.border} />
@@ -328,7 +396,22 @@ export default function DiscoverScreen() {
         )}
       </View>
 
-      {blocksLoaded && topProfile && (
+      {blocksLoaded && showSponsored && (
+        <View style={[styles.floatingActions, { bottom: bottomPad + 16 }]}>
+          <TouchableOpacity
+            onPress={() => setShowSponsored(false)}
+            style={[styles.nextBtn, { backgroundColor: colors.primary }]}
+            activeOpacity={0.85}
+            accessibilityRole="button"
+            accessibilityLabel="Continue"
+          >
+            <Text style={[styles.nextBtnText, { color: colors.primaryForeground }]}>Continue</Text>
+            <Feather name="arrow-right" size={18} color={colors.primaryForeground} />
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {blocksLoaded && topProfile && !showSponsored && (
         <View style={[styles.floatingActions, { bottom: bottomPad + 16 }]}>
           <TouchableOpacity
             onPress={handlePass}
@@ -345,9 +428,18 @@ export default function DiscoverScreen() {
               style={[styles.rewindBtn, { backgroundColor: colors.background, borderColor: colors.border }]}
               activeOpacity={0.8}
               accessibilityRole="button"
-              accessibilityLabel="Bring back the last person you passed"
+              accessibilityLabel={
+                freeUndo
+                  ? "Bring back the last person you passed"
+                  : "Watch an ad to bring back the last person you passed"
+              }
             >
               <Feather name="rotate-ccw" size={20} color={colors.gold} />
+              {!freeUndo && (
+                <View style={[styles.adDot, { backgroundColor: colors.gold }]}>
+                  <Text style={styles.adDotText}>AD</Text>
+                </View>
+              )}
             </TouchableOpacity>
           )}
         </View>
@@ -363,8 +455,17 @@ export default function DiscoverScreen() {
         profile={likeTarget ? topProfile ?? null : null}
         target={likeTarget}
         likesLeft={dailyLikes}
-        onSend={handleSendLike}
-        onClose={() => setLikeTarget(null)}
+        adsLeft={likesAdsLeft}
+        initialNote={pendingNote}
+        onSend={(note) => {
+          setPendingNote("");
+          handleSendLike(note);
+        }}
+        onWatchAd={(note) => watchLikesAd(likeTarget, note)}
+        onClose={() => {
+          setPendingNote("");
+          setLikeTarget(null);
+        }}
       />
 
       {showMatch && (
@@ -410,6 +511,8 @@ export default function DiscoverScreen() {
         filters={activeFilters}
         onApply={handleApplyFilters}
         lastBrowseCityChange={lastBrowseCityChange}
+        citySkipAvailable={adsLeft("citySkip") > 0}
+        onSkipCityLock={handleSkipCityLock}
         onClose={() => setShowFilter(false)}
         colors={colors}
       />
@@ -619,6 +722,27 @@ const styles = StyleSheet.create({
     padding: 14,
     borderRadius: 12,
   },
+  lowLikesBtn: { backgroundColor: "#fff", paddingHorizontal: 12, paddingVertical: 8, borderRadius: 14 },
+  lowLikesBtnText: { fontSize: 13, fontWeight: "700" },
+  nextBtn: {
+    height: 52,
+    paddingHorizontal: 22,
+    borderRadius: 26,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    elevation: 5,
+  },
+  nextBtnText: { fontSize: 16, fontWeight: "700" },
+  adDot: {
+    position: "absolute",
+    top: -6,
+    right: -8,
+    paddingHorizontal: 4,
+    paddingVertical: 1,
+    borderRadius: 6,
+  },
+  adDotText: { color: "#fff", fontSize: 9, fontWeight: "800" },
   lowLikesText: {
     color: "#fff",
     fontSize: 13,

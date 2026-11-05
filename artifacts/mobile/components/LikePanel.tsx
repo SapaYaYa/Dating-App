@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AD_RULES } from "@/constants/ads";
 import type { Profile } from "@/constants/mockData";
 import { LIKE_NOTE_MAX, type LikeTarget } from "@/constants/prompts";
 import { useColors } from "@/hooks/useColors";
@@ -22,19 +23,25 @@ interface Props {
   profile: Profile | null;
   target: LikeTarget | null;
   likesLeft: number;
+  /** Extra-likes ads still available today. */
+  adsLeft: number;
+  /** Note to start with, e.g. kept while an ad played. */
+  initialNote?: string;
   onSend: (note: string) => void;
+  /** Watch an ad for more likes; passes the note typed so far. */
+  onWatchAd: (note: string) => void;
   onClose: () => void;
 }
 
 /** Opens from a heart: shows the photo or answer being liked, an optional note, and Send like. */
-export function LikePanel({ profile, target, likesLeft, onSend, onClose }: Props) {
+export function LikePanel({ profile, target, likesLeft, adsLeft, initialNote, onSend, onWatchAd, onClose }: Props) {
   const colors = useColors();
   const insets = useSafeAreaInsets();
   const [note, setNote] = useState("");
   const visible = !!profile && !!target;
 
   useEffect(() => {
-    if (visible) setNote("");
+    if (visible) setNote(initialNote ?? "");
   }, [visible, profile?.id, target?.kind, target?.index]);
 
   if (!profile || !target) return null;
@@ -75,18 +82,34 @@ export function LikePanel({ profile, target, likesLeft, onSend, onClose }: Props
 
           {outOfLikes && (
             <Text style={[styles.outOfLikes, { color: colors.destructive }]}>
-              You're out of likes for today. Complete a challenge to earn more.
+              {adsLeft > 0
+                ? "You're out of likes. Watch a short ad to get more, or complete a challenge."
+                : "You're out of likes for today. Complete a challenge to earn more."}
             </Text>
           )}
-          <TouchableOpacity
-            onPress={() => onSend(note.trim())}
-            disabled={outOfLikes}
-            style={[styles.send, { backgroundColor: colors.accent, opacity: outOfLikes ? 0.4 : 1 }]}
-            activeOpacity={0.85}
-          >
-            <Feather name="heart" size={18} color="#fff" />
-            <Text style={styles.sendText}>{note.trim() ? "Send like with note" : "Send like"}</Text>
-          </TouchableOpacity>
+          {outOfLikes && adsLeft > 0 ? (
+            <TouchableOpacity
+              onPress={() => onWatchAd(note)}
+              style={[styles.send, { backgroundColor: colors.gold }]}
+              activeOpacity={0.85}
+              accessibilityRole="button"
+            >
+              <Feather name="play-circle" size={18} color="#fff" />
+              <Text style={styles.sendText}>
+                Watch an ad for +{AD_RULES.EXTRA_LIKES_PER_AD} likes ({adsLeft} left today)
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              onPress={() => onSend(note.trim())}
+              disabled={outOfLikes}
+              style={[styles.send, { backgroundColor: colors.accent, opacity: outOfLikes ? 0.4 : 1 }]}
+              activeOpacity={0.85}
+            >
+              <Feather name="heart" size={18} color="#fff" />
+              <Text style={styles.sendText}>{note.trim() ? "Send like with note" : "Send like"}</Text>
+            </TouchableOpacity>
+          )}
           <TouchableOpacity onPress={onClose} style={styles.cancel}>
             <Text style={[styles.cancelText, { color: colors.mutedForeground }]}>Cancel</Text>
           </TouchableOpacity>
