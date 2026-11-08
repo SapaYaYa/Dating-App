@@ -3,9 +3,11 @@
 Decisions and the shortlist for the app's new name and look. Nothing here is
 in the app yet; the app still says "Spark".
 
-## Name: Squeeze
+Each shortlist option is a complete brand: name, logo and world together.
 
-- Chosen name. A "U" to "W" swap (Sqweeze) is the fallback if needed.
+## Name: Squeeze (unless the Gentoo option is chosen)
+
+- Chosen name for the non-Gentoo options. A "U" to "W" swap (Sqweeze) is the fallback if needed.
 - A small dating app called "Squeeze Dating" (Squeeze Dating, LLC, Burlington,
   MA) launched in 2022. It appears to be gone from the App Store; its last
   Android update was March 2023. No registered SQUEEZE trademark for dating
@@ -34,13 +36,27 @@ who are serious about finding someone. Inspirations: Bumble (one theme
 everywhere), Cash App / Spotify / Instagram (one bold, simple symbol), Waze /
 Duolingo (a friendly character).
 
-### 1. The Gentoo world (shortlisted)
+### 1. Gentoo (shortlisted): a complete name swap
+
+**Name: Gentoo** (said "JEN-too"), replacing Squeeze for this option.
+
+- **Name check:** no dating app called Gentoo turned up. But Gentoo is a
+  well-known Linux operating system, and the Gentoo Foundation holds a US
+  trademark for GENTOO covering software (Class 9, reg. 2966511, per
+  third-party trademark databases), with a separate European holder. A
+  dating app is also software, so a trademark lawyer must judge whether a
+  dating app named Gentoo would conflict. Web and app store searches for
+  "Gentoo" are dominated by the Linux project.
+- Fallbacks if the name is blocked: keep the penguin world under another
+  name (for example "Gentoo Dating" or a different penguin word), after the
+  same checks.
 
 Sketch: `docs/branding/gentoo-world.png` (source: `gentoo-world.html`).
 
 - **Story:** gentoo penguins court by finding the perfect pebble and giving
-  it to their partner, and penguins huddle (squeeze together) to stay warm.
-  The huddle is the "squeeze" in the name.
+  it to their partner, and penguins huddle together to stay warm. The app is
+  named after the penguin, so the name, the mascot and the world are one
+  idea, like Bumble's bee.
 - **Character:** a gentoo penguin: white stripe over the eyes, orange beak
   and feet (already the brand colors), holding a pebble with a heart. Used
   as the mascot on match screens, empty screens and celebrations.
