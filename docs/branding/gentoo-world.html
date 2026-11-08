@@ -1,0 +1,101 @@
+<!doctype html><html><head><meta charset="utf-8">
+<style>
+body{margin:0;background:#F7F1E9;font-family:-apple-system,Segoe UI,Helvetica,Arial,sans-serif;color:#17181A}
+.wrap{padding:40px;width:1240px;display:flex;flex-direction:column;gap:22px}
+h1{margin:0;font-size:30px}
+.row{display:flex;gap:22px}
+.card{background:#fff;border-radius:22px;padding:24px;display:flex;flex-direction:column;align-items:center;gap:12px}
+.k{font-size:13px;font-weight:700;letter-spacing:.6px;color:#4A4E52}
+.s{font-size:14px;color:#4A4E52;text-align:center;line-height:20px}
+.ic{width:120px;height:120px;border-radius:28px;display:flex;align-items:center;justify-content:center}
+.mini{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center}
+.phone{width:230px;height:330px;border-radius:30px;background:#F7F1E9;box-shadow:0 0 0 6px #17181A;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:18px;box-sizing:border-box}
+.btn{background:#B34F2D;color:#fff;border-radius:22px;padding:10px 18px;font-weight:700;font-size:14px}
+.t{font-size:20px;font-weight:800;text-align:center}
+</style></head><body><div class="wrap">
+<h1>Squeeze: the Gentoo world</h1>
+<svg width="0" height="0" style="position:absolute">
+ <defs>
+  <!-- front-facing gentoo mascot -->
+  <g id="gentoo">
+   <ellipse cx="120" cy="214" rx="18" ry="7" fill="#E07A3A"/><ellipse cx="150" cy="214" rx="18" ry="7" fill="#E07A3A"/>
+   <path d="M76 120 C 52 140, 50 172, 60 190" fill="none" stroke="#17181A" stroke-width="16" stroke-linecap="round"/>
+   <path d="M194 120 C 218 140, 220 172, 210 190" fill="none" stroke="#17181A" stroke-width="16" stroke-linecap="round"/>
+   <ellipse cx="135" cy="148" rx="62" ry="70" fill="#17181A"/>
+   <ellipse cx="135" cy="162" rx="44" ry="54" fill="#FBF8F3"/>
+   <circle cx="135" cy="70" r="46" fill="#17181A"/>
+   <path d="M104 56 C 110 44, 124 44, 130 50 C 132 52, 138 52, 140 50 C 146 44, 160 44, 166 56 C 158 54, 150 56, 146 62 C 140 58, 130 58, 124 62 C 120 56, 112 54, 104 56 Z" fill="#FBF8F3"/>
+   <circle cx="117" cy="68" r="5.5" fill="#FBF8F3"/><circle cx="117" cy="68" r="3" fill="#17181A"/>
+   <circle cx="153" cy="68" r="5.5" fill="#FBF8F3"/><circle cx="153" cy="68" r="3" fill="#17181A"/>
+   <path d="M126 80 C 130 76, 140 76, 144 80 L 135 96 Z" fill="#E07A3A"/>
+   <ellipse cx="135" cy="168" rx="26" ry="19" fill="#B8B2AA"/>
+   <path d="M135 180 C 124 173, 120 167, 121 162 C 122 157, 127 155, 130 156 C 132 156, 134 158, 135 160 C 136 158, 138 156, 140 156 C 143 155, 148 157, 149 162 C 150 167, 146 173, 135 180 Z" fill="#B34F2D"/>
+  </g>
+  <!-- side-view gentoo for the huddle -->
+  <g id="side">
+   <ellipse cx="80" cy="120" rx="44" ry="62" fill="#17181A" transform="rotate(10 80 120)"/>
+   <ellipse cx="90" cy="136" rx="26" ry="42" fill="#FBF8F3" transform="rotate(10 90 136)"/>
+   <path d="M84 70 C 92 62, 104 64, 108 72 C 100 70, 92 72, 88 78 Z" fill="#FBF8F3"/>
+   <circle cx="101" cy="80" r="3" fill="#17181A"/>
+   <path d="M110 90 L128 96 L109 101 Z" fill="#E07A3A"/>
+   <ellipse cx="64" cy="182" rx="12" ry="5" fill="#E07A3A"/><ellipse cx="96" cy="183" rx="12" ry="5" fill="#E07A3A"/>
+  </g>
+  <g id="pebble">
+   <ellipse cx="100" cy="108" rx="74" ry="58" fill="#7E3A22" transform="rotate(-8 100 108)"/>
+   <ellipse cx="100" cy="100" rx="74" ry="58" fill="#F7F1E9" transform="rotate(-8 100 100)"/>
+   <path d="M100 128 C 78 114, 70 103, 72 92 C 74 82, 83 78, 90 79 C 95 80, 98 83, 100 87 C 102 83, 105 80, 110 79 C 117 78, 126 82, 128 92 C 130 103, 122 114, 100 128 Z" fill="#B34F2D"/>
+  </g>
+  <g id="head">
+   <circle cx="100" cy="104" r="70" fill="#17181A"/>
+   <path d="M52 82 C 62 62, 86 62, 94 72 C 97 75, 103 75, 106 72 C 114 62, 138 62, 148 82 C 136 78, 124 82, 118 92 C 108 86, 92 86, 82 92 C 76 82, 64 78, 52 82 Z" fill="#FBF8F3"/>
+   <circle cx="78" cy="102" r="8" fill="#FBF8F3"/><circle cx="78" cy="102" r="4.5" fill="#17181A"/>
+   <circle cx="122" cy="102" r="8" fill="#FBF8F3"/><circle cx="122" cy="102" r="4.5" fill="#17181A"/>
+   <path d="M86 120 C 92 114, 108 114, 114 120 L 100 146 Z" fill="#E07A3A"/>
+  </g>
+ </defs>
+</svg>
+<div class="row">
+
+<div class="card" style="flex:1.1">
+<div class="k">THE CHARACTER</div>
+<svg width="270" height="230" viewBox="0 0 270 230" role="img" aria-label="A gentoo penguin mascot holding a pebble with a heart"><use href="#gentoo"/></svg>
+<div class="s">A gentoo: white "bonnet" stripe over the eyes, orange beak and feet (already your brand colors). It holds the pebble it's about to give someone.</div>
+</div>
+
+<div class="card" style="flex:1">
+<div class="k">APP ICON OPTIONS</div>
+<div style="display:flex;gap:14px;align-items:flex-end">
+<div class="ic" style="background:#B34F2D"><svg width="94" height="94" viewBox="0 0 200 200" aria-hidden="true"><use href="#pebble"/></svg></div>
+<div class="mini" style="background:#B34F2D"><svg width="34" height="34" viewBox="0 0 200 200" aria-hidden="true"><use href="#pebble"/></svg></div>
+</div>
+<div class="s"><b>Pebble:</b> simple and classy, like Cash App.</div>
+<div style="display:flex;gap:14px;align-items:flex-end">
+<div class="ic" style="background:#F2A15B"><svg width="96" height="96" viewBox="0 0 200 200" aria-hidden="true"><use href="#head"/></svg></div>
+<div class="mini" style="background:#F2A15B"><svg width="36" height="36" viewBox="0 0 200 200" aria-hidden="true"><use href="#head"/></svg></div>
+</div>
+<div class="s"><b>Gentoo face:</b> friendly, like Duolingo's owl.</div>
+</div>
+
+<div class="card" style="flex:1">
+<div class="k">IT'S A MATCH</div>
+<div class="phone">
+<svg width="200" height="170" viewBox="0 0 230 200" aria-hidden="true"><use href="#side"/><g transform="translate(230 0) scale(-1 1)"><use href="#side"/></g>
+<path d="M115 52 c-6-11-22-6-19 5 c2 7 10 12 19 18 c9-6 17-11 19-18 c3-11-13-16-19-5z" fill="#B34F2D"/></svg>
+<div class="t">You two huddled up!</div>
+<div class="btn">Say hi to Emma</div>
+</div>
+<div class="s">Two gentoos lean in and huddle: the "squeeze" in the name.</div>
+</div>
+
+<div class="card" style="flex:1">
+<div class="k">SENDING A LIKE</div>
+<div class="phone">
+<svg width="120" height="104" viewBox="0 0 200 200" aria-hidden="true"><ellipse cx="100" cy="108" rx="74" ry="58" fill="#8E877F" transform="rotate(-8 100 108)"/><ellipse cx="100" cy="100" rx="74" ry="58" fill="#B8B2AA" transform="rotate(-8 100 100)"/><path d="M100 128 C 78 114, 70 103, 72 92 C 74 82, 83 78, 90 79 C 95 80, 98 83, 100 87 C 102 83, 105 80, 110 79 C 117 78, 126 82, 128 92 C 130 103, 122 114, 100 128 Z" fill="#B34F2D"/></svg>
+<div class="t">Give Emma a pebble?</div>
+<div class="btn">Send a pebble</div>
+<div class="s" style="font-size:12px">3 pebbles left today</div>
+</div>
+<div class="s">Gentoos court with the perfect pebble, so every like is one.</div>
+</div>
+
+</div></div></body></html>
