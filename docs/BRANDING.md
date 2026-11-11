@@ -5,6 +5,10 @@ in the app yet; the app still says "Spark".
 
 Each shortlist option is a complete brand: name, logo and world together.
 
+**Decision (Nov 2026): the app is Gentoo, built around the Gentoo penguin
+brand world (option 1 below).** Squeeze and its gradient "S" are no longer
+the plan. Open items for Gentoo are listed under option 1.
+
 ## Name: Squeeze (unless the Gentoo option is chosen)
 
 - Chosen name for the non-Gentoo options. A "U" to "W" swap (Sqweeze) is the fallback if needed.
@@ -36,7 +40,7 @@ who are serious about finding someone. Inspirations: Bumble (one theme
 everywhere), Cash App / Spotify / Instagram (one bold, simple symbol), Waze /
 Duolingo (a friendly character).
 
-### 1. Gentoo (shortlisted): a complete name swap
+### 1. Gentoo (chosen): a complete name swap
 
 **Name: Gentoo** (said "JEN-too"), replacing Squeeze for this option.
 
