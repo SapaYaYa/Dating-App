@@ -20,18 +20,27 @@ the plan. Open items for Gentoo are listed under option 1.
   lawyer's clearance search, and file an intent-to-use application (software
   and dating services). Optionally ask the old founders to release the name.
 
-## Color palette: Rust Orange
+## Color palette: Antarctic (chosen for Gentoo)
+
+The penguin's own world: ice, sea, and the orange beak against black and
+white feathers.
 
 | Color | Hex | Use |
 |---|---|---|
-| Rust | `#B34F2D` | Primary: logo, app icon, main buttons (white text) |
-| Orange | `#F2A15B` | Accent: hearts, badges, highlights (dark text only) |
-| Cream | `#F7F1E9` | Background |
-| Slate | `#4A4E52` | Secondary text |
-| Charcoal | `#17181A` | Text; dark mode background |
+| Beak orange | `#C9431C` | Primary buttons ("Send a pebble"); white text (4.9:1) |
+| Bright beak | `#E8572A` | Hearts and decoration only (too light for white text); dark-mode buttons with charcoal text (4.9:1) |
+| Deep sea | `#1E5A7A` | App icon background, logo text, links |
+| Ice | `#CFE8F5` | Badges, chips, soft cards (charcoal text) |
+| Snow | `#F5F9FC` | Background |
+| Slate | `#4A5560` | Secondary text (7.2:1 on snow) |
+| Charcoal | `#17181A` | Text, the penguin |
 
-Keep it earthy (rust, cream, charcoal, no gradients) so it doesn't drift
-toward Tinder's orange-pink.
+Dark mode: background Night `#0E1A22`, cards `#16262F`, text Snow, secondary
+text `#A9B8C4`, accents Ice text `#8FCBEA`, buttons Bright beak with
+charcoal text.
+
+Earlier palette (not chosen): Rust Orange: rust `#B34F2D`, orange
+`#F2A15B`, cream `#F7F1E9`, slate `#4A4E52`, charcoal `#17181A`.
 
 ## Brand direction shortlist
 
@@ -65,7 +74,7 @@ Sketch: `docs/branding/gentoo-world.png` (source: `gentoo-world.html`).
   and feet (already the brand colors), holding a pebble with a heart. Used
   as the mascot on match screens, empty screens and celebrations.
 - **App icon options:** the pebble with a heart (simple, like Cash App), or
-  the gentoo's face (friendly, like Duolingo). Leaning toward the pebble.
+  the gentoo's face (friendly, like Duolingo). Chosen: the pebble.
 - **Tagline idea:** "Find your pebble."
 - **App wording:**
 
@@ -79,9 +88,9 @@ Sketch: `docs/branding/gentoo-world.png` (source: `gentoo-world.html`).
   | Levels: Spark, Flame, Blaze, Inferno, Legend | Pebble, Waddle, Huddle, Colony, Legend |
   | Watch an ad for likes | Watch a short ad for 3 more pebbles |
 
-- **Open questions:** pebble or face for the app icon; the mascot's name
-  (ideas: Pip, Pebbles, Gus, Juno); full pebble/huddle wording or plain
-  wording with the penguin only for personality.
+- **Decided:** app icon is the pebble (on deep-sea blue); the mascot is
+  named **Gus**; the app uses the full pebble/huddle wording below; colors
+  are the Antarctic palette.
 - **Next step:** a design brief so an illustrator can draw the real penguin
   and icon (the sketch is rough).
 
