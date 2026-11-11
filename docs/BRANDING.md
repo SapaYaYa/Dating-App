@@ -82,15 +82,18 @@ Sketch: `docs/branding/gentoo-world.png` (source: `gentoo-world.html`).
   |---|---|
   | Send like | Send a pebble |
   | Likes left today | Pebbles left today |
-  | It's a Match! | You two huddled up! |
+  | It's a Match! | It's a pair! ("You and Emma both gave a pebble.") |
   | Likes tab | Pebbles |
-  | Matches tab | Huddle |
+  | Matches tab | Matches (unchanged) |
   | Levels: Spark, Flame, Blaze, Inferno, Legend | Pebble, Waddle, Huddle, Colony, Legend |
   | Watch an ad for likes | Watch a short ad for 3 more pebbles |
 
 - **Decided:** app icon is the pebble (on deep-sea blue); the mascot is
-  named **Gus**; the app uses the full pebble/huddle wording below; colors
-  are the Antarctic palette.
+  named **Gus**; the app uses the pebble wording above; colors are the
+  Antarctic palette, light and dark mode both approved. "Huddle" and
+  "Nest" were turned down for the match moment and the Matches tab.
+- **Screen mockups:** `docs/branding/gentoo-screens-light.png` and
+  `docs/branding/gentoo-screens-dark.png`.
 - **Next step:** a design brief so an illustrator can draw the real penguin
   and icon (the sketch is rough).
 
