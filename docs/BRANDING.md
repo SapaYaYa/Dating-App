@@ -1,7 +1,8 @@
 # Branding
 
-Decisions and the shortlist for the app's new name and look. Nothing here is
-in the app yet; the app still says "Spark".
+Decisions and the shortlist for the app's new name and look. The Gentoo look
+is now built into the app with sketch-quality art; the final art comes from
+an illustrator (see `docs/ILLUSTRATOR_BRIEF.md`).
 
 Each shortlist option is a complete brand: name, logo and world together.
 

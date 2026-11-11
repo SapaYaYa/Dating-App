@@ -19,6 +19,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Pebble } from "@/components/Gentoo";
 import { useColors } from "@/hooks/useColors";
 
 function clerkSignInErrorMessage(code: string, rawMsg: string): string {
@@ -298,12 +299,12 @@ export default function LoginScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View style={styles.logoSection}>
-            <View style={[styles.logoMark, { backgroundColor: colors.primary }]}>
-              <Feather name="heart" size={28} color={colors.primaryForeground} />
+            <View style={[styles.logoMark, { backgroundColor: colors.brand }]}>
+              <Pebble size={44} fill={colors.brandForeground} heart={colors.brand} shadow={false} />
             </View>
-            <Text style={[styles.appName, { color: colors.foreground }]}>Spark</Text>
+            <Text style={[styles.appName, { color: colors.brand }]}>gentoo</Text>
             <Text style={[styles.tagline, { color: colors.mutedForeground }]}>
-              Meet people who matter
+              Find your pebble.
             </Text>
           </View>
 

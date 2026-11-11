@@ -18,6 +18,7 @@ import { SlowToReplyNotice, hasSlowToReplyBadge } from "@/components/SlowToReply
 import { LikePanel } from "@/components/LikePanel";
 import { ProfileScroll } from "@/components/ProfileScroll";
 import { SponsoredCard } from "@/components/SponsoredCard";
+import { GentooPair, Gus, Pebble, PebbleLogo } from "@/components/Gentoo";
 import { AD_RULES, type RewardPlacement } from "@/constants/ads";
 import { normalizeLookingFor } from "@/constants/lookingFor";
 import type { LikeTarget } from "@/constants/prompts";
@@ -169,8 +170,8 @@ export default function DiscoverScreen() {
   const visibleProfiles = profiles.filter((p) => matchesDiscoverFilters(p, activeFilters));
   const topProfile = visibleProfiles[0];
 
-  // Discover is one profile at a time, scrolled. A heart on a photo or
-  // answer opens the like panel; X passes.
+  // Discover is one profile at a time, scrolled. A pebble on a photo or
+  // answer opens the pebble panel (a like); X passes.
   const scrollRef = useRef<ScrollView>(null);
   const [likeTarget, setLikeTarget] = useState<LikeTarget | null>(null);
   const [toast, setToast] = useState("");
@@ -209,7 +210,7 @@ export default function DiscoverScreen() {
     const { earned } = await playAd("extraLikes");
     if (earned) {
       earnLikes(AD_RULES.EXTRA_LIKES_PER_AD);
-      showToast(`+${AD_RULES.EXTRA_LIKES_PER_AD} likes`);
+      showToast(`+${AD_RULES.EXTRA_LIKES_PER_AD} pebbles`);
     }
     if (reopen) setLikeTarget(reopen);
   };
@@ -230,7 +231,7 @@ export default function DiscoverScreen() {
       setShowMatch(true);
       Animated.spring(matchAnim, { toValue: 1, useNativeDriver: true, friction: 5 }).start();
     } else {
-      showToast(`Like sent to ${liked.name}`);
+      showToast(`Pebble sent to ${liked.name}`);
     }
   };
 
@@ -290,14 +291,14 @@ export default function DiscoverScreen() {
           <Feather name="sliders" size={18} color={filterCount > 0 ? colors.accent : colors.foreground} />
           {filterCount > 0 && (
             <View style={[styles.filterBadge, { backgroundColor: colors.accent }]}>
-              <Text style={styles.filterBadgeText}>{filterCount}</Text>
+              <Text style={[styles.filterBadgeText, { color: colors.accentForeground }]}>{filterCount}</Text>
             </View>
           )}
         </TouchableOpacity>
 
         <View style={styles.centerHeader}>
-          <Feather name="heart" size={20} color={colors.accent} />
-          <Text style={[styles.appTitle, { color: colors.foreground }]}>Spark</Text>
+          <PebbleLogo size={26} />
+          <Text style={[styles.appTitle, { color: colors.brand }]}>gentoo</Text>
           {isLegend && (
             <View style={[styles.priorityBadge, { backgroundColor: colors.gold + "22" }]}>
               <Feather name="zap" size={10} color={colors.gold} />
@@ -307,9 +308,9 @@ export default function DiscoverScreen() {
         </View>
 
         <View style={[styles.likesCounter, { backgroundColor: colors.secondary }]}>
-          <Feather name="zap" size={13} color={colors.gold} />
+          <Pebble size={18} fill={colors.ice} heart={colors.accent} shadow={false} />
           <Text style={[styles.likesText, { color: colors.foreground }]}>
-            {dailyLikes} likes
+            {dailyLikes} {dailyLikes === 1 ? "pebble" : "pebbles"}
           </Text>
         </View>
       </View>
@@ -327,21 +328,21 @@ export default function DiscoverScreen() {
       )}
 
       {dailyLikes === 0 && (
-        <View style={[styles.lowLikesBar, { backgroundColor: colors.gold }]}>
-          <Feather name="zap" size={14} color="#fff" />
-          <Text style={styles.lowLikesText}>
+        <View style={[styles.lowLikesBar, { backgroundColor: colors.brand }]}>
+          <Pebble size={20} fill={colors.brandForeground} heart={colors.brand} shadow={false} />
+          <Text style={[styles.lowLikesText, { color: colors.brandForeground }]}>
             {likesAdsLeft > 0
-              ? "Out of likes. Watch a short ad or complete a challenge to get more."
-              : "Out of likes for today. Complete a challenge to earn more."}
+              ? "Out of pebbles. Watch a short ad or complete a challenge to get more."
+              : "Out of pebbles for today. Complete a challenge to earn more."}
           </Text>
           {likesAdsLeft > 0 && (
             <TouchableOpacity
               onPress={() => watchLikesAd(null, "")}
-              style={styles.lowLikesBtn}
+              style={[styles.lowLikesBtn, { backgroundColor: colors.brandForeground }]}
               accessibilityRole="button"
-              accessibilityLabel={`Watch an ad for ${AD_RULES.EXTRA_LIKES_PER_AD} likes`}
+              accessibilityLabel={`Watch an ad for ${AD_RULES.EXTRA_LIKES_PER_AD} more pebbles`}
             >
-              <Text style={[styles.lowLikesBtnText, { color: colors.gold }]}>+{AD_RULES.EXTRA_LIKES_PER_AD} likes</Text>
+              <Text style={[styles.lowLikesBtnText, { color: colors.brand }]}>+{AD_RULES.EXTRA_LIKES_PER_AD} pebbles</Text>
             </TouchableOpacity>
           )}
         </View>
@@ -364,28 +365,23 @@ export default function DiscoverScreen() {
           </ScrollView>
         ) : !topProfile ? (
           <View style={styles.emptyState}>
-            <Feather name="map-pin" size={44} color={colors.border} />
-            <Text style={[styles.emptyTitle, { color: colors.foreground }]}>
+            <Gus size={150} holdingPebble={false} />
+            <Text style={[styles.emptyTitle, { color: colors.foreground }]}>Gus is out looking</Text>
+            <Text style={[styles.emptySubtitle, { color: colors.mutedForeground }]}>
               No one new within {formatDistanceLimit(activeFilters.maxDistance, getDistanceUnit())}
-              {browseCity ? ` of ${browseCity}` : ""}
+              {browseCity ? ` of ${browseCity}` : ""} right now.
+              {isAtMaxDistance(activeFilters.maxDistance, getDistanceUnit())
+                ? " Check back soon for new people."
+                : " Widen your distance to see more people."}
             </Text>
-            {!isAtMaxDistance(activeFilters.maxDistance, getDistanceUnit()) ? (
-              <>
-                <Text style={[styles.emptySubtitle, { color: colors.mutedForeground }]}>
-                  Expand your distance to see more people.
-                </Text>
-                <TouchableOpacity
-                  onPress={() => setShowFilter(true)}
-                  style={[styles.expandBtn, { backgroundColor: colors.primary }]}
-                  activeOpacity={0.85}
-                >
-                  <Text style={[styles.expandBtnText, { color: colors.primaryForeground }]}>Expand distance</Text>
-                </TouchableOpacity>
-              </>
-            ) : (
-              <Text style={[styles.emptySubtitle, { color: colors.mutedForeground }]}>
-                Check back soon for new people near you.
-              </Text>
+            {!isAtMaxDistance(activeFilters.maxDistance, getDistanceUnit()) && (
+              <TouchableOpacity
+                onPress={() => setShowFilter(true)}
+                style={[styles.expandBtn, { backgroundColor: colors.brand }]}
+                activeOpacity={0.85}
+              >
+                <Text style={[styles.expandBtnText, { color: colors.brandForeground }]}>Widen distance</Text>
+              </TouchableOpacity>
             )}
           </View>
         ) : (
@@ -443,10 +439,10 @@ export default function DiscoverScreen() {
                   : "Watch an ad to bring back the last person you passed"
               }
             >
-              <Feather name="rotate-ccw" size={20} color={colors.gold} />
+              <Feather name="rotate-ccw" size={20} color={colors.brand} />
               {!freeUndo && (
-                <View style={[styles.adDot, { backgroundColor: colors.gold }]}>
-                  <Text style={styles.adDotText}>AD</Text>
+                <View style={[styles.adDot, { backgroundColor: colors.brand }]}>
+                  <Text style={[styles.adDotText, { color: colors.brandForeground }]}>AD</Text>
                 </View>
               )}
             </TouchableOpacity>
@@ -488,9 +484,10 @@ export default function DiscoverScreen() {
           ]}
         >
           <View style={[styles.matchCard, { backgroundColor: colors.card }]}>
-            <Text style={[styles.matchTitle, { color: colors.foreground }]}>It's a Match!</Text>
+            <GentooPair size={150} />
+            <Text style={[styles.matchTitle, { color: colors.foreground }]}>It's a pair!</Text>
             <Text style={[styles.matchSub, { color: colors.mutedForeground }]}>
-              You and {matchedName} liked each other
+              You and {matchedName} both gave a pebble.
             </Text>
             {matchedNote ? (
               <View style={[styles.matchNoteCard, { backgroundColor: colors.secondary }]}>
@@ -504,10 +501,10 @@ export default function DiscoverScreen() {
                 style={[styles.matchBtn, { backgroundColor: colors.primary }]}
                 activeOpacity={0.85}
               >
-                <Text style={[styles.matchBtnText, { color: colors.primaryForeground }]}>Send Message</Text>
+                <Text style={[styles.matchBtnText, { color: colors.primaryForeground }]}>Say hi to {matchedName}</Text>
               </TouchableOpacity>
               <TouchableOpacity onPress={dismissMatch} style={styles.matchSkip}>
-                <Text style={[styles.matchSkipText, { color: colors.mutedForeground }]}>Keep Browsing</Text>
+                <Text style={[styles.matchSkipText, { color: colors.mutedForeground }]}>Keep looking</Text>
               </TouchableOpacity>
             </View>
           </View>

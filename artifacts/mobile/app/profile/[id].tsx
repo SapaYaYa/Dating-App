@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Pebble } from "@/components/Gentoo";
 import { ProfileScroll } from "@/components/ProfileScroll";
 import { MOCK_CITY_PROFILES, MOCK_PROFILES } from "@/constants/mockData";
 import { useApp } from "@/context/AppContext";
@@ -149,9 +150,11 @@ export default function ProfileDetailScreen() {
 
         <TouchableOpacity
           onPress={handleLike}
-          style={[styles.actionBtn, styles.likeBtn, { backgroundColor: liked ? colors.green : colors.accent }]}
+          style={[styles.actionBtn, styles.likeBtn, { backgroundColor: liked ? colors.green : colors.primary }]}
+          accessibilityRole="button"
+          accessibilityLabel={liked ? `Pebble sent to ${profile.name}` : `Give ${profile.name} a pebble`}
         >
-          <Feather name="heart" size={26} color="#fff" />
+          <Pebble size={34} fill={colors.primaryForeground} heart={liked ? colors.green : colors.primary} shadow={false} />
         </TouchableOpacity>
       </View>
 

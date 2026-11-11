@@ -1,6 +1,6 @@
 # Go-live checklist
 
-Everything that has to happen before Spark goes live with real users.
+Everything that has to happen before Gentoo goes live with real users.
 Check items off as they're done.
 
 ## Database and deploy
@@ -203,6 +203,20 @@ Rules live in `artifacts/mobile/constants/ads.ts`; the app plays ads through
       switching to real ones.
 - [ ] Later: an ad-free paid subscription that removes sponsored cards and
       posts (decide what it does for rewarded ads).
+
+## Gentoo brand
+
+- [ ] Trademark: have a lawyer check "Gentoo" for a dating app (the Gentoo
+      Linux project holds a US software trademark), then file an
+      intent-to-use application. See `docs/BRANDING.md`.
+- [ ] Replace the sketch art with the illustrator's final files (app icon,
+      Gus, the penguin pair, the pebble): `docs/ILLUSTRATOR_BRIEF.md`.
+      Today's art is drawn in code in `artifacts/mobile/components/Gentoo.tsx`.
+- [ ] Set the app's slug, bundle ID / package name and URL scheme to Gentoo
+      before the first store build (`artifacts/mobile/app.json` still says
+      "mobile").
+- [ ] App Store and Google Play listings, screenshots and descriptions in
+      the Gentoo look and wording.
 
 ## On hold
 

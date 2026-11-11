@@ -1,6 +1,6 @@
 # Testing checklist
 
-Everything to test in Spark, kept up to date as features are added or
+Everything to test in Gentoo, kept up to date as features are added or
 changed. Check items off as you test them, and un-check them when the feature
 changes.
 
@@ -33,25 +33,44 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Reset password flow.
 - [ ] Sign out returns to the login screen.
 
+### Gentoo look (name, colors, Gus)
+- [ ] The app is called Gentoo everywhere: Discover header ("gentoo" with the
+      pebble logo), sign-in screen ("gentoo", "Find your pebble."), and the
+      app name and icon (the pebble on deep-sea blue) on a phone.
+- [ ] Light mode: snow-white background, beak-orange buttons with white
+      text, deep-sea blue logo and active tab.
+- [ ] Dark mode (phone set to dark): night-blue background, bright orange
+      buttons with dark text, ice-blue logo and active tab; all text
+      readable.
+- [ ] Gus and the penguin pair show on the match pop-ups, the empty
+      Discover screen and the empty Pebbles tab, with a soft glow in dark
+      mode so they stand out.
+- [ ] Nowhere says "Spark", "like" or "It's a Match!" (wording is pebbles and
+      "It's a pair!"); the Matches tab keeps its name.
+
 ### Discover (scroll)
 - [ ] One person at a time as a scrolling profile: first photo with name and
       age, then the basics card, then answers and photos alternating.
 - [ ] Basics card: Great Chat, Verified and "Both in ..." tags; Lives in,
       distance, job, bio and interests. No song, Spotify or Instagram
       anywhere (music is on hold).
-- [ ] Every photo and every answer has a heart; there's no swiping.
-- [ ] A heart opens the like panel showing that photo or answer, with an
-      optional note (140 characters, counter) and Send like. The button says
-      "Send like with note" when there's a note. Cancel sends nothing.
-- [ ] Sending a like moves to the next person, starting at the top, with a
-      "Like sent to ..." message; the likes counter goes down.
-- [ ] At 0 likes: the "Out of likes" bar shows with a "+3 likes" button, and
-      the like panel shows "Watch an ad for +3 likes" instead of Send like.
-      After 3 ads in a day, both say to complete a challenge instead.
+- [ ] Every photo and every answer has a pebble button (a like); there's no
+      swiping.
+- [ ] A pebble button opens the pebble panel showing that photo or answer,
+      with an optional note (140 characters, counter), "Send [name] a pebble"
+      and "N pebbles left today". With a note it says "Send pebble with note".
+      Cancel sends nothing.
+- [ ] Sending a pebble moves to the next person, starting at the top, with a
+      "Pebble sent to ..." message; the pebbles counter in the header goes
+      down.
+- [ ] At 0 pebbles: the blue "Out of pebbles" bar shows with a "+3 pebbles"
+      button, and the panel shows "Watch an ad for 3 more pebbles" instead of
+      Send. After 3 ads in a day, both say to complete a challenge instead.
 - [ ] X passes to the next person; nothing in the profile is hidden behind
       it for long (you can scroll past it).
-- [ ] "It's a Match!" pop-up appears on a match; Send Message and Keep
-      Browsing both work.
+- [ ] On a match, the pop-up shows two penguins, "It's a pair!" and "You and
+      [name] both gave a pebble."; "Say hi to [name]" and "Keep looking" both
+      work.
 - [ ] Undo (the arrow next to X) brings back the last passed person: free at
       level 4+, and below level 4 it's marked "AD" and plays an ad first
       (5 a day, then it disappears).
@@ -64,8 +83,9 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Lowering the distance hides people farther away; raising it brings
       them back.
 - [ ] Age, interests and "verified only" filters hide people who don't match.
-- [ ] Nobody left in range: "No one new within 25 mi" with Expand distance,
-      which opens the filters.
+- [ ] Nobody left in range: Gus with "Gus is out looking", "No one new
+      within 25 mi right now", and a Widen distance button that opens the
+      filters.
 - [ ] At the maximum distance, it says "Check back soon" with no button.
 - [ ] Filter count badge shows on the filter button when filters are active.
 - [ ] Reset all restores the defaults.
@@ -87,22 +107,25 @@ private/incognito window to start fresh. To test kilometers, set your phone
       message says this week's ad was already used, with no button.
 - [ ] Profile → Home city: change it, then reopening says it's locked for a
       month with the next date.
-- [ ] "Lives in City, ST" appears on cards, full profiles and in Likes.
+- [ ] "Lives in City, ST" appears on cards, full profiles and in Pebbles.
       City and state only.
 
-### Likes
-- [ ] Each like shows who, "Lives in City, ST" (plus distance for local
-      people), what they liked ("Liked your photo" with that photo, or "Liked
-      your answer" with that answer) and their note if any.
-- [ ] A like from another city (Maya, Brooklyn) is mixed in with local likes,
-      with no distance.
-- [ ] Tapping a like opens their full profile with what they liked at the
-      top; X and Like back are fully visible (no tab bar over them).
-- [ ] Like back shows "It's a Match!"; X removes them.
+### Pebbles (likes)
+- [ ] The tab has a pebble icon and is titled "Pebbles"; with none, Gus shows
+      "No pebbles yet".
+- [ ] Each pebble shows who, "Lives in City, ST" (plus distance for local
+      people), what it was for ("Pebble for your photo" with that photo, or
+      "Pebble for your answer" with that answer) and their note if any.
+- [ ] A pebble from another city (Maya, Brooklyn) is mixed in with local
+      ones, with no distance.
+- [ ] Tapping one opens their full profile with what they gave the pebble to
+      at the top; X and "Give a pebble back" are fully visible (no tab bar
+      over them).
+- [ ] "Give a pebble back" shows the "It's a pair!" pop-up; X removes them.
 - [ ] Report note: a reason is required before Report note works; Cancel
-      reports nothing; after reporting, the like disappears with a thank-you
+      reports nothing; after reporting, the pebble disappears with a thank-you
       message and stays gone after leaving and coming back.
-- [ ] Notes from someone you block afterwards disappear with their like.
+- [ ] Notes from someone you block afterwards disappear with their pebble.
 
 ### Matches and chat
 - [ ] New Matches row and Conversations list show the right people.
@@ -191,8 +214,8 @@ private/incognito window to start fresh. To test kilometers, set your phone
       with a lock icon on each photo.
 - [ ] Match note saves when you tap away (max 150 characters) and is still
       there after leaving and coming back.
-- [ ] Sample match notes show in the "It's a Match!" pop-up (Discover and
-      Likes) and under New Matches.
+- [ ] Sample match notes show in the "It's a pair!" pop-up (Discover and
+      Pebbles) and under New Matches.
 - [ ] My Prompts shows your 3 answers; Edit prompts opens the editor; Save
       stays disabled until all 3 have answers; saved answers show on Profile.
 - [ ] Edit Profile (Account section, the My Bio card, or Add/Edit under My
@@ -209,19 +232,20 @@ private/incognito window to start fresh. To test kilometers, set your phone
 
 ### Challenges
 - [ ] Completing a challenge marks it done and adds the right number of
-      likes and points.
-- [ ] Level goes up with points.
+      pebbles and points.
+- [ ] Level goes up with points. Level names: Pebble, Waddle, Huddle,
+      Colony, Legend.
 
 ### Ads (fake ads in the preview)
 - [ ] Rewarded ads show "Ad" (or "Ad 1 of 2"), count down 5 seconds each,
       then "Reward earned · Close" gives the reward.
 - [ ] Closing an ad early asks to confirm; Leave gives no reward and doesn't
       use up a daily ad.
-- [ ] Extra likes: +3 likes per ad, 3 ads a day. Watching from the like panel
-      reopens it with your note still there.
-- [ ] Completing a challenge gives its likes with no offer to double them.
-- [ ] Discover shows a "Sponsored" card after every 15 profiles (liked or
-      passed), even when out of likes; Continue moves on.
+- [ ] Extra pebbles: +3 pebbles per ad, 3 ads a day. Watching from the
+      pebble panel reopens it with your note still there.
+- [ ] Completing a challenge gives its pebbles with no offer to double them.
+- [ ] Discover shows a "Sponsored" card after every 15 profiles (given a
+      pebble or passed), even when out of pebbles; Continue moves on.
 - [ ] Boards show a "Sponsored" post after every 15 posts.
 - [ ] Daily ad limits reset at midnight; the city skip resets after 7 days.
 

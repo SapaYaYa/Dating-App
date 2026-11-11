@@ -13,7 +13,8 @@ import { ChallengeCard } from "@/components/ChallengeCard";
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
 
-const LEVELS = ["Spark", "Flame", "Blaze", "Inferno", "Legend"];
+// Levels follow a gentoo penguin's life.
+const LEVELS = ["Pebble", "Waddle", "Huddle", "Colony", "Legend"];
 const XP_PER_LEVEL = 500;
 
 export default function ChallengesScreen() {
@@ -78,7 +79,7 @@ export default function ChallengesScreen() {
           <View style={styles.statsRow}>
             <View style={styles.statItem}>
               <Text style={[styles.statValue, { color: colors.foreground }]}>{dailyLikes}</Text>
-              <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>Likes left</Text>
+              <Text style={[styles.statLabel, { color: colors.mutedForeground }]}>Pebbles left</Text>
             </View>
             <View style={[styles.statDivider, { backgroundColor: colors.border }]} />
             <View style={styles.statItem}>
@@ -97,7 +98,7 @@ export default function ChallengesScreen() {
           <View style={styles.earnRow}>
             <Feather name="heart" size={16} color={colors.accent} />
             <Text style={[styles.earnText, { color: colors.accent }]}>
-              Earn +5 likes by completing challenges
+              Earn extra pebbles by completing challenges
             </Text>
           </View>
         </View>

@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { Pebble } from "@/components/Gentoo";
 import { AD_RULES } from "@/constants/ads";
 import type { Profile } from "@/constants/mockData";
 import { LIKE_NOTE_MAX, type LikeTarget } from "@/constants/prompts";
@@ -33,7 +34,7 @@ interface Props {
   onClose: () => void;
 }
 
-/** Opens from a heart: shows the photo or answer being liked, an optional note, and Send like. */
+/** Opens from a pebble button: shows the photo or answer, an optional note, and "Send a pebble". */
 export function LikePanel({ profile, target, likesLeft, adsLeft, initialNote, onSend, onWatchAd, onClose }: Props) {
   const colors = useColors();
   const insets = useSafeAreaInsets();
@@ -83,32 +84,39 @@ export function LikePanel({ profile, target, likesLeft, adsLeft, initialNote, on
           {outOfLikes && (
             <Text style={[styles.outOfLikes, { color: colors.destructive }]}>
               {adsLeft > 0
-                ? "You're out of likes. Watch a short ad to get more, or complete a challenge."
-                : "You're out of likes for today. Complete a challenge to earn more."}
+                ? "You're out of pebbles. Watch a short ad to get more, or complete a challenge."
+                : "You're out of pebbles for today. Complete a challenge to earn more."}
             </Text>
           )}
           {outOfLikes && adsLeft > 0 ? (
             <TouchableOpacity
               onPress={() => onWatchAd(note)}
-              style={[styles.send, { backgroundColor: colors.gold }]}
+              style={[styles.send, { backgroundColor: colors.brand }]}
               activeOpacity={0.85}
               accessibilityRole="button"
             >
-              <Feather name="play-circle" size={18} color="#fff" />
-              <Text style={styles.sendText}>
-                Watch an ad for +{AD_RULES.EXTRA_LIKES_PER_AD} likes ({adsLeft} left today)
+              <Feather name="play-circle" size={18} color={colors.brandForeground} />
+              <Text style={[styles.sendText, { color: colors.brandForeground }]}>
+                Watch an ad for {AD_RULES.EXTRA_LIKES_PER_AD} more pebbles ({adsLeft} left today)
               </Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
               onPress={() => onSend(note.trim())}
               disabled={outOfLikes}
-              style={[styles.send, { backgroundColor: colors.accent, opacity: outOfLikes ? 0.4 : 1 }]}
+              style={[styles.send, { backgroundColor: colors.primary, opacity: outOfLikes ? 0.4 : 1 }]}
               activeOpacity={0.85}
             >
-              <Feather name="heart" size={18} color="#fff" />
-              <Text style={styles.sendText}>{note.trim() ? "Send like with note" : "Send like"}</Text>
+              <Pebble size={24} fill={colors.primaryForeground} heart={colors.primary} shadow={false} />
+              <Text style={[styles.sendText, { color: colors.primaryForeground }]}>
+                {note.trim() ? "Send pebble with note" : `Send ${profile.name} a pebble`}
+              </Text>
             </TouchableOpacity>
+          )}
+          {!outOfLikes && (
+            <Text style={[styles.left, { color: colors.mutedForeground }]}>
+              {likesLeft} {likesLeft === 1 ? "pebble" : "pebbles"} left today
+            </Text>
           )}
           <TouchableOpacity onPress={onClose} style={styles.cancel}>
             <Text style={[styles.cancelText, { color: colors.mutedForeground }]}>Cancel</Text>
@@ -133,7 +141,8 @@ const styles = StyleSheet.create({
   count: { alignSelf: "flex-end", fontSize: 12, marginTop: -6 },
   outOfLikes: { fontSize: 13, textAlign: "center" },
   send: { height: 52, borderRadius: 14, flexDirection: "row", alignItems: "center", justifyContent: "center", gap: 8 },
-  sendText: { color: "#fff", fontSize: 16, fontWeight: "700" },
+  sendText: { color: "#fff", fontSize: 16, fontWeight: "700", flexShrink: 1, textAlign: "center" },
+  left: { fontSize: 13, textAlign: "center", marginTop: -4 },
   cancel: { height: 40, alignItems: "center", justifyContent: "center" },
   cancelText: { fontSize: 15, fontWeight: "500" },
 });

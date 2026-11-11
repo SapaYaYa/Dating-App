@@ -5,6 +5,7 @@ import React from "react";
 import { Platform, StyleSheet, View } from "react-native";
 import { useColorScheme } from "react-native";
 
+import { PebbleOutline } from "@/components/Gentoo";
 import { ReplyStatusSheet } from "@/components/ReplyStatusSheet";
 import { useColors } from "@/hooks/useColors";
 
@@ -20,7 +21,7 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.primary,
+        tabBarActiveTintColor: colors.brand,
         tabBarInactiveTintColor: colors.mutedForeground,
         tabBarShowLabel: false,
         tabBarStyle: {
@@ -54,9 +55,9 @@ export default function TabLayout() {
       <Tabs.Screen
         name="likes"
         options={{
-          tabBarIcon: ({ color, focused }) => (
-            <Feather name={focused ? "heart" : "heart"} size={24} color={color} />
-          ),
+          // Likes are pebbles in Gentoo.
+          tabBarIcon: ({ color }) => <PebbleOutline size={26} color={color} />,
+          tabBarAccessibilityLabel: "Pebbles",
         }}
       />
       <Tabs.Screen

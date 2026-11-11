@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { GentooPair, Gus, Pebble } from "@/components/Gentoo";
 import { ProfileScroll } from "@/components/ProfileScroll";
 import { ReportNoteSheet } from "@/components/ReportNoteSheet";
 import { MOCK_CITY_PROFILES, MOCK_PROFILES, type Profile } from "@/constants/mockData";
@@ -103,10 +104,10 @@ export default function LikesScreen() {
   return (
     <View style={[styles.root, { backgroundColor: colors.background }]}>
       <View style={[styles.header, { paddingTop: topPad + 12 }]}>
-        <Text style={[styles.title, { color: colors.foreground }]}>Likes You</Text>
+        <Text style={[styles.title, { color: colors.foreground }]}>Pebbles</Text>
         {loaded && pendingLikes.length > 0 && (
           <View style={[styles.countBadge, { backgroundColor: colors.accent }]}>
-            <Text style={styles.countText}>{pendingLikes.length}</Text>
+            <Text style={[styles.countText, { color: colors.accentForeground }]}>{pendingLikes.length}</Text>
           </View>
         )}
       </View>
@@ -119,14 +120,14 @@ export default function LikesScreen() {
 
       {!loaded ? (
         <View style={styles.emptyState}>
-          <Text style={[styles.emptySub, { color: colors.mutedForeground }]}>Loading likes…</Text>
+          <Text style={[styles.emptySub, { color: colors.mutedForeground }]}>Loading pebbles…</Text>
         </View>
       ) : pendingLikes.length === 0 ? (
         <View style={styles.emptyState}>
-          <Feather name="heart" size={52} color={colors.border} />
-          <Text style={[styles.emptyTitle, { color: colors.foreground }]}>No new likes yet</Text>
+          <Gus size={140} />
+          <Text style={[styles.emptyTitle, { color: colors.foreground }]}>No pebbles yet</Text>
           <Text style={[styles.emptySub, { color: colors.mutedForeground }]}>
-            When someone likes one of your photos or answers, you'll see it here
+            When someone gives a pebble to one of your photos or answers, you'll see it here.
           </Text>
         </View>
       ) : (
@@ -135,7 +136,7 @@ export default function LikesScreen() {
           contentContainerStyle={[styles.list, { paddingBottom: bottomPad + 16 }]}
         >
           <Text style={[styles.subtitle, { color: colors.mutedForeground }]}>
-            Tap someone to see their profile, then like back to match.
+            Tap someone to see their profile, then give a pebble back to match.
           </Text>
           {pendingLikes.map((profile) => (
             <View key={profile.id} style={[styles.card, { borderColor: colors.border }]}>
@@ -172,7 +173,7 @@ export default function LikesScreen() {
         {open && (
           <View style={[styles.root, { backgroundColor: colors.background }]}>
             <View style={[styles.detailHeader, { paddingTop: topPad + 8 }]}>
-              <TouchableOpacity onPress={() => setOpen(null)} style={styles.backBtn} accessibilityLabel="Back to likes">
+              <TouchableOpacity onPress={() => setOpen(null)} style={styles.backBtn} accessibilityLabel="Back to Pebbles">
                 <Feather name="arrow-left" size={22} color={colors.foreground} />
               </TouchableOpacity>
               <Text style={[styles.detailTitle, { color: colors.foreground }]}>{open.name}</Text>
@@ -203,11 +204,11 @@ export default function LikesScreen() {
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => likeBack(open)}
-                style={[styles.likeBackBtn, { backgroundColor: colors.accent }]}
+                style={[styles.likeBackBtn, { backgroundColor: colors.primary }]}
                 activeOpacity={0.85}
               >
-                <Feather name="heart" size={18} color="#fff" />
-                <Text style={styles.likeBackText}>Like back</Text>
+                <Pebble size={24} fill={colors.primaryForeground} heart={colors.primary} shadow={false} />
+                <Text style={[styles.likeBackText, { color: colors.primaryForeground }]}>Give a pebble back</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -217,12 +218,10 @@ export default function LikesScreen() {
       <Modal transparent visible={!!matched} animationType="fade" onRequestClose={() => setMatched(null)}>
         <View style={styles.matchOverlay}>
           <View style={[styles.matchCard, { backgroundColor: colors.card }]}>
-            <View style={[styles.matchIconWrap, { backgroundColor: colors.accent + "18" }]}>
-              <Feather name="heart" size={36} color={colors.accent} />
-            </View>
-            <Text style={[styles.matchTitle, { color: colors.foreground }]}>It's a Match!</Text>
+            <GentooPair size={140} />
+            <Text style={[styles.matchTitle, { color: colors.foreground }]}>It's a pair!</Text>
             <Text style={[styles.matchSub, { color: colors.mutedForeground }]}>
-              You and {matched?.name} liked each other
+              You and {matched?.name} both gave a pebble.
             </Text>
             {matched?.matchNote ? (
               <View style={[styles.matchNoteCard, { backgroundColor: colors.secondary }]}>
@@ -236,10 +235,10 @@ export default function LikesScreen() {
                 router.push("/(tabs)/matches");
               }}
             >
-              <Text style={[styles.matchBtnText, { color: colors.primaryForeground }]}>Send Message</Text>
+              <Text style={[styles.matchBtnText, { color: colors.primaryForeground }]}>Say hi to {matched?.name}</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={() => setMatched(null)} style={styles.matchSkip}>
-              <Text style={[styles.matchSkipText, { color: colors.mutedForeground }]}>Back to Likes</Text>
+              <Text style={[styles.matchSkipText, { color: colors.mutedForeground }]}>Back to Pebbles</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -254,7 +253,7 @@ export default function LikesScreen() {
   );
 }
 
-/** Which of your photos or answers they liked. */
+/** Which of your photos or answers they gave a pebble to. */
 function LikedItem({
   target,
   images,
@@ -274,8 +273,8 @@ function LikedItem({
     <View style={[styles.liked, large && styles.likedLarge]}>
       {photo ? <Image source={{ uri: photo }} style={large ? styles.likedPhotoLarge : styles.likedPhoto} /> : null}
       <View style={styles.likedText}>
-        <Text style={[styles.likedLabel, { color: colors.destructive }]}>
-          {target.kind === "photo" ? "LIKED YOUR PHOTO" : "LIKED YOUR ANSWER"}
+        <Text style={[styles.likedLabel, { color: colors.accent }]}>
+          {target.kind === "photo" ? "PEBBLE FOR YOUR PHOTO" : "PEBBLE FOR YOUR ANSWER"}
         </Text>
         {prompt ? (
           <>

@@ -5,6 +5,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { GreatChatPill, hasGreatChatBadge } from "@/components/GreatChatBadge";
 import type { Profile } from "@/constants/mockData";
 import type { LikeTarget } from "@/constants/prompts";
+import { Pebble } from "@/components/Gentoo";
 import { useColors } from "@/hooks/useColors";
 import { formatProfileDistance } from "@/utils/discoverFilters";
 
@@ -56,7 +57,7 @@ export function ProfileScroll({ profile, sharedBoard, onLike, hideDistance }: Pr
         accessibilityLabel={label}
         activeOpacity={0.8}
       >
-        <Feather name="heart" size={onPhoto ? 24 : 22} color={colors.accent} />
+        <Pebble size={onPhoto ? 32 : 28} fill={colors.ice} heart={colors.accent} shadow={false} />
       </TouchableOpacity>
     ) : null;
 
@@ -74,7 +75,7 @@ export function ProfileScroll({ profile, sharedBoard, onLike, hideDistance }: Pr
                   </Text>
                 </View>
               )}
-              {heart(block, `Like ${profile.name}'s photo ${block.index + 1}`, true)}
+              {heart(block, `Give ${profile.name} a pebble for photo ${block.index + 1}`, true)}
             </View>
           );
         }
@@ -83,7 +84,7 @@ export function ProfileScroll({ profile, sharedBoard, onLike, hideDistance }: Pr
             <View key={`prompt-${block.index}`} style={[styles.prompt, { backgroundColor: colors.card }]}>
               <Text style={[styles.question, { color: colors.mutedForeground }]}>{block.question}</Text>
               <Text style={[styles.answer, { color: colors.foreground }]}>{block.answer}</Text>
-              {heart(block, `Like ${profile.name}'s answer: ${block.question}`, false)}
+              {heart(block, `Give ${profile.name} a pebble for the answer: ${block.question}`, false)}
             </View>
           );
         }
