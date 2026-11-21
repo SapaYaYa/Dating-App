@@ -7,9 +7,22 @@ agreed.
 
 ## 1. Decisions that block launch
 
-- [ ] **Name:** have a trademark lawyer clear "Gentoo" for a dating app (the
-      Gentoo Linux project holds a US software trademark). Check domains and
-      social handles for Gentoo too.
+- [x] **Name (decided):** the brand is **Gentoo Dating**, "Gentoo" for
+      short, run by **For Happiness LLC** under a DBA. No lawyer. Our own
+      search found no dating app named Gentoo; the Gentoo Foundation's US
+      software trademark (GENTOO, reg. 2966511) is the known risk.
+  - [ ] Register the DBA "Gentoo Dating" (and "Gentoo" if used publicly) for
+        For Happiness LLC in its state, plus county if required.
+  - [ ] Optional: file a USPTO trademark for GENTOO DATING ourselves
+        ($350 per class; dating services class 45, app class 9).
+  - [ ] Search the USPTO database (tmsearch.uspto.gov) for live GENTOO marks.
+  - [ ] Check domains and social handles for Gentoo Dating.
+  - [ ] Apple and Google developer accounts in the LLC's name (Apple needs a
+        D-U-N-S number for an organization account).
+  - [ ] Add the DBA to the LLC's bank account.
+  - [ ] State online-dating safety laws (New Jersey, New York, Illinois,
+        Texas, Florida and others): show a safety-awareness notice at sign-up
+        and say whether we run criminal background checks.
 - [ ] **Legal and safety basics:**
   - [ ] Terms of Service, Privacy Policy and Community Guidelines.
   - [ ] Delete account from inside the app (Apple requires it).
