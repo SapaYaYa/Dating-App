@@ -25,6 +25,7 @@ import { PROMPT_RULES, promptsComplete, type PromptAnswer } from "@/constants/pr
 import { PromptsEditor, emptyPrompts } from "@/components/PromptsEditor";
 import { DrumRollPicker } from "@/components/DrumRollPicker";
 import { SafetyTips } from "@/components/SafetyTips";
+import { openLegal } from "@/constants/legal";
 import {
   DEFAULT_LOOKING_FOR,
   LOOKING_FOR_OPTIONS,
@@ -114,6 +115,7 @@ export default function RegisterScreen() {
 
   const [step, setStep] = useState(1);
   const [safetyAcknowledged, setSafetyAcknowledged] = useState(false);
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
   const [verifyCode, setVerifyCode] = useState("");
   const [submitError, setSubmitError] = useState("");
@@ -361,7 +363,8 @@ export default function RegisterScreen() {
     if (step === 5) return promptsComplete(prompts);
     if (step === 6) return photos.filter(Boolean).length >= MIN_PHOTOS;
     // Required by state dating-safety laws: read the tips before joining.
-    return safetyAcknowledged;
+    // Agreeing to the Terms by ticking a box is what makes them enforceable.
+    return safetyAcknowledged && termsAccepted;
   };
 
   const stepTitles = ["Let's start", "Show me", "Your account", "About you", "Your prompts", "Show yourself", "Dating safely"];
@@ -807,6 +810,41 @@ export default function RegisterScreen() {
                   I understand. I've read these safety tips and that Gentoo does not run criminal background checks.
                 </Text>
               </TouchableOpacity>
+              <View style={[styles.ackRow, { borderColor: colors.border, backgroundColor: colors.card }]}>
+                <TouchableOpacity
+                  onPress={() => setTermsAccepted(!termsAccepted)}
+                  accessibilityRole="checkbox"
+                  accessibilityState={{ checked: termsAccepted }}
+                  accessibilityLabel="I agree to the Terms of Service and Privacy Policy"
+                  hitSlop={12}
+                  activeOpacity={0.8}
+                >
+                  <View
+                    style={[
+                      styles.ackBox,
+                      { borderColor: termsAccepted ? colors.primary : colors.mutedForeground },
+                      termsAccepted && { backgroundColor: colors.primary },
+                    ]}
+                  >
+                    {termsAccepted && <Feather name="check" size={14} color={colors.primaryForeground} />}
+                  </View>
+                </TouchableOpacity>
+                <Text style={[styles.ackText, { color: colors.foreground }]}>
+                  I agree to the{" "}
+                  <Text style={[styles.legalLink, { color: colors.brand }]} onPress={() => openLegal("terms")}>
+                    Terms of Service
+                  </Text>{" "}
+                  and{" "}
+                  <Text style={[styles.legalLink, { color: colors.brand }]} onPress={() => openLegal("privacy")}>
+                    Privacy Policy
+                  </Text>
+                  , including the{" "}
+                  <Text style={[styles.legalLink, { color: colors.brand }]} onPress={() => openLegal("guidelines")}>
+                    Community Guidelines
+                  </Text>
+                  .
+                </Text>
+              </View>
             </View>
           )}
 
@@ -886,6 +924,7 @@ const styles = StyleSheet.create({
   ackRow: { flexDirection: "row", gap: 12, alignItems: "center", padding: 14, borderRadius: 14, borderWidth: 1, minHeight: 48 },
   ackBox: { width: 22, height: 22, borderRadius: 6, borderWidth: 2, alignItems: "center", justifyContent: "center" },
   ackText: { flex: 1, fontSize: 14, lineHeight: 20, fontWeight: "600" },
+  legalLink: { fontWeight: "700", textDecorationLine: "underline" },
   stepSub: { fontSize: 15 },
   fields: { gap: 20, marginBottom: 28 },
   fieldGroup: { gap: 8 },

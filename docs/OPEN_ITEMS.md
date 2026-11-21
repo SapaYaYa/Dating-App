@@ -33,9 +33,9 @@ agreed.
         period. Revisit with a lawyer once there's real revenue (e.g. when
         the subscription launches); adding arbitration later needs users to
         accept the updated Terms.
-  - [ ] Sign-up: an "I agree to the Terms and Privacy Policy" checkbox
-        (courts enforce agreed-by-click terms; Terms linked only in a menu
-        often aren't).
+  - [x] Sign-up: "I agree to the Terms of Service and Privacy Policy"
+        checkbox built (last step, required to create an account); the
+        documents are also linked under Profile > Privacy & Safety.
   - [ ] Delete account from inside the app (Apple requires it).
   - [x] "Privacy & Safety" on Profile now shows the safety tips and how to
         report and block.

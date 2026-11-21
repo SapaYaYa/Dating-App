@@ -55,8 +55,14 @@ private/incognito window to start fresh. To test kilometers, set your phone
       substitute for acting with caution..."), and how to report and block.
       Back returns to Profile. Readable in light and dark mode.
 - [ ] Sign-up (real app only, needs Clerk): step 7 of 7, "Dating safely",
-      shows the same statement and tips; Create Account stays disabled until
-      "I understand..." is ticked.
+      shows the same statement and tips, then two checkboxes: "I
+      understand..." and "I agree to the Terms of Service and Privacy
+      Policy, including the Community Guidelines". Create Account stays
+      disabled until both are ticked. Tapping a document name opens it in a
+      browser without ticking the box.
+- [ ] Privacy & Safety has a Legal section; Terms of Service, Privacy Policy
+      and Community Guidelines each open in a browser (pages must be
+      published first).
 
 ### Discover (scroll)
 - [ ] One person at a time as a scrolling profile: first photo with name and

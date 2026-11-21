@@ -57,8 +57,10 @@ as **Gentoo Dating** ("Gentoo" for short).
   Guidelines). Before publishing, fill in the [bracketed] placeholders:
   effective date, mailing address, final support email, data deletion web
   page, cancellation instructions.
-- [ ] Host all three on a public web page and link them in the app and the
-      store listings.
+- [ ] Publish all three at the addresses the app links to:
+      gentoodating.com/terms, /privacy and /guidelines (set in
+      `artifacts/mobile/constants/legal.ts`; change them there if the domain
+      differs). Also link them in the store listings.
 - [ ] **Mailing address** for the policies and the copyright agent (a PO box
       or the LLC's registered agent address works).
 - [ ] **Register a DMCA copyright agent** with the U.S. Copyright Office

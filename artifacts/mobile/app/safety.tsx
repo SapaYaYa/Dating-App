@@ -5,6 +5,7 @@ import { Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { SafetyTips } from "@/components/SafetyTips";
+import { openLegal } from "@/constants/legal";
 import { useColors } from "@/hooks/useColors";
 
 /** Profile > Privacy & Safety: the safety tips and how to report or block. */
@@ -33,6 +34,25 @@ export default function SafetyScreen() {
             you won't see each other again.
           </Text>
         </View>
+
+        <Text style={[styles.h2, { color: colors.foreground }]}>Legal</Text>
+        <View style={[styles.card, styles.links, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          {([
+            ["terms", "Terms of Service"],
+            ["privacy", "Privacy Policy"],
+            ["guidelines", "Community Guidelines"],
+          ] as const).map(([page, label], i) => (
+            <TouchableOpacity
+              key={page}
+              onPress={() => openLegal(page)}
+              style={[styles.linkRow, i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border }]}
+              accessibilityRole="link"
+            >
+              <Text style={[styles.linkText, { color: colors.foreground }]}>{label}</Text>
+              <Feather name="external-link" size={16} color={colors.mutedForeground} />
+            </TouchableOpacity>
+          ))}
+        </View>
       </ScrollView>
     </View>
   );
@@ -47,4 +67,7 @@ const styles = StyleSheet.create({
   h2: { fontSize: 18, fontWeight: "800", marginTop: 6 },
   card: { borderRadius: 14, borderWidth: 1, padding: 14 },
   body: { fontSize: 14, lineHeight: 20 },
+  links: { paddingVertical: 0 },
+  linkRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", minHeight: 48 },
+  linkText: { fontSize: 15, fontWeight: "600" },
 });

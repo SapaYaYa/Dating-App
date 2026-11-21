@@ -218,6 +218,14 @@ Rules live in `artifacts/mobile/constants/ads.ts`; the app plays ads through
 - [ ] App Store and Google Play listings, screenshots and descriptions in
       the Gentoo look and wording.
 
+## Terms acceptance
+
+- [ ] Save proof that each person agreed to the Terms: the version (effective
+      date) and the time they ticked the box at sign-up, stored on the
+      server with their account. Courts and subscription laws can ask for it.
+- [ ] When the Terms or Privacy Policy change in an important way, ask people
+      to accept the new version in the app (and save that too).
+
 ## On hold
 
 - [ ] **Music (theme song or top artists):** on hold. Spotify limits new
