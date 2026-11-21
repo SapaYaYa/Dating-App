@@ -48,6 +48,16 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Nowhere says "Spark", "like" or "It's a Match!" (wording is pebbles and
       "It's a pair!"); the Matches tab keeps its name.
 
+### Dating safety notice
+- [ ] Profile > Privacy & Safety opens "Dating safely on Gentoo": the
+      statement "Gentoo does not conduct criminal background screenings of
+      its members.", 8 numbered safety tips (the first: "There is no
+      substitute for acting with caution..."), and how to report and block.
+      Back returns to Profile. Readable in light and dark mode.
+- [ ] Sign-up (real app only, needs Clerk): step 7 of 7, "Dating safely",
+      shows the same statement and tips; Create Account stays disabled until
+      "I understand..." is ticked.
+
 ### Discover (scroll)
 - [ ] One person at a time as a scrolling profile: first photo with name and
       age, then the basics card, then answers and photos alternating.

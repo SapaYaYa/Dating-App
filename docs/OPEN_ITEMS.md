@@ -20,14 +20,17 @@ agreed.
   - [ ] Apple and Google developer accounts in the LLC's name (Apple needs a
         D-U-N-S number for an organization account).
   - [ ] Add the DBA to the LLC's bank account.
-  - [ ] State online-dating safety laws (New Jersey, New York, Illinois,
-        Texas, Florida and others): show a safety-awareness notice at sign-up
-        and say whether we run criminal background checks.
+  - [x] State online-dating safety laws: decided **no criminal background
+        checks**; the statement and 8 safety tips are built into sign-up
+        (step 7, must be acknowledged) and Profile > Privacy & Safety.
+  - Paperwork items (trade name filing, accounts, legal documents) now live
+    in `ADMIN_CHECKLIST.md`.
 - [ ] **Legal and safety basics:**
   - [ ] Terms of Service, Privacy Policy and Community Guidelines.
   - [ ] Delete account from inside the app (Apple requires it).
-  - [ ] Decide what "Privacy & Safety" and "Help & Support" on Profile do
-        (both do nothing today).
+  - [x] "Privacy & Safety" on Profile now shows the safety tips and how to
+        report and block.
+  - [ ] Decide what "Help & Support" on Profile does (nothing today).
   - [ ] Age: is typing a birthday (18+) enough, or do we verify age?
   - [ ] Who reviews reports, how fast, and what happens to the reported
         person.

@@ -24,6 +24,7 @@ import { BIO_MAX } from "@/constants/profileFields";
 import { PROMPT_RULES, promptsComplete, type PromptAnswer } from "@/constants/prompts";
 import { PromptsEditor, emptyPrompts } from "@/components/PromptsEditor";
 import { DrumRollPicker } from "@/components/DrumRollPicker";
+import { SafetyTips } from "@/components/SafetyTips";
 import {
   DEFAULT_LOOKING_FOR,
   LOOKING_FOR_OPTIONS,
@@ -84,7 +85,7 @@ function clerkErrorDetails(error: unknown, fallback: string): {
   };
 }
 
-const FORM_STEPS = 6;
+const FORM_STEPS = 7;
 // Sign-up asks for exactly the minimum; more can be added later on Profile.
 const MIN_PHOTOS = PHOTO_RULES.MIN_PHOTOS;
 const MAX_PHOTOS = PHOTO_RULES.MIN_PHOTOS;
@@ -112,6 +113,7 @@ export default function RegisterScreen() {
   const isLoading = fetchStatus === "fetching";
 
   const [step, setStep] = useState(1);
+  const [safetyAcknowledged, setSafetyAcknowledged] = useState(false);
   const [pendingVerification, setPendingVerification] = useState(false);
   const [verifyCode, setVerifyCode] = useState("");
   const [submitError, setSubmitError] = useState("");
@@ -357,10 +359,12 @@ export default function RegisterScreen() {
     if (step === 3) return email.trim().length > 0 && password.trim().length >= 8;
     if (step === 4) return true;
     if (step === 5) return promptsComplete(prompts);
-    return photos.filter(Boolean).length >= MIN_PHOTOS;
+    if (step === 6) return photos.filter(Boolean).length >= MIN_PHOTOS;
+    // Required by state dating-safety laws: read the tips before joining.
+    return safetyAcknowledged;
   };
 
-  const stepTitles = ["Let's start", "Show me", "Your account", "About you", "Your prompts", "Show yourself"];
+  const stepTitles = ["Let's start", "Show me", "Your account", "About you", "Your prompts", "Show yourself", "Dating safely"];
   const stepSubs = [
     "Your name, birthday & gender",
     "Choose the gender identities you want in your card stack",
@@ -368,6 +372,7 @@ export default function RegisterScreen() {
     "Write a short bio (optional)",
     "Pick 3 prompts and answer them. They're what people like and start conversations with.",
     `Add ${PHOTO_RULES.MIN_PHOTOS} photos to show who you are. You can add up to ${PHOTO_RULES.MAX_PHOTOS} later on your profile.`,
+    "A few things to know before you meet people on Gentoo. You can find these anytime in Profile > Privacy & Safety.",
   ];
 
   const filledPhotos = photos.filter(Boolean).length;
@@ -779,6 +784,32 @@ export default function RegisterScreen() {
             </View>
           )}
 
+          {step === 7 && (
+            <View style={styles.fields}>
+              <SafetyTips />
+              <TouchableOpacity
+                onPress={() => setSafetyAcknowledged(!safetyAcknowledged)}
+                style={[styles.ackRow, { borderColor: colors.border, backgroundColor: colors.card }]}
+                accessibilityRole="checkbox"
+                accessibilityState={{ checked: safetyAcknowledged }}
+                activeOpacity={0.8}
+              >
+                <View
+                  style={[
+                    styles.ackBox,
+                    { borderColor: safetyAcknowledged ? colors.primary : colors.mutedForeground },
+                    safetyAcknowledged && { backgroundColor: colors.primary },
+                  ]}
+                >
+                  {safetyAcknowledged && <Feather name="check" size={14} color={colors.primaryForeground} />}
+                </View>
+                <Text style={[styles.ackText, { color: colors.foreground }]}>
+                  I understand. I've read these safety tips and that Gentoo does not run criminal background checks.
+                </Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
           {displayError ? (
             <View style={[styles.errorBox, { backgroundColor: colors.destructive + "18" }]}>
               <Feather name="alert-circle" size={14} color={colors.destructive} />
@@ -852,6 +883,9 @@ const styles = StyleSheet.create({
   stepCounter: { fontSize: 13, fontWeight: "600" },
   headingSection: { marginBottom: 28, gap: 6 },
   stepTitle: { fontSize: 28, fontWeight: "800" },
+  ackRow: { flexDirection: "row", gap: 12, alignItems: "center", padding: 14, borderRadius: 14, borderWidth: 1, minHeight: 48 },
+  ackBox: { width: 22, height: 22, borderRadius: 6, borderWidth: 2, alignItems: "center", justifyContent: "center" },
+  ackText: { flex: 1, fontSize: 14, lineHeight: 20, fontWeight: "600" },
   stepSub: { fontSize: 15 },
   fields: { gap: 20, marginBottom: 28 },
   fieldGroup: { gap: 8 },

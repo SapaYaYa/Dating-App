@@ -322,7 +322,7 @@ export default function ProfileScreen() {
           // Off: your boards aren't shown on Discover cards or used to boost
           // people, in either direction.
           { icon: "users", label: "Show my boards on Discover", toggle: true, value: showBoardsOnDiscover, onToggle: () => setShowBoardsOnDiscover(!showBoardsOnDiscover) },
-          { icon: "shield", label: "Privacy & Safety" },
+          { icon: "shield", label: "Privacy & Safety", onPress: () => router.push("/safety") },
           { icon: "help-circle", label: "Help & Support" },
         ].map((item, i, arr) => (
           <View key={item.label}>

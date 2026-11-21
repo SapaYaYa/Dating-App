@@ -54,6 +54,7 @@ function RootLayoutNav() {
       <Stack.Screen name="home-city" options={{ headerShown: false }} />
       <Stack.Screen name="prompts" options={{ headerShown: false }} />
       <Stack.Screen name="edit-profile" options={{ headerShown: false }} />
+      <Stack.Screen name="safety" options={{ headerShown: false }} />
       <Stack.Screen name="community/create" options={{ headerShown: false, presentation: "modal" }} />
       <Stack.Screen name="community/[id]" options={{ headerShown: false }} />
     </Stack>
