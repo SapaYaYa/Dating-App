@@ -26,7 +26,14 @@ agreed.
   - Paperwork items (trade name filing, accounts, legal documents) now live
     in `ADMIN_CHECKLIST.md`.
 - [ ] **Legal and safety basics:**
-  - [ ] Terms of Service, Privacy Policy and Community Guidelines.
+  - [x] Terms of Service, Privacy Policy and Community Guidelines drafted
+        in `docs/legal/` (no lawyer, by choice).
+  - [ ] Arbitration: add a binding arbitration agreement and class action
+        waiver to the Terms, or keep disputes in Fulton County courts (the
+        current draft)?
+  - [ ] Sign-up: an "I agree to the Terms and Privacy Policy" checkbox
+        (courts enforce agreed-by-click terms; Terms linked only in a menu
+        often aren't).
   - [ ] Delete account from inside the app (Apple requires it).
   - [x] "Privacy & Safety" on Profile now shows the safety tips and how to
         report and block.

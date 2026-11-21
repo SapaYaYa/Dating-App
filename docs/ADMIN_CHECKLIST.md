@@ -49,13 +49,31 @@ as **Gentoo Dating** ("Gentoo" for short).
 
 ## Legal documents
 
-- [ ] **Terms of Service.**
-- [ ] **Privacy Policy** (required by Apple, Google and California law),
-      including what the ad network collects.
-- [ ] **Community Guidelines** (what's allowed and what gets someone
-      removed).
+- [x] **Terms of Service** drafted (`docs/legal/TERMS_OF_SERVICE.md`).
+- [x] **Privacy Policy** drafted (`docs/legal/PRIVACY_POLICY.md`).
+- [x] **Community Guidelines** drafted
+      (`docs/legal/COMMUNITY_GUIDELINES.md`).
+- Drafts are in `docs/legal/` (Terms of Service, Privacy Policy, Community
+  Guidelines). Before publishing, fill in the [bracketed] placeholders:
+  effective date, mailing address, final support email, data deletion web
+  page, cancellation instructions.
 - [ ] Host all three on a public web page and link them in the app and the
       store listings.
+- [ ] **Mailing address** for the policies and the copyright agent (a PO box
+      or the LLC's registered agent address works).
+- [ ] **Register a DMCA copyright agent** with the U.S. Copyright Office
+      ($6, renew every 3 years); put the agent's details in the Terms.
+- [ ] **Web page for account deletion requests** (Google Play requires a
+      web link as well as in-app deletion).
+- [ ] **Confirm which states give a 3-business-day right to cancel** a
+      dating subscription (New York and Illinois confirmed; others reported
+      in dating apps' terms include Arizona, California, Connecticut, Iowa,
+      Minnesota, North Carolina, Ohio, Rhode Island and Wisconsin) and how
+      we'll process those refunds.
+- [ ] **Check whether Georgia's privacy bill (SB 111) became law** and, if
+      so, what it requires (sources conflict). The draft Privacy Policy
+      already gives every user access, correction, deletion and appeal
+      rights.
 - [ ] **State dating-safety laws:** before launch, check New Jersey's and
       New York's current wording against our in-app safety notice and the
       "no criminal background screenings" statement (built into sign-up and
