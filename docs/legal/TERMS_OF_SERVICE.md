@@ -183,8 +183,6 @@ of these Terms.
   Fulton County, Georgia, and you and we consent to those courts'
   jurisdiction. Either of us may bring a claim in small claims court
   instead, if it qualifies.
-- [Decision pending: whether to add a binding arbitration agreement and
-  class action waiver. Not included in this draft.]
 
 ## 15. Copyright complaints
 

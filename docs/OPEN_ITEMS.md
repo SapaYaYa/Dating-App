@@ -28,9 +28,11 @@ agreed.
 - [ ] **Legal and safety basics:**
   - [x] Terms of Service, Privacy Policy and Community Guidelines drafted
         in `docs/legal/` (no lawyer, by choice).
-  - [ ] Arbitration: add a binding arbitration agreement and class action
-        waiver to the Terms, or keep disputes in Fulton County courts (the
-        current draft)?
+  - [x] Disputes (decided): **courts, no arbitration.** Georgia law,
+        Fulton County courts, small claims allowed, 60-day talk-first
+        period. Revisit with a lawyer once there's real revenue (e.g. when
+        the subscription launches); adding arbitration later needs users to
+        accept the updated Terms.
   - [ ] Sign-up: an "I agree to the Terms and Privacy Policy" checkbox
         (courts enforce agreed-by-click terms; Terms linked only in a menu
         often aren't).
