@@ -82,6 +82,21 @@ private/incognito window to start fresh. To test kilometers, set your phone
       signal. iPhone: test with Apple's sandbox or a test account set to
       each age range.
 
+### Welcome from Gus
+- [ ] The first time the app opens after sign-up (and the first time the
+      preview opens), Gus's welcome covers the screen: 3 cards with art,
+      dots for which card you're on, Next, and Skip (top right; not on the
+      last card). Readable in light and dark mode.
+- [ ] Card 1 "Pebbles are how you like someone" (Gus with a pebble), card 2
+      "Give a pebble back and it's a pair" (two penguins), card 3 "Reply,
+      and you'll rise" with "Start exploring".
+- [ ] Start exploring or Skip closes it, and it never shows again on that
+      phone, even after reloading.
+- [ ] Badge messages (Slow to reply warning, Great Chat) wait until the
+      welcome is closed, then show as before.
+- [ ] Deleting the account clears it, so a new account on the same phone
+      sees it again.
+
 ### Notification settings
 - [ ] Profile > Account > Notifications opens a screen (no longer a single
       switch) with four switches, all on at first: New matches, Messages,

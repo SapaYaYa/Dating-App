@@ -8,6 +8,7 @@ import { useColorScheme } from "react-native";
 
 import { PebbleOutline } from "@/components/Gentoo";
 import { ReplyStatusSheet } from "@/components/ReplyStatusSheet";
+import { WelcomeSheet, useWelcomeNeeded } from "@/components/WelcomeSheet";
 import { useColors } from "@/hooks/useColors";
 
 export default function TabLayout() {
@@ -16,6 +17,7 @@ export default function TabLayout() {
   const isDark = scheme === "dark";
   const isIOS = Platform.OS === "ios";
   const isWeb = Platform.OS === "web";
+  const [welcomeNeeded, finishWelcome] = useWelcomeNeeded();
 
   return (
     <>
@@ -88,7 +90,8 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
-    <ReplyStatusSheet />
+    {/* The welcome comes first; badge messages wait until it's done. */}
+    {welcomeNeeded ? <WelcomeSheet onDone={finishWelcome} /> : welcomeNeeded === false ? <ReplyStatusSheet /> : null}
     </>
   );
 }
