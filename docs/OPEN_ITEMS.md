@@ -90,8 +90,20 @@ agreed.
 - [x] Community boards and events (decided): **launch without boards.**
       Add them once enough people use Gentoo in a city. Events come later
       still (with the Event Goer challenge).
-- [ ] Push notifications: which ones (new pebble, match, message, Slow to
-      reply warning, badge earned)? The switch does nothing today.
+- [x] Push notifications (decided):
+  - New match and new message: on, sent right away.
+  - New pebbles: on, bundled at most once a day ("3 people sent you
+    pebbles").
+  - Slow to reply warning: on, at most once a day, before the badge would
+    appear.
+  - Badge or level earned, and daily pebbles refreshed: no notification
+    (shown in the app).
+  - Quiet hours 10pm to 8am in the person's time zone; anything due then
+    waits until 8am.
+  - Settings: one switch per type instead of the single Notifications
+    switch.
+  - Sending needs the server (matches and chat on the server first) and a
+    phone build with Expo push notifications.
 - [ ] Time zone loophole for the daily reset: ignore or close?
 - [ ] Onboarding: should Gus welcome new users and explain pebbles?
 
