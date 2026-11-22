@@ -55,9 +55,16 @@ agreed.
   - [x] Report review (decided): a daily email of open reports to you;
         serious reports reviewed within 24 hours, the rest within 3 days;
         anyone reported by 3 different people is hidden from Discover until
-        reviewed. Still open: warn, suspend and ban actions, and a review
-        page (today you mark reports reviewed with an admin address).
-  - [ ] Real photo verification ("Get Verified" approves everyone today).
+        reviewed. Serious reports (now including Underage, and Scam or asking
+        for money) are also emailed instantly. Still open: warn, suspend and
+        ban actions, and a review page (today you mark reports reviewed with
+        an admin address).
+  - [x] Photo verification (decided: option C): turned off for launch, so
+        no Verified badge, Get Verified card or "Verified only" filter
+        (`PHOTO_VERIFICATION_ENABLED` in `constants/verification.ts`).
+        Later, once there's revenue: an automatic face match (Amazon
+        Rekognition, AWS Face Liveness or Persona), after researching the
+        biometric privacy laws (Illinois, Texas, Washington) and costs.
 - [ ] **Challenges:** they're the only way to earn points (levels, free undo,
       6th pebble, Priority, extra pebbles) but they're placeholders with a
       "Mark Complete" button. Decide the real list, the points and pebbles

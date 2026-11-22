@@ -68,7 +68,7 @@ to how you treat people you met on Gentoo when you meet them in person.
   chat, from their profile, or from a pebble note. Reporting someone also
   blocks them, so you won't see each other again.
 - **We review reports**, aiming for 24 hours for serious ones (such as
-  harassment, violence or explicit photos) and 3 days for the rest, and may
+  harassment, violence, explicit photos, anyone under 18 or scams) and 3 days for the rest, and may
   remove content, warn, suspend or permanently ban the account. Someone
   reported by several people may be hidden while we review. Serious violations, such as threats, scams, intimate
   images without consent or anything involving minors, lead to an immediate

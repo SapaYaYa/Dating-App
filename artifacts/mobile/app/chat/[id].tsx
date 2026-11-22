@@ -401,6 +401,7 @@ export default function ChatScreen() {
           style={[styles.iconBtn, { backgroundColor: colors.secondary }]}
           onPress={handleMoreOptions}
           disabled={alreadyReported}
+          accessibilityLabel={alreadyReported ? "Reported" : "More options"}
         >
           {alreadyReported ? (
             <Feather name="flag" size={16} color={colors.mutedForeground} />

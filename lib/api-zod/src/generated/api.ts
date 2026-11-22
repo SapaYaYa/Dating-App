@@ -306,6 +306,8 @@ export const CreateReportBody = zod.object({
     "Violence",
     "Catfishing",
     "Impersonation",
+    "Underage",
+    "Scam or asking for money",
   ]),
   note: zod
     .string()

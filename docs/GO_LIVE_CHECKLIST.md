@@ -50,12 +50,22 @@ Check items off as they're done.
       written to the server log.
 - [ ] Set `ADMIN_TOKEN` to a long random secret (24+ characters) to turn on
       the admin addresses; keep it private.
-- [ ] Send yourself a test digest before launch.
+- [ ] Send yourself a test digest and a test serious report before launch.
 - [ ] Discover must also hide auto-hidden people once Discover comes from
       the server's real profiles (`GET /profiles` already does).
 - [ ] Later: a simple review page instead of the admin addresses, and
       warn, suspend and ban actions (the outcome is only recorded today).
 - [ ] Later: board and post reports on the server, in the same digest.
+
+## Photo verification (off for launch)
+
+- [ ] Keep `PHOTO_VERIFICATION_ENABLED` false in
+      `artifacts/mobile/constants/verification.ts` until a real check
+      exists; the old Get Verified screen (`app/verify.tsx`) approves
+      everyone and must not be reachable.
+- [ ] Later: pick an automatic face-match service, research the biometric
+      privacy laws first, add it to the Privacy Policy, then turn the
+      switch on.
 
 ## Help & Support
 

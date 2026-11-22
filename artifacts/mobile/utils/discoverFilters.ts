@@ -1,3 +1,4 @@
+import { PHOTO_VERIFICATION_ENABLED } from "@/constants/verification";
 import type { DiscoverFilters } from "@/components/FilterModal";
 import type { Profile } from "@/constants/mockData";
 import { formatDistance } from "@/utils/distance";
@@ -33,6 +34,6 @@ export function matchesDiscoverFilters(profile: Profile, filters: DiscoverFilter
   if (filters.interests.length > 0 && !profile.interests.some((i) => filters.interests.includes(i))) {
     return false;
   }
-  if (filters.verifiedOnly && !profile.verified) return false;
+  if (PHOTO_VERIFICATION_ENABLED && filters.verifiedOnly && !profile.verified) return false;
   return true;
 }

@@ -6,6 +6,7 @@ import { GreatChatPill, hasGreatChatBadge } from "@/components/GreatChatBadge";
 import type { Profile } from "@/constants/mockData";
 import type { LikeTarget } from "@/constants/prompts";
 import { Pebble } from "@/components/Gentoo";
+import { PHOTO_VERIFICATION_ENABLED } from "@/constants/verification";
 import { useColors } from "@/hooks/useColors";
 import { formatProfileDistance } from "@/utils/discoverFilters";
 
@@ -88,12 +89,13 @@ export function ProfileScroll({ profile, sharedBoard, onLike, hideDistance }: Pr
             </View>
           );
         }
+        const showVerified = PHOTO_VERIFICATION_ENABLED && profile.verified;
         return (
           <View key="basics" style={[styles.basics, { borderColor: colors.border }]}>
-            {(hasGreatChatBadge(profile.badges) || profile.verified || sharedBoard) && (
+            {(hasGreatChatBadge(profile.badges) || showVerified || sharedBoard) && (
               <View style={styles.tags}>
                 {hasGreatChatBadge(profile.badges) && <GreatChatPill />}
-                {profile.verified && (
+                {showVerified && (
                   <View style={[styles.tag, { backgroundColor: colors.superLike }]}>
                     <Feather name="check-circle" size={13} color="#fff" />
                     <Text style={styles.tagText}>Verified</Text>

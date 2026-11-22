@@ -120,7 +120,8 @@ private/incognito window to start fresh. To test kilometers, set your phone
 ### Discover (scroll)
 - [ ] One person at a time as a scrolling profile: first photo with name and
       age, then the basics card, then answers and photos alternating.
-- [ ] Basics card: Great Chat, Verified and "Both in ..." tags; Lives in,
+- [ ] Basics card: Great Chat and "Both in ..." tags (no Verified tag while
+      photo verification is off); Lives in,
       distance, job, bio and interests. No song, Spotify or Instagram
       anywhere (music is on hold).
 - [ ] Every photo and every answer has a pebble button (a like); there's no
@@ -217,6 +218,11 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Block: back to Matches, the person is gone everywhere (Discover, Likes,
       Matches, boards).
 - [ ] Unmatch: same, the person is gone everywhere.
+- [ ] The "..." button reads "More options" to screen readers.
+- [ ] Report reasons: Fake Profile, Harassment, Spam, Inappropriate
+      Photos, Violence, Catfishing, Impersonation, Underage, and Scam or
+      asking for money. All 9 fit on a normal phone; on a small phone the
+      list scrolls and shows a scroll bar.
 - [ ] Report: pick a category, add a note, submit (needs the server; fails
       in the preview). The confirmation says they've been blocked; Done
       leaves the chat.
@@ -235,7 +241,7 @@ private/incognito window to start fresh. To test kilometers, set your phone
       badge (needs a fresh start or the server to see in full).
 
 ### Great Chat badge
-- [ ] Shown before and after matching: "Great Chat" next to Verified on
+- [ ] Shown before and after matching: "Great Chat" on
       Discover cards, on the full profile, by the name in chat, on the photo
       in Matches.
 - [ ] Your own card shows no numbers, only the badge and a short explanation.
@@ -295,7 +301,10 @@ private/incognito window to start fresh. To test kilometers, set your phone
       message and doesn't add it; tapping a picked one removes it.
 - [ ] Saved interests show under My Interests. With none, it shows only
       "Add interests" (no made-up interests).
-- [ ] Get Verified flow runs. It's a placeholder that approves automatically.
+- [ ] Photo verification is off: no Get Verified card and no Verified or
+      Pending badge on Profile (even if a status was saved before), no
+      Verified tag on Discover cards, and no "Verified profiles only" filter
+      (an old saved filter is ignored and not counted).
 - [ ] There's no Profile Strength score on Profile.
 - [ ] Level, streak and Priority (level 5+) badges show correctly.
 
@@ -427,11 +436,16 @@ private/incognito window to start fresh. To test kilometers, set your phone
       outcome is rejected.
 - [ ] The daily email arrives once a day after 8am Eastern, only when there
       are open reports, and lists every open report most urgent first:
-      category, SERIOUS for Harassment, Violence and Inappropriate Photos,
+      category, SERIOUS for Harassment, Violence, Inappropriate Photos,
+      Underage, and Scam or asking for money,
       "due in" or "OVERDUE by" (24h serious, 3 days the rest), who was
       reported, how many people reported them, whether they're hidden, who
       reported, when, and the note.
 - [ ] `GET /api/admin/reports/digest` shows the same text on demand.
+- [ ] A serious report is also emailed right away ("Gentoo: serious report
+      (category)", with who, by whom, the note and the review deadline);
+      other reports wait for the daily email. A failed instant email doesn't
+      stop the report from saving.
 - [ ] Restarting the server the same day doesn't send a second email; if
       sending fails, it tries again within the hour.
 

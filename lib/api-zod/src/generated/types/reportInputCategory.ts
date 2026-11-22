@@ -17,4 +17,6 @@ export const ReportInputCategory = {
   Violence: "Violence",
   Catfishing: "Catfishing",
   Impersonation: "Impersonation",
+  Underage: "Underage",
+  Scam_or_asking_for_money: "Scam or asking for money",
 } as const;

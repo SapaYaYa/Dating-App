@@ -33,6 +33,8 @@ const REPORT_CATEGORIES = [
   "Violence",
   "Catfishing",
   "Impersonation",
+  "Underage",
+  "Scam or asking for money",
 ] as const;
 
 export type ReportCategory = (typeof REPORT_CATEGORIES)[number];
@@ -228,7 +230,7 @@ export default function ReportModal({
 
               <ScrollView
                 bounces={false}
-                showsVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator
                 style={styles.categoryList}
               >
                 {REPORT_CATEGORIES.map((cat, i) => (
@@ -455,7 +457,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
   categoryList: {
-    maxHeight: SCREEN_H * 0.45,
+    maxHeight: SCREEN_H * 0.62,
   },
   categoryItem: {
     flexDirection: "row",

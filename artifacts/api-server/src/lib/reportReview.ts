@@ -6,9 +6,16 @@ import { logger } from "./logger";
 // - Serious reports must be reviewed within 24 hours, the rest within 3 days.
 // - Anyone with open reports from AUTO_HIDE_REPORTERS different people is
 //   hidden from Discover until their reports are reviewed.
-// - A daily email lists every open report, most urgent first.
+// - A daily email lists every open report, most urgent first, and each
+//   serious report is also emailed the moment it comes in.
 
-export const SERIOUS_CATEGORIES = new Set(["Harassment", "Violence", "Inappropriate Photos"]);
+export const SERIOUS_CATEGORIES = new Set([
+  "Harassment",
+  "Violence",
+  "Inappropriate Photos",
+  "Underage",
+  "Scam or asking for money",
+]);
 export const SERIOUS_DUE_HOURS = 24;
 export const STANDARD_DUE_HOURS = 72;
 export const AUTO_HIDE_REPORTERS = 3;
@@ -187,6 +194,36 @@ export async function sendDigestIfDue(now: Date = new Date()): Promise<"sent" | 
     // Give the day back so the next hourly check tries again.
     await db.delete(reportDigestsTable).where(eq(reportDigestsTable.day, day));
     throw err;
+  }
+}
+
+/**
+ * Emails a serious report right away, so it doesn't wait for the next
+ * daily digest. Never throws: a failed email is logged, and the report still
+ * appears in the next digest.
+ */
+export async function notifySeriousReport(report: typeof reportsTable.$inferSelect): Promise<void> {
+  const to = process.env.REPORTS_DIGEST_TO;
+  if (!to || !SERIOUS_CATEGORIES.has(report.category)) return;
+  try {
+    const [profile] = await db
+      .select({ name: profilesTable.name })
+      .from(profilesTable)
+      .where(eq(profilesTable.id, report.reportedProfileId));
+    const due = dueAt(report.category, report.timestamp);
+    const text = [
+      `New serious report #${report.id}: ${report.category}. Review by ${formatTime(due)}.`,
+      "",
+      `Reported: ${profile?.name ?? "(profile deleted)"} (${report.reportedProfileId})`,
+      `By: ${report.reporterId} on ${formatTime(report.timestamp)}`,
+      `Note: ${report.note.trim() || "(none)"}`,
+      "",
+      "When you've reviewed them, mark their reports reviewed:",
+      'POST /api/admin/profiles/<profile id>/reports/review with {"outcome": "no_action"} or {"outcome": "action_taken"}',
+    ].join("\n");
+    await sendEmail(to, `Gentoo: serious report (${report.category})`, text);
+  } catch (err) {
+    logger.error({ err, reportId: report.id }, "Serious report email failed");
   }
 }
 

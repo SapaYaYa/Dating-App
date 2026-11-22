@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { getAuth } from "@clerk/express";
 import { db, blocksTable, reportsTable } from "@workspace/db";
 import { CreateReportBody } from "@workspace/api-zod";
+import { notifySeriousReport } from "../lib/reportReview";
 
 const router: IRouter = Router();
 
@@ -43,6 +44,9 @@ router.post("/reports", async (req, res): Promise<void> => {
 
     return saved;
   });
+
+  // Serious reports are emailed right away (in the background).
+  void notifySeriousReport(report);
 
   const { reviewedAt: _r, outcome: _o, ...saved } = report;
   res.status(201).json(saved);

@@ -17,6 +17,7 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { PHOTO_VERIFICATION_ENABLED } from "@/constants/verification";
 import {
   DEFAULT_LOOKING_FOR,
   LOOKING_FOR_OPTIONS,
@@ -303,7 +304,7 @@ export function getActiveFilterCount(f: DiscoverFilters): number {
   if (f.bodyType.length) n++;
   if (f.tattoos.length) n++;
   if (f.piercings.length) n++;
-  if (f.verifiedOnly) n++;
+  if (PHOTO_VERIFICATION_ENABLED && f.verifiedOnly) n++;
   if (f.activeRecently) n++;
   return n;
 }
@@ -1092,7 +1093,9 @@ export function FilterModal({
 
           <View style={styles.section}>
             {([
-              { key: "verifiedOnly" as const, dbKey: "verifiedOnly", icon: "check-circle", label: "Verified profiles only", sub: "People who have verified their identity" },
+              ...(PHOTO_VERIFICATION_ENABLED
+                ? [{ key: "verifiedOnly" as const, dbKey: "verifiedOnly", icon: "check-circle", label: "Verified profiles only", sub: "People who have verified their identity" }]
+                : []),
               { key: "activeRecently" as const, dbKey: "activeRecently", icon: "clock", label: "Active in last 7 days", sub: "People who opened the app recently" },
             ]).map((item, i, arr) => (
               <View key={item.key}>

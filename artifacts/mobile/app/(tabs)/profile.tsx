@@ -28,6 +28,7 @@ import { useReplyStatus } from "@/context/ReplyStatusContext";
 import { useCommunity } from "@/context/CommunityContext";
 import { useColors } from "@/hooks/useColors";
 import { PHOTO_RULES } from "@/constants/photos";
+import { PHOTO_VERIFICATION_ENABLED } from "@/constants/verification";
 import { promptsComplete } from "@/constants/prompts";
 
 const { MAX_PHOTOS, MIN_PHOTOS } = PHOTO_RULES;
@@ -158,13 +159,13 @@ export default function ProfileScreen() {
             <Feather name="zap" size={12} color={colors.green} />
             <Text style={[styles.badgeText, { color: colors.green }]}>{currentStreak} streak</Text>
           </View>
-          {verificationStatus === "verified" && (
+          {PHOTO_VERIFICATION_ENABLED && verificationStatus === "verified" && (
             <View style={[styles.badge, { backgroundColor: colors.superLike + "22" }]}>
               <Feather name="check-circle" size={12} color={colors.superLike} />
               <Text style={[styles.badgeText, { color: colors.superLike }]}>Verified</Text>
             </View>
           )}
-          {verificationStatus === "pending" && (
+          {PHOTO_VERIFICATION_ENABLED && verificationStatus === "pending" && (
             <View style={[styles.badge, { backgroundColor: colors.mutedForeground + "22" }]}>
               <Feather name="clock" size={12} color={colors.mutedForeground} />
               <Text style={[styles.badgeText, { color: colors.mutedForeground }]}>Pending</Text>
@@ -183,7 +184,7 @@ export default function ProfileScreen() {
       <ReplyStatusCard />
       <GreatChatCard />
 
-      {verificationStatus === "none" && (
+      {PHOTO_VERIFICATION_ENABLED && verificationStatus === "none" && (
         <TouchableOpacity
           style={[styles.verifyCard, { backgroundColor: colors.card, borderColor: colors.superLike + "55" }]}
           onPress={() => router.push("/verify")}

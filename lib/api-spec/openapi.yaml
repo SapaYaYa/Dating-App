@@ -681,6 +681,8 @@ components:
             - Violence
             - Catfishing
             - Impersonation
+            - Underage
+            - Scam or asking for money
         note:
           type: string
           maxLength: 500
@@ -706,6 +708,8 @@ components:
             - Violence
             - Catfishing
             - Impersonation
+            - Underage
+            - Scam or asking for money
         note:
           type: string
         timestamp:
