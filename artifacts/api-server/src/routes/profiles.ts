@@ -9,6 +9,7 @@ import {
   ListProfilesResponse,
 } from "@workspace/api-zod";
 import { haversineDistanceKm } from "../lib/distance";
+import { autoHiddenProfileIds } from "../lib/reportReview";
 
 const router: IRouter = Router();
 
@@ -50,7 +51,7 @@ router.get("/profiles", async (req, res): Promise<void> => {
     .where(eq(profilesTable.id, userId));
 
   // Hide anyone either person has blocked or unmatched.
-  const [blocks, unmatches] = await Promise.all([
+  const [blocks, unmatches, underReview] = await Promise.all([
     db
       .select()
       .from(blocksTable)
@@ -59,6 +60,8 @@ router.get("/profiles", async (req, res): Promise<void> => {
       .select()
       .from(unmatchesTable)
       .where(or(eq(unmatchesTable.userId, userId), eq(unmatchesTable.unmatchedProfileId, userId))),
+    // Reported by several different people: hidden until reviewed.
+    autoHiddenProfileIds(),
   ]);
   const hiddenIds = [
     ...blocks.flatMap((b) =>
@@ -67,6 +70,7 @@ router.get("/profiles", async (req, res): Promise<void> => {
     ...unmatches.flatMap((u) =>
       u.userId === userId ? [u.unmatchedProfileId] : u.unmatchedProfileId === userId ? [u.userId] : [],
     ),
+    ...underReview,
   ];
 
   // Paused profiles are hidden from everyone's Discover.

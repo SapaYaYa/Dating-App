@@ -37,6 +37,26 @@ Check items off as they're done.
 - [ ] Later: tell the server when the store says someone is under 18, so an
       existing account can be removed, not just blocked on that phone.
 
+## Report review
+
+- [ ] Run the database push: it adds `reviewed_at` and `outcome` to
+      reports and the `report_digests` table.
+- [ ] Set up a **Resend** account (resend.com, free tier is enough), verify
+      the gentoodating.com domain, and set on the server:
+      `RESEND_API_KEY`, `REPORTS_DIGEST_TO` (your email; several allowed,
+      comma-separated) and optionally `REPORTS_DIGEST_FROM` (default
+      "Gentoo Reports <reports@gentoodating.com>"). Without
+      `REPORTS_DIGEST_TO` the daily email is off; without the key it's only
+      written to the server log.
+- [ ] Set `ADMIN_TOKEN` to a long random secret (24+ characters) to turn on
+      the admin addresses; keep it private.
+- [ ] Send yourself a test digest before launch.
+- [ ] Discover must also hide auto-hidden people once Discover comes from
+      the server's real profiles (`GET /profiles` already does).
+- [ ] Later: a simple review page instead of the admin addresses, and
+      warn, suspend and ban actions (the outcome is only recorded today).
+- [ ] Later: board and post reports on the server, in the same digest.
+
 ## Help & Support
 
 - [ ] Replace the placeholder `SUPPORT_EMAIL` in

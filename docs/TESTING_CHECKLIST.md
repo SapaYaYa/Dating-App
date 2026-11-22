@@ -416,6 +416,25 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] You can't report, block or unmatch yourself.
 - [ ] Board and post reports reach your team.
 
+### Report review
+- [ ] Someone reported by 3 different people disappears from everyone's
+      Discover. Several reports from the same person count once.
+- [ ] Marking their reports reviewed
+      (`POST /api/admin/profiles/<id>/reports/review` with
+      `{"outcome": "no_action"}` or `"action_taken"`) brings them back.
+- [ ] Admin addresses need `Authorization: Bearer <ADMIN_TOKEN>`; without
+      it (or with `ADMIN_TOKEN` unset) they answer "Not found". A wrong
+      outcome is rejected.
+- [ ] The daily email arrives once a day after 8am Eastern, only when there
+      are open reports, and lists every open report most urgent first:
+      category, SERIOUS for Harassment, Violence and Inappropriate Photos,
+      "due in" or "OVERDUE by" (24h serious, 3 days the rest), who was
+      reported, how many people reported them, whether they're hidden, who
+      reported, when, and the note.
+- [ ] `GET /api/admin/reports/digest` shows the same text on demand.
+- [ ] Restarting the server the same day doesn't send a second email; if
+      sending fails, it tries again within the hour.
+
 ### Badges
 - [ ] Slow to reply is calculated on the server from real messages: 3+ days
       unanswered, last 2 weeks, 5+ and over 60%, warning at 3.

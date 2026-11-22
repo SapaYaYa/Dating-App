@@ -97,6 +97,16 @@ as **Gentoo Dating** ("Gentoo" for short).
       the **privacy "nutrition labels"** (Apple) and **data safety form**
       (Google).
 
+## Safety operations
+
+- [ ] **Review reports on time:** read the daily report email (8am
+      Eastern). Serious reports (harassment, violence, inappropriate photos)
+      within **24 hours**, everything else within **3 days**. Anyone
+      reported by 3 different people is hidden from Discover until you mark
+      their reports reviewed.
+- [ ] Create a **Resend** account in the LLC's name for the report email.
+- [ ] Decide who covers report review when you're away.
+
 ## Contracts
 
 - [ ] **Illustrator contract** with full ownership of the art and source

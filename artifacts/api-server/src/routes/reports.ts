@@ -44,7 +44,8 @@ router.post("/reports", async (req, res): Promise<void> => {
     return saved;
   });
 
-  res.status(201).json(report);
+  const { reviewedAt: _r, outcome: _o, ...saved } = report;
+  res.status(201).json(saved);
 });
 
 export default router;

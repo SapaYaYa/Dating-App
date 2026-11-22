@@ -52,8 +52,11 @@ agreed.
         store says someone is under 18, the app shows an adults-only screen
         instead. No answer from the store falls back to the birthday. Needs
         a real phone to test.
-  - [ ] Who reviews reports, how fast, and what happens to the reported
-        person.
+  - [x] Report review (decided): a daily email of open reports to you;
+        serious reports reviewed within 24 hours, the rest within 3 days;
+        anyone reported by 3 different people is hidden from Discover until
+        reviewed. Still open: warn, suspend and ban actions, and a review
+        page (today you mark reports reviewed with an admin address).
   - [ ] Real photo verification ("Get Verified" approves everyone today).
 - [ ] **Challenges:** they're the only way to earn points (levels, free undo,
       6th pebble, Priority, extra pebbles) but they're placeholders with a

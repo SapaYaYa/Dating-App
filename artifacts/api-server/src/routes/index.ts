@@ -7,6 +7,7 @@ import likesRouter from "./likes";
 import adsRouter from "./ads";
 import browseCityRouter from "./browseCity";
 import accountRouter from "./account";
+import adminRouter from "./admin";
 
 const router: IRouter = Router();
 
@@ -18,5 +19,6 @@ router.use(likesRouter);
 router.use(adsRouter);
 router.use(browseCityRouter);
 router.use(accountRouter);
+router.use(adminRouter);
 
 export default router;
