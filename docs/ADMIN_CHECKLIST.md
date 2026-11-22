@@ -75,7 +75,8 @@ as **Gentoo Dating** ("Gentoo" for short).
       address to Google Play. Handle each request by hand within 30 days:
       confirm it came from the account's owner, delete the account, and
       reply when done.
-- [ ] **Confirm which states give a 3-business-day right to cancel** a
+- [ ] *(Before the subscription launches, not needed at the free launch.)*
+      **Confirm which states give a 3-business-day right to cancel** a
       dating subscription (New York and Illinois confirmed; others reported
       in dating apps' terms include Arizona, California, Connecticut, Iowa,
       Minnesota, North Carolina, Ohio, Rhode Island and Wisconsin) and how

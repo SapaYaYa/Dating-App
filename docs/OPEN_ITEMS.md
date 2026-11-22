@@ -71,8 +71,12 @@ agreed.
       Priority takes an active user about 3 months. Building it needs
       pebbles and chat on the server first.
   - [ ] Later: **Event Goer** challenge, once community events exist.
-- [ ] **Free vs. paid:** the subscription's price and perks (no ads? more
-      pebbles? free undo?), decided before launch.
+- [x] **Free vs. paid (decided):** launch **free with ads**; add a
+      subscription a few months after launch, designed using real usage.
+  - [ ] Later: the subscription's price and perks. Ideas so far: no ads, a
+        few more pebbles a day, free undo at any level, see who sent you
+        pebbles first, browse another city more often. Never sell levels or
+        Priority (that would undercut challenges).
 
 ## 2. Product questions
 
