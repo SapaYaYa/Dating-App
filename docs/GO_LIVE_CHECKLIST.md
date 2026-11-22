@@ -291,6 +291,10 @@ Rules live in `artifacts/mobile/constants/ads.ts`; the app plays ads through
       app; free undo stays at level 4 and the 6th pebble and Priority at 5.
 - [ ] Weekly challenges reset Monday at local midnight (the screen says
       Wednesday today).
+- [ ] Priority boost in Discover (server): among profiles that fit the
+      viewer's filters, put level-5 people earlier, at most 1 in every 4
+      cards; never widen anyone's filters; no "Priority" tag on other
+      people's cards.
 - [ ] After launch, compare real time-to-Priority with the plan's estimate
       (about 13 weeks for an active user) and adjust points if needed.
 

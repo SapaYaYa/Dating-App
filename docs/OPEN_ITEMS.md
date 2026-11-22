@@ -82,8 +82,11 @@ agreed.
 
 - [x] Level 3 name (decided): keep **"Huddle"**. "Pair" would clash with
       the "It's a pair!" match pop-up.
-- [ ] What "Priority" (level 5) actually does: just a badge, or shown to
-      more people?
+- [x] Priority (level 5) (decided): **shown to more people.** Among people
+      whose filters they fit, Priority profiles come up a bit earlier in
+      Discover, capped at 1 in 4 cards; never shown to anyone outside
+      their filters. The label stays private (only they see it). Not
+      buildable until Discover uses the server's real profiles.
 - [ ] Community boards and events: do they launch? (Events were never
       discussed.)
 - [ ] Push notifications: which ones (new pebble, match, message, Slow to
