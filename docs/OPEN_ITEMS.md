@@ -104,7 +104,12 @@ agreed.
     switch.
   - Sending needs the server (matches and chat on the server first) and a
     phone build with Expo push notifications.
-- [ ] Time zone loophole for the daily reset: ignore or close?
+- [x] Time zone loophole (decided): **ignore it.** Switching the phone to a
+      time zone where it's already tomorrow gets tomorrow's pebbles early,
+      but time zones span only about 26 hours and each date's allowance can
+      be used once, so the most anyone gains is about one extra day of
+      pebbles and ad rewards, once. Not worth extra code or annoying
+      travelers.
 - [ ] Onboarding: should Gus welcome new users and explain pebbles?
 
 ## 3. Server work (in this order)
