@@ -87,7 +87,8 @@ private/incognito window to start fresh. To test kilometers, set your phone
       preview opens), Gus's welcome covers the screen: 3 cards with art,
       dots for which card you're on, Next, and Skip (top right; not on the
       last card). Readable in light and dark mode.
-- [ ] Card 1 "Pebbles are how you like someone" (Gus with a pebble), card 2
+- [ ] Card 1 "Pebbles are how you like someone" / "You get 5 a day, so make
+      each one count." (Gus with a pebble), card 2
       "Give a pebble back and it's a pair" (two penguins), card 3 "Reply,
       and you'll rise" with "Start exploring".
 - [ ] Start exploring or Skip closes it, and it never shows again on that

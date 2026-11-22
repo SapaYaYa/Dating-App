@@ -112,8 +112,8 @@ agreed.
       travelers.
 - [x] Onboarding (decided): a short welcome from Gus, three cards shown
       once right after sign-up, with Skip:
-      1. "Pebbles are how you like someone. You get 5 a day, so give them
-         to people you really mean."
+      1. "Pebbles are how you like someone. You get 5 a day, so make each
+         one count."
       2. "Give a pebble back and it's a pair. Then you can chat."
       3. "Reply, and you'll rise. Good conversations earn badges, levels and
          perks."

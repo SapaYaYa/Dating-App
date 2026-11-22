@@ -13,7 +13,7 @@ const CARDS = [
   {
     art: "gus",
     title: "Pebbles are how you like someone",
-    body: "You get 5 a day, so give them to people you really mean.",
+    body: "You get 5 a day, so make each one count.",
   },
   {
     art: "pair",
