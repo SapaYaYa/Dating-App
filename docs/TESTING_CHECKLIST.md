@@ -82,6 +82,18 @@ private/incognito window to start fresh. To test kilometers, set your phone
       signal. iPhone: test with Apple's sandbox or a test account set to
       each age range.
 
+### Notification settings
+- [ ] Profile > Account > Notifications opens a screen (no longer a single
+      switch) with four switches, all on at first: New matches, Messages,
+      Pebbles (at most once a day), Slow to reply reminders (at most once a
+      day). Readable in light and dark mode.
+- [ ] Turning switches off sticks after leaving and coming back, and after
+      reloading.
+- [ ] The quiet hours note (10pm to 8am) and the "use your phone's
+      settings to turn off all notifications" line show.
+- [ ] No notifications are sent yet; sending comes with the server's
+      matches and chat.
+
 ### Help & Support
 - [ ] Profile > Account > Help & Support opens the help screen with 5
       sections (Pebbles and matches, Your profile, Levels, points and
@@ -361,6 +373,13 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Unknown address returns a JSON "Not found"; broken JSON returns a JSON
       error; server errors never show stack traces.
 - [ ] Requests without sign-in get 401.
+
+### Notification settings
+- [ ] `GET /notification-settings` returns all four on for someone who
+      never changed them; `PUT` saves all four and they come back on the
+      next `GET`, on any device.
+- [ ] Missing or non-true/false values are rejected; no sign-in gets 401.
+- [ ] Deleting the account removes the saved settings.
 
 ### Pause and delete account
 - [ ] Pausing saves on the server: a paused person disappears from everyone

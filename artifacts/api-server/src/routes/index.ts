@@ -8,6 +8,7 @@ import adsRouter from "./ads";
 import browseCityRouter from "./browseCity";
 import accountRouter from "./account";
 import adminRouter from "./admin";
+import notificationsRouter from "./notifications";
 
 const router: IRouter = Router();
 
@@ -20,5 +21,6 @@ router.use(adsRouter);
 router.use(browseCityRouter);
 router.use(accountRouter);
 router.use(adminRouter);
+router.use(notificationsRouter);
 
 export default router;

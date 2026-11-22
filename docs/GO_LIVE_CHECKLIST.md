@@ -67,6 +67,20 @@ Check items off as they're done.
       privacy laws first, add it to the Privacy Policy, then turn the
       switch on.
 
+## Push notifications
+
+- [ ] Run the database push: it adds the `notification_settings` table.
+- [ ] Sending (after matches and chat are on the server): set up Expo push
+      notifications in a phone build, ask permission at a sensible moment
+      (e.g. after the first match), save each phone's push token on the
+      server, and send: new match and new message right away; pebbles
+      bundled at most once a day; Slow to reply reminder at most once a day
+      before the badge would appear.
+- [ ] Respect each person's switches (`notification_settings`; no row means
+      all on) and quiet hours, 10pm to 8am in their time zone (hold until
+      8am).
+- [ ] Remove push tokens when someone signs out or deletes their account.
+
 ## Help & Support
 
 - [ ] Replace the placeholder `SUPPORT_EMAIL` in

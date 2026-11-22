@@ -474,6 +474,58 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /notification-settings:
+    get:
+      operationId: getNotificationSettings
+      tags: [profiles]
+      security:
+        - bearerAuth: []
+      summary: Which push notifications this person wants
+      description: Everything is on until the person changes it.
+      responses:
+        "200":
+          description: Notification settings
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationSettings"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: setNotificationSettings
+      tags: [profiles]
+      security:
+        - bearerAuth: []
+      summary: Turn notification types on or off
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NotificationSettings"
+      responses:
+        "200":
+          description: Saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/NotificationSettings"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /browse-city:
     get:
       operationId: getBrowseCity
@@ -787,6 +839,25 @@ components:
           type: integer
         granted:
           type: boolean
+    NotificationSettings:
+      type: object
+      description: >
+        One switch per notification type. Quiet hours (10pm to 8am local) always
+        apply and aren't a setting.
+      required: [matches, messages, pebbles, slowReply]
+      properties:
+        matches:
+          type: boolean
+          description: New match
+        messages:
+          type: boolean
+          description: New message
+        pebbles:
+          type: boolean
+          description: New pebbles, bundled at most once a day
+        slowReply:
+          type: boolean
+          description: Slow to reply reminder, at most once a day
     BrowseCity:
       type: object
       required: [city, lastCity, changedAt, nextChangeAt, citySkipsLeft]

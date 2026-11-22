@@ -221,6 +221,21 @@ export interface AdSession {
   granted: boolean;
 }
 
+/**
+ * One switch per notification type. Quiet hours (10pm to 8am local) always apply and aren't a setting.
+
+ */
+export interface NotificationSettings {
+  /** New match */
+  matches: boolean;
+  /** New message */
+  messages: boolean;
+  /** New pebbles, bundled at most once a day */
+  pebbles: boolean;
+  /** Slow to reply reminder, at most once a day */
+  slowReply: boolean;
+}
+
 export interface BrowseCity {
   /**
    * The city browsed now; null means your own area.

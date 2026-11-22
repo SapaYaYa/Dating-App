@@ -26,3 +26,4 @@ export * from "./likes";
 export * from "./ads";
 export * from "./browseCity";
 export * from "./accountDeletions";
+export * from "./notifications";

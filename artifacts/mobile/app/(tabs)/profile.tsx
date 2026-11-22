@@ -46,7 +46,6 @@ export default function ProfileScreen() {
   const { status: replyStatus, greatChat } = useReplyStatus();
   const { showBoardsOnDiscover, setShowBoardsOnDiscover } = useCommunity();
   const scheme = useColorScheme();
-  const [notificationsOn, setNotificationsOn] = useState(true);
   const [matchNote, setMatchNote] = useState(user?.matchNote ?? "");
 
   const topPad = insets.top + (Platform.OS === "web" ? 67 : 0);
@@ -322,7 +321,7 @@ export default function ProfileScreen() {
         {[
           { icon: "edit-2", label: "Edit Profile", onPress: () => router.push("/edit-profile") },
           { icon: "home", label: "Home city", detail: user?.homeCity ?? "Not set", onPress: () => router.push("/home-city") },
-          { icon: "bell", label: "Notifications", toggle: true, value: notificationsOn, onToggle: () => setNotificationsOn(!notificationsOn) },
+          { icon: "bell", label: "Notifications", onPress: () => router.push("/notifications") },
           // Off: your boards aren't shown on Discover cards or used to boost
           // people, in either direction.
           ...(BOARDS_ENABLED

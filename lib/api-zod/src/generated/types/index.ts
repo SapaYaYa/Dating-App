@@ -17,6 +17,7 @@ export * from "./errorResponse";
 export * from "./getLikeAllowanceParams";
 export * from "./healthStatus";
 export * from "./likeAllowance";
+export * from "./notificationSettings";
 export * from "./pauseInput";
 export * from "./profile";
 export * from "./profileInput";

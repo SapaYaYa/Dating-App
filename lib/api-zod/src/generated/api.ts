@@ -442,6 +442,52 @@ export const CompleteTestAdResponse = zod.object({
 });
 
 /**
+ * Everything is on until the person changes it.
+ * @summary Which push notifications this person wants
+ */
+export const GetNotificationSettingsResponse = zod
+  .object({
+    matches: zod.boolean().describe("New match"),
+    messages: zod.boolean().describe("New message"),
+    pebbles: zod.boolean().describe("New pebbles, bundled at most once a day"),
+    slowReply: zod
+      .boolean()
+      .describe("Slow to reply reminder, at most once a day"),
+  })
+  .describe(
+    "One switch per notification type. Quiet hours (10pm to 8am local) always apply and aren't a setting.\n",
+  );
+
+/**
+ * @summary Turn notification types on or off
+ */
+export const SetNotificationSettingsBody = zod
+  .object({
+    matches: zod.boolean().describe("New match"),
+    messages: zod.boolean().describe("New message"),
+    pebbles: zod.boolean().describe("New pebbles, bundled at most once a day"),
+    slowReply: zod
+      .boolean()
+      .describe("Slow to reply reminder, at most once a day"),
+  })
+  .describe(
+    "One switch per notification type. Quiet hours (10pm to 8am local) always apply and aren't a setting.\n",
+  );
+
+export const SetNotificationSettingsResponse = zod
+  .object({
+    matches: zod.boolean().describe("New match"),
+    messages: zod.boolean().describe("New message"),
+    pebbles: zod.boolean().describe("New pebbles, bundled at most once a day"),
+    slowReply: zod
+      .boolean()
+      .describe("Slow to reply reminder, at most once a day"),
+  })
+  .describe(
+    "One switch per notification type. Quiet hours (10pm to 8am local) always apply and aren't a setting.\n",
+  );
+
+/**
  * @summary The city being browsed in Discover
  */
 export const GetBrowseCityResponse = zod.object({

@@ -9,6 +9,7 @@ import {
   browseCitiesTable,
   db,
   likeAllowancesTable,
+  notificationSettingsTable,
   profilesTable,
   unmatchesTable,
   userProgressTable,
@@ -68,6 +69,7 @@ router.delete("/profiles/me", async (req, res): Promise<void> => {
     await tx.delete(likeAllowancesTable).where(eq(likeAllowancesTable.userId, userId));
     await tx.delete(userProgressTable).where(eq(userProgressTable.userId, userId));
     await tx.delete(browseCitiesTable).where(eq(browseCitiesTable.userId, userId));
+    await tx.delete(notificationSettingsTable).where(eq(notificationSettingsTable.userId, userId));
     await tx
       .delete(blocksTable)
       .where(or(eq(blocksTable.blockerId, userId), eq(blocksTable.blockedProfileId, userId)));
