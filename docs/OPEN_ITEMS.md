@@ -80,7 +80,8 @@ agreed.
 
 ## 2. Product questions
 
-- [ ] Level 3 name: keep "Huddle" or change it to "Pair"?
+- [x] Level 3 name (decided): keep **"Huddle"**. "Pair" would clash with
+      the "It's a pair!" match pop-up.
 - [ ] What "Priority" (level 5) actually does: just a badge, or shown to
       more people?
 - [ ] Community boards and events: do they launch? (Events were never
