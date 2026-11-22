@@ -87,8 +87,9 @@ agreed.
       Discover, capped at 1 in 4 cards; never shown to anyone outside
       their filters. The label stays private (only they see it). Not
       buildable until Discover uses the server's real profiles.
-- [ ] Community boards and events: do they launch? (Events were never
-      discussed.)
+- [x] Community boards and events (decided): **launch without boards.**
+      Add them once enough people use Gentoo in a city. Events come later
+      still (with the Event Goer challenge).
 - [ ] Push notifications: which ones (new pebble, match, message, Slow to
       reply warning, badge earned)? The switch does nothing today.
 - [ ] Time zone loophole for the daily reset: ignore or close?
