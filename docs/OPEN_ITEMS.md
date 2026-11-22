@@ -110,7 +110,13 @@ agreed.
       be used once, so the most anyone gains is about one extra day of
       pebbles and ad rewards, once. Not worth extra code or annoying
       travelers.
-- [ ] Onboarding: should Gus welcome new users and explain pebbles?
+- [x] Onboarding (decided): a short welcome from Gus, three cards shown
+      once right after sign-up, with Skip:
+      1. "Pebbles are how you like someone. You get 5 a day, so give them
+         to people you really mean."
+      2. "Give a pebble back and it's a pair. Then you can chat."
+      3. "Reply, and you'll rise. Good conversations earn badges, levels and
+         perks."
 
 ## 3. Server work (in this order)
 
