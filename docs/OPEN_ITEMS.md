@@ -36,7 +36,11 @@ agreed.
   - [x] Sign-up: "I agree to the Terms of Service and Privacy Policy"
         checkbox built (last step, required to create an account); the
         documents are also linked under Profile > Privacy & Safety.
-  - [ ] Delete account from inside the app (Apple requires it).
+  - [x] Delete account from inside the app (Apple requires it): built under
+        Profile > Pause or delete account, with a pause option and an
+        optional "Why are you leaving?" question. Web deletion page text is
+        in `docs/legal/DELETE_ACCOUNT_PAGE.md` (a form that emails us; we
+        delete by hand within 30 days).
   - [x] "Privacy & Safety" on Profile now shows the safety tips and how to
         report and block.
   - [ ] Decide what "Help & Support" on Profile does (nothing today).

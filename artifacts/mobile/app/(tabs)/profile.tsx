@@ -20,6 +20,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { GhostIcon } from "@/components/GhostIcon";
 import { GreatChatCard } from "@/components/GreatChatCard";
+import { PausedBanner } from "@/components/PausedBanner";
 import { ReplyStatusCard } from "@/components/ReplyStatusCard";
 import { useAuth } from "@/context/AuthContext";
 import { useApp } from "@/context/AppContext";
@@ -178,6 +179,7 @@ export default function ProfileScreen() {
         </View>
       </View>
 
+      <PausedBanner />
       <ReplyStatusCard />
       <GreatChatCard />
 
@@ -324,6 +326,7 @@ export default function ProfileScreen() {
           { icon: "users", label: "Show my boards on Discover", toggle: true, value: showBoardsOnDiscover, onToggle: () => setShowBoardsOnDiscover(!showBoardsOnDiscover) },
           { icon: "shield", label: "Privacy & Safety", onPress: () => router.push("/safety") },
           { icon: "help-circle", label: "Help & Support" },
+          { icon: "user-x", label: "Pause or delete account", detail: user?.paused ? "Paused" : undefined, onPress: () => router.push("/account") },
         ].map((item, i, arr) => (
           <View key={item.label}>
             <TouchableOpacity

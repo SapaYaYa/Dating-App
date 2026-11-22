@@ -64,6 +64,27 @@ private/incognito window to start fresh. To test kilometers, set your phone
       and Community Guidelines each open in a browser (pages must be
       published first).
 
+### Pause or delete account
+- [ ] Profile > Account has "Pause or delete account"; it opens a screen
+      with two cards, Pause my account and Delete my account. Back returns
+      to Profile. Readable in light and dark mode.
+- [ ] Pause my account: the card changes to "Your account is paused" with
+      an Unpause button; the Profile row shows "Paused"; a "Your account is
+      paused" banner shows on Profile and Discover. You can still browse
+      Discover while paused.
+- [ ] The banner's Unpause button (or the one on the screen) unpauses and
+      the banner disappears. Paused stays paused after reloading.
+- [ ] Delete my account opens "Why are you leaving?" with 6 optional
+      choices; tapping a picked one un-picks it. Choosing "I'm taking a
+      break" shows "Pause instead", which goes back to the pause card.
+- [ ] The subscription note ("Deleting your account doesn't cancel a
+      subscription") and Manage subscription link show; the link opens the
+      App Store (iPhone) or Google Play (Android) subscriptions page.
+- [ ] Continue asks "Delete your account for good?" with Delete my account
+      and Keep my account. Keep my account returns to Profile.
+- [ ] Demo: Delete my account wipes everything saved on the device and
+      starts over with the demo profile.
+
 ### Discover (scroll)
 - [ ] One person at a time as a scrolling profile: first photo with name and
       age, then the basics card, then answers and photos alternating.
@@ -288,6 +309,24 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Unknown address returns a JSON "Not found"; broken JSON returns a JSON
       error; server errors never show stack traces.
 - [ ] Requests without sign-in get 401.
+
+### Pause and delete account
+- [ ] Pausing saves on the server: a paused person disappears from everyone
+      else's Discover, and shows again after unpausing. Their matches and
+      chats keep working.
+- [ ] Paused stays paused after signing in on another device.
+- [ ] Deleting removes the profile, likes, points, ad history, browse city,
+      blocks and unmatches (in both directions), then the sign-in account,
+      and signs the person out. Signing in with the same email afterwards
+      starts a brand-new account.
+- [ ] Reports made by or about the person are kept.
+- [ ] The reason, if chosen, is saved once in `account_deletions` with no
+      link to the person.
+- [ ] If removing the sign-in account fails, the app shows "Your data was
+      deleted, but signing you out of Gentoo failed. Please try again." and
+      Try again finishes the job.
+- [ ] Once matches, chats, pebbles, photos and boards are on the server,
+      deleting removes those too (see the go-live checklist).
 
 ### Discover
 - [ ] Discover loads real profiles from the server.

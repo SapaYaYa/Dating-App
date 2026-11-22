@@ -55,8 +55,9 @@ as **Gentoo Dating** ("Gentoo" for short).
       (`docs/legal/COMMUNITY_GUIDELINES.md`).
 - Drafts are in `docs/legal/` (Terms of Service, Privacy Policy, Community
   Guidelines). Before publishing, fill in the [bracketed] placeholders:
-  effective date, mailing address, final support email, data deletion web
-  page, cancellation instructions.
+  effective date, mailing address, final support email, cancellation
+  instructions. (The data deletion page is set to
+  gentoodating.com/delete-account.)
 - [ ] Publish all three at the addresses the app links to:
       gentoodating.com/terms, /privacy and /guidelines (set in
       `artifacts/mobile/constants/legal.ts`; change them there if the domain
@@ -66,7 +67,13 @@ as **Gentoo Dating** ("Gentoo" for short).
 - [ ] **Register a DMCA copyright agent** with the U.S. Copyright Office
       ($6, renew every 3 years); put the agent's details in the Terms.
 - [ ] **Web page for account deletion requests** (Google Play requires a
-      web link as well as in-app deletion).
+      web link as well as in-app deletion). Text is ready in
+      `docs/legal/DELETE_ACCOUNT_PAGE.md`. Publish it at
+      gentoodating.com/delete-account with a simple form (account email and
+      an optional reason) that emails help@gentoodating.com, and give that
+      address to Google Play. Handle each request by hand within 30 days:
+      confirm it came from the account's owner, delete the account, and
+      reply when done.
 - [ ] **Confirm which states give a 3-business-day right to cancel** a
       dating subscription (New York and Illinois confirmed; others reported
       in dating apps' terms include Arizona, California, Connecticut, Iowa,

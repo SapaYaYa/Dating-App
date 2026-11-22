@@ -22,6 +22,8 @@ export const ProfileLookingForItem = {
 } as const;
 
 export interface Profile {
+  /** Hidden from Discover while true. */
+  paused?: boolean;
   id: string;
   name: string;
   /** @nullable */
@@ -245,6 +247,26 @@ export interface BrowseCityInput {
   city: string | null;
   /** A granted, unused city-skip ad session, to change city before the week is up. */
   skipSessionId?: string;
+}
+
+export interface PauseInput {
+  paused: boolean;
+}
+
+export type DeleteAccountInputReason =
+  (typeof DeleteAccountInputReason)[keyof typeof DeleteAccountInputReason];
+
+export const DeleteAccountInputReason = {
+  met_on_gentoo: "met_on_gentoo",
+  met_elsewhere: "met_elsewhere",
+  taking_break: "taking_break",
+  not_enough_people: "not_enough_people",
+  not_for_me: "not_for_me",
+  other: "other",
+} as const;
+
+export interface DeleteAccountInput {
+  reason?: DeleteAccountInputReason;
 }
 
 export type GetLikeAllowanceParams = {

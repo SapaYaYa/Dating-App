@@ -24,6 +24,10 @@ export const HealthCheckResponse = zod.object({
 export const ListProfilesResponse = zod.object({
   profiles: zod.array(
     zod.object({
+      paused: zod
+        .boolean()
+        .optional()
+        .describe("Hidden from Discover while true."),
       id: zod.string(),
       name: zod.string(),
       age: zod.number().nullish(),
@@ -63,6 +67,7 @@ export const ListProfilesResponse = zod.object({
  */
 
 export const GetMyProfileResponse = zod.object({
+  paused: zod.boolean().optional().describe("Hidden from Discover while true."),
   id: zod.string(),
   name: zod.string(),
   age: zod.number().nullish(),
@@ -185,6 +190,67 @@ export const UpsertMyProfileBody = zod.object({
 });
 
 export const UpsertMyProfileResponse = zod.object({
+  paused: zod.boolean().optional().describe("Hidden from Discover while true."),
+  id: zod.string(),
+  name: zod.string(),
+  age: zod.number().nullish(),
+  birthday: zod.string().nullish(),
+  gender: zod.string().nullish(),
+  lookingFor: zod
+    .array(
+      zod.enum([
+        "Men",
+        "Women",
+        "Non-binary",
+        "Trans Men",
+        "Trans Women",
+        "Everyone",
+      ]),
+    )
+    .min(1),
+  bio: zod.string(),
+  photos: zod.array(zod.string()),
+  interests: zod.array(zod.string()),
+  occupation: zod.string(),
+  distanceKm: zod
+    .number()
+    .nullish()
+    .describe(
+      "Pre-rounded distance in whole kilometres between this profile and the requesting user. Null when viewing your own profile. Never includes raw coordinates.\n",
+    ),
+  createdAt: zod.coerce.date().optional(),
+  updatedAt: zod.coerce.date().optional(),
+});
+
+/**
+ * Permanently deletes the authenticated user's profile, pebbles, ad rewards, browse city, blocks and unmatches they made, and their sign-in account. Reports stay for safety. Safe to retry: a repeat call finishes anything a failed call left. The optional reason is stored without any link to the person.
+
+ * @summary Delete the current user's account
+ */
+export const DeleteMyAccountBody = zod.object({
+  reason: zod
+    .enum([
+      "met_on_gentoo",
+      "met_elsewhere",
+      "taking_break",
+      "not_enough_people",
+      "not_for_me",
+      "other",
+    ])
+    .optional(),
+});
+
+/**
+ * A paused profile is hidden from everyone's Discover; existing matches and chats are unaffected.
+
+ * @summary Pause or unpause the current user's profile
+ */
+export const SetMyProfilePausedBody = zod.object({
+  paused: zod.boolean(),
+});
+
+export const SetMyProfilePausedResponse = zod.object({
+  paused: zod.boolean().optional().describe("Hidden from Discover while true."),
   id: zod.string(),
   name: zod.string(),
   age: zod.number().nullish(),

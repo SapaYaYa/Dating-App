@@ -126,8 +126,9 @@ Wherever you live, you can:
 
 - **See and download** the information we have about you.
 - **Correct** it (most of it directly in the app under Profile).
-- **Delete your account** in the app, or by visiting
-  [web deletion page, placeholder]. See section 7 for what happens next.
+- **Delete your account** in the app (Profile > Pause or delete account),
+  or by visiting gentoodating.com/delete-account. See section 7 for what
+  happens next.
 - **Turn off** location access and notifications in your phone's settings.
 - **Not be discriminated against** for using any of these rights.
 

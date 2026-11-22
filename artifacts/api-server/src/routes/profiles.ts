@@ -69,13 +69,14 @@ router.get("/profiles", async (req, res): Promise<void> => {
     ),
   ];
 
+  // Paused profiles are hidden from everyone's Discover.
   const others = await db
     .select()
     .from(profilesTable)
     .where(
       hiddenIds.length > 0
-        ? and(ne(profilesTable.id, userId), notInArray(profilesTable.id, hiddenIds))
-        : ne(profilesTable.id, userId),
+        ? and(ne(profilesTable.id, userId), eq(profilesTable.paused, false), notInArray(profilesTable.id, hiddenIds))
+        : and(ne(profilesTable.id, userId), eq(profilesTable.paused, false)),
     );
 
   // Age is enough for discovery; another user's exact birthday is not shared.

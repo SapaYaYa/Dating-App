@@ -25,6 +25,7 @@ import type { LikeTarget } from "@/constants/prompts";
 import { MOCK_CITY_DECKS, MOCK_CITY_PROFILES, MOCK_PROFILES, type Profile } from "@/constants/mockData";
 import { useAds } from "@/context/AdsContext";
 import { useApp } from "@/context/AppContext";
+import { PausedBanner } from "@/components/PausedBanner";
 import { useAuth } from "@/context/AuthContext";
 import { useCommunity } from "@/context/CommunityContext";
 import { useColors } from "@/hooks/useColors";
@@ -315,6 +316,8 @@ export default function DiscoverScreen() {
         </View>
       </View>
 
+      <PausedBanner style={styles.pausedBanner} />
+
       {browseCity && (
         <TouchableOpacity
           onPress={() => setShowFilter(true)}
@@ -599,6 +602,7 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     textAlign: "center",
   },
+  pausedBanner: { marginHorizontal: 16, marginBottom: 8 },
   browsingPill: {
     flexDirection: "row",
     alignItems: "center",

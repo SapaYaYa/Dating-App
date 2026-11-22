@@ -31,7 +31,18 @@ export interface AuthUser {
   /** 3 prompt answers, chosen at sign-up and editable on Profile. */
   prompts?: PromptAnswer[];
   homeCityChangedAt?: number;
+  /** Paused: hidden from Discover; matches and chats are kept. */
+  paused?: boolean;
 }
+
+/** Optional answer to "Why are you leaving?" (matches the API's enum). */
+export type DeleteReason =
+  | "met_on_gentoo"
+  | "met_elsewhere"
+  | "taking_break"
+  | "not_enough_people"
+  | "not_for_me"
+  | "other";
 
 interface AuthContextType {
   user: AuthUser | null;
@@ -41,6 +52,10 @@ interface AuthContextType {
   updateUser: (data: Partial<AuthUser>) => void;
   saveProfile: (userId: string, data: Partial<AuthUser>) => Promise<void>;
   updateVerification: (status: VerificationStatus) => void;
+  /** Hide or show the profile on Discover. Throws if the server refuses. */
+  setPaused: (paused: boolean) => Promise<void>;
+  /** Delete the account and everything in it, then sign out. Throws on failure. */
+  deleteAccount: (reason?: DeleteReason) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -212,6 +227,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         homeCity: profile?.homeCity,
         prompts: profile?.prompts,
         homeCityChangedAt: profile?.homeCityChangedAt,
+        paused: profile?.paused ?? false,
         verificationStatus,
       }
     : null;
@@ -254,6 +270,47 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setVerificationStatusState("none");
   };
 
+  const setPaused = useCallback(
+    async (paused: boolean) => {
+      if (!clerkUser?.id) return;
+      const token = await getToken();
+      if (!token) throw new Error("Not signed in");
+      const res = await apiFetch("/profiles/me/pause", token, {
+        method: "PUT",
+        body: JSON.stringify({ paused }),
+      });
+      if (!res.ok) throw new Error("Couldn't update your account");
+      setProfile((prev) => {
+        const next = { ...(prev || {}), paused };
+        AsyncStorage.setItem(profileKey(clerkUser.id), JSON.stringify(next));
+        return next;
+      });
+    },
+    [clerkUser?.id, getToken],
+  );
+
+  const deleteAccount = useCallback(
+    async (reason?: DeleteReason) => {
+      const token = await getToken();
+      if (!token) throw new Error("Not signed in");
+      const res = await apiFetch("/profiles/me", token, {
+        method: "DELETE",
+        body: JSON.stringify(reason ? { reason } : {}),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? "Couldn't delete your account. Please try again.");
+      }
+      // Everything this app kept on the phone goes too.
+      await AsyncStorage.clear();
+      await signOut().catch(() => {});
+      setProfile(null);
+      setProfileLoading(true);
+      setVerificationStatusState("none");
+    },
+    [getToken, signOut],
+  );
+
   const updateUser = useCallback(
     (data: Partial<AuthUser>) => {
       if (!clerkUser?.id) return;
@@ -272,7 +329,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, verificationStatus, logout, updateUser, saveProfile, updateVerification }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, verificationStatus, logout, updateUser, saveProfile, updateVerification, setPaused, deleteAccount }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -354,10 +413,26 @@ export function DemoAuthProvider({ children }: { children: React.ReactNode }) {
     setVerificationStatusState("none");
   };
 
+  const setPaused = useCallback(
+    async (paused: boolean) => {
+      updateUser({ paused });
+    },
+    [updateUser],
+  );
+
+  // Demo: wipe everything on this device and start over with the demo profile.
+  const deleteAccount = async (_reason?: DeleteReason) => {
+    await AsyncStorage.clear();
+    setProfile(DEMO_PROFILE);
+    setVerificationStatusState("none");
+  };
+
   const user: AuthUser = { ...DEMO_PROFILE, ...profile, id: DEMO_USER_ID, verificationStatus };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, verificationStatus, logout, updateUser, saveProfile, updateVerification }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, verificationStatus, logout, updateUser, saveProfile, updateVerification, setPaused, deleteAccount }}
+    >
       {children}
     </AuthContext.Provider>
   );

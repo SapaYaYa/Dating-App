@@ -123,6 +123,86 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: deleteMyAccount
+      tags: [profiles]
+      security:
+        - bearerAuth: []
+      summary: Delete the current user's account
+      description: >
+        Permanently deletes the authenticated user's profile, pebbles, ad
+        rewards, browse city, blocks and unmatches they made, and their
+        sign-in account. Reports stay for safety. Safe to retry: a repeat
+        call finishes anything a failed call left. The optional reason is
+        stored without any link to the person.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DeleteAccountInput"
+      responses:
+        "204":
+          description: Account deleted
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Data deleted, but removing the sign-in account failed; retry
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /profiles/me/pause:
+    put:
+      operationId: setMyProfilePaused
+      tags: [profiles]
+      security:
+        - bearerAuth: []
+      summary: Pause or unpause the current user's profile
+      description: >
+        A paused profile is hidden from everyone's Discover; existing matches
+        and chats are unaffected.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PauseInput"
+      responses:
+        "200":
+          description: Profile updated
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Profile"
+        "400":
+          description: Invalid input
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /reports:
     post:
       operationId: createReport
@@ -472,6 +552,9 @@ components:
       type: object
       required: [id, name, lookingFor, bio, photos, interests, occupation]
       properties:
+        paused:
+          type: boolean
+          description: Hidden from Discover while true.
         id:
           type: string
         name:
@@ -730,3 +813,15 @@ components:
         skipSessionId:
           type: string
           description: A granted, unused city-skip ad session, to change city before the week is up.
+    PauseInput:
+      type: object
+      required: [paused]
+      properties:
+        paused:
+          type: boolean
+    DeleteAccountInput:
+      type: object
+      properties:
+        reason:
+          type: string
+          enum: [met_on_gentoo, met_elsewhere, taking_break, not_enough_people, not_for_me, other]

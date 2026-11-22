@@ -18,6 +18,23 @@ Check items off as they're done.
 - [ ] Make sure production builds never set `EXPO_PUBLIC_DEMO_MODE`. It skips
       sign-in and is only for browser previews.
 
+## Pause and delete account
+
+- [ ] Run the database push before deploying: it adds the `paused` column
+      to profiles and the `account_deletions` table.
+- [ ] The production server needs `CLERK_SECRET_KEY` so deleting an account
+      can also remove the sign-in account.
+- [ ] Every new server table that holds someone's data (pebbles, matches,
+      chats, prompts, photos in storage, challenges, boards) must be added
+      to `DELETE /profiles/me` in `artifacts/api-server/src/routes/account.ts`.
+- [ ] Discover must also hide paused people once Discover comes from the
+      server's real profiles (`GET /profiles` already does).
+- [ ] Bans: when banning exists, keep a minimal ban record (not the profile)
+      after the banned person deletes their account, so they can't rejoin.
+- [ ] Publish the web deletion page (`docs/legal/DELETE_ACCOUNT_PAGE.md`) at
+      gentoodating.com/delete-account and set its form to email
+      help@gentoodating.com.
+
 ## Replace sample data with real data
 
 These screens still run on sample data (`MOCK_*` in

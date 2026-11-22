@@ -8,6 +8,8 @@
 import type { ProfileLookingForItem } from "./profileLookingForItem";
 
 export interface Profile {
+  /** Hidden from Discover while true. */
+  paused?: boolean;
   id: string;
   name: string;
   /** @nullable */

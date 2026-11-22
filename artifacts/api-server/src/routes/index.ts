@@ -6,6 +6,7 @@ import safetyRouter from "./safety";
 import likesRouter from "./likes";
 import adsRouter from "./ads";
 import browseCityRouter from "./browseCity";
+import accountRouter from "./account";
 
 const router: IRouter = Router();
 
@@ -16,5 +17,6 @@ router.use(safetyRouter);
 router.use(likesRouter);
 router.use(adsRouter);
 router.use(browseCityRouter);
+router.use(accountRouter);
 
 export default router;

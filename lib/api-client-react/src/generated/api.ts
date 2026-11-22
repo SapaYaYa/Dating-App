@@ -21,10 +21,12 @@ import type {
   AdSessionInput,
   BrowseCity,
   BrowseCityInput,
+  DeleteAccountInput,
   ErrorResponse,
   GetLikeAllowanceParams,
   HealthStatus,
   LikeAllowance,
+  PauseInput,
   Profile,
   ProfileInput,
   ProfileList,
@@ -354,6 +356,182 @@ export const useUpsertMyProfile = <
   TContext
 > => {
   return useMutation(getUpsertMyProfileMutationOptions(options));
+};
+
+/**
+ * Permanently deletes the authenticated user's profile, pebbles, ad rewards, browse city, blocks and unmatches they made, and their sign-in account. Reports stay for safety. Safe to retry: a repeat call finishes anything a failed call left. The optional reason is stored without any link to the person.
+
+ * @summary Delete the current user's account
+ */
+export const getDeleteMyAccountUrl = () => {
+  return `/api/profiles/me`;
+};
+
+export const deleteMyAccount = async (
+  deleteAccountInput?: DeleteAccountInput,
+  options?: RequestInit,
+): Promise<void> => {
+  return customFetch<void>(getDeleteMyAccountUrl(), {
+    ...options,
+    method: "DELETE",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(deleteAccountInput),
+  });
+};
+
+export const getDeleteMyAccountMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMyAccount>>,
+    TError,
+    { data: BodyType<DeleteAccountInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteMyAccount>>,
+  TError,
+  { data: BodyType<DeleteAccountInput> },
+  TContext
+> => {
+  const mutationKey = ["deleteMyAccount"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteMyAccount>>,
+    { data: BodyType<DeleteAccountInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return deleteMyAccount(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteMyAccountMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteMyAccount>>
+>;
+export type DeleteMyAccountMutationBody = BodyType<DeleteAccountInput>;
+export type DeleteMyAccountMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Delete the current user's account
+ */
+export const useDeleteMyAccount = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteMyAccount>>,
+    TError,
+    { data: BodyType<DeleteAccountInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteMyAccount>>,
+  TError,
+  { data: BodyType<DeleteAccountInput> },
+  TContext
+> => {
+  return useMutation(getDeleteMyAccountMutationOptions(options));
+};
+
+/**
+ * A paused profile is hidden from everyone's Discover; existing matches and chats are unaffected.
+
+ * @summary Pause or unpause the current user's profile
+ */
+export const getSetMyProfilePausedUrl = () => {
+  return `/api/profiles/me/pause`;
+};
+
+export const setMyProfilePaused = async (
+  pauseInput: PauseInput,
+  options?: RequestInit,
+): Promise<Profile> => {
+  return customFetch<Profile>(getSetMyProfilePausedUrl(), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(pauseInput),
+  });
+};
+
+export const getSetMyProfilePausedMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof setMyProfilePaused>>,
+    TError,
+    { data: BodyType<PauseInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof setMyProfilePaused>>,
+  TError,
+  { data: BodyType<PauseInput> },
+  TContext
+> => {
+  const mutationKey = ["setMyProfilePaused"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof setMyProfilePaused>>,
+    { data: BodyType<PauseInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return setMyProfilePaused(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SetMyProfilePausedMutationResult = NonNullable<
+  Awaited<ReturnType<typeof setMyProfilePaused>>
+>;
+export type SetMyProfilePausedMutationBody = BodyType<PauseInput>;
+export type SetMyProfilePausedMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Pause or unpause the current user's profile
+ */
+export const useSetMyProfilePaused = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof setMyProfilePaused>>,
+    TError,
+    { data: BodyType<PauseInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof setMyProfilePaused>>,
+  TError,
+  { data: BodyType<PauseInput> },
+  TContext
+> => {
+  return useMutation(getSetMyProfilePausedMutationOptions(options));
 };
 
 /**
