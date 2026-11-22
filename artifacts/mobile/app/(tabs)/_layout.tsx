@@ -1,4 +1,5 @@
 import { Feather } from "@expo/vector-icons";
+import { BOARDS_ENABLED } from "@/constants/features";
 import { BlurView } from "expo-blur";
 import { Tabs } from "expo-router";
 import React from "react";
@@ -69,6 +70,8 @@ export default function TabLayout() {
       <Tabs.Screen
         name="community"
         options={{
+          // Boards aren't launching yet (constants/features.ts).
+          ...(BOARDS_ENABLED ? {} : { href: null }),
           tabBarIcon: ({ color }) => <Feather name="users" size={24} color={color} />,
         }}
       />

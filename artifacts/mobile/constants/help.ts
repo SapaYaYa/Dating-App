@@ -1,4 +1,5 @@
 import { AD_RULES, REWARD_RULES } from "@/constants/ads";
+import { BOARDS_ENABLED } from "@/constants/features";
 import { LOCATION_RULE } from "@/constants/location";
 import { SLOW_REPLY_RULE } from "@/constants/replyBadge";
 
@@ -100,7 +101,7 @@ export const HELP_SECTIONS: HelpSection[] = [
       {
         question: "Why do I see ads?",
         answer:
-          "Ads keep Gentoo free. You'll see an occasional sponsored card on Discover and sponsored posts in boards, and you can choose to watch short ads for rewards like extra pebbles.",
+          `Ads keep Gentoo free. You'll see an occasional sponsored card on Discover${BOARDS_ENABLED ? " and sponsored posts in boards" : ""}, and you can choose to watch short ads for rewards like extra pebbles.`,
       },
     ],
   },

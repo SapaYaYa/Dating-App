@@ -28,6 +28,7 @@ import { useReplyStatus } from "@/context/ReplyStatusContext";
 import { useCommunity } from "@/context/CommunityContext";
 import { useColors } from "@/hooks/useColors";
 import { PHOTO_RULES } from "@/constants/photos";
+import { BOARDS_ENABLED } from "@/constants/features";
 import { PHOTO_VERIFICATION_ENABLED } from "@/constants/verification";
 import { promptsComplete } from "@/constants/prompts";
 
@@ -324,7 +325,9 @@ export default function ProfileScreen() {
           { icon: "bell", label: "Notifications", toggle: true, value: notificationsOn, onToggle: () => setNotificationsOn(!notificationsOn) },
           // Off: your boards aren't shown on Discover cards or used to boost
           // people, in either direction.
-          { icon: "users", label: "Show my boards on Discover", toggle: true, value: showBoardsOnDiscover, onToggle: () => setShowBoardsOnDiscover(!showBoardsOnDiscover) },
+          ...(BOARDS_ENABLED
+            ? [{ icon: "users", label: "Show my boards on Discover", toggle: true, value: showBoardsOnDiscover, onToggle: () => setShowBoardsOnDiscover(!showBoardsOnDiscover) }]
+            : []),
           { icon: "shield", label: "Privacy & Safety", onPress: () => router.push("/safety") },
           { icon: "help-circle", label: "Help & Support", onPress: () => router.push("/help") },
           { icon: "user-x", label: "Pause or delete account", detail: user?.paused ? "Paused" : undefined, onPress: () => router.push("/account") },

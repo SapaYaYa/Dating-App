@@ -223,6 +223,10 @@ These screens still run on sample data (`MOCK_*` in
 
 ## Community boards
 
+*Not launching: `BOARDS_ENABLED` is false in
+`artifacts/mobile/constants/features.ts`. Keep it off at launch; the items
+below are for when boards are turned on.*
+
 - [ ] Store boards, memberships, posts and comments on the server. They're
       sample data saved on the phone, so boards someone creates are visible
       only to them.

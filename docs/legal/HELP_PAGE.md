@@ -72,7 +72,7 @@ Go to Profile > Pause or delete account and tap Delete my account. Can't get int
 
 ### Why do I see ads?
 
-Ads keep Gentoo free. You'll see an occasional sponsored card on Discover and sponsored posts in boards, and you can choose to watch short ads for rewards like extra pebbles.
+Ads keep Gentoo free. You'll see an occasional sponsored card on Discover, and you can choose to watch short ads for rewards like extra pebbles.
 
 ## Still need help?
 

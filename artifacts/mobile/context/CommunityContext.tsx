@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BOARDS_ENABLED } from "@/constants/features";
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { BOARD_RULES, findSimilarBoards } from "@/constants/boards";
@@ -258,7 +259,7 @@ export function CommunityProvider({ children }: { children: React.ReactNode }) {
 
   const sharedBoardsWith = useCallback(
     (profile: Profile) => {
-      if (!loaded || !state.showBoardsOnDiscover || profile.showsBoardsOnDiscover === false) return [];
+      if (!BOARDS_ENABLED || !loaded || !state.showBoardsOnDiscover || profile.showsBoardsOnDiscover === false) return [];
       return boards.filter((b) => state.joined.includes(b.id) && b.memberIds?.includes(profile.id));
     },
     [loaded, state.showBoardsOnDiscover, state.joined, boards],

@@ -10,6 +10,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ChallengeCard } from "@/components/ChallengeCard";
+import { BOARDS_ENABLED } from "@/constants/features";
 import { useApp } from "@/context/AppContext";
 import { useColors } from "@/hooks/useColors";
 
@@ -31,7 +32,8 @@ export default function ChallengesScreen() {
 
   const xpInLevel = totalPoints % XP_PER_LEVEL;
   const levelName = LEVELS[Math.min(level - 1, LEVELS.length - 1)];
-  const dailyChallenges = challenges.filter((c) => c.type === "daily");
+  // "Community Voice" (c3) is a board challenge; hidden while boards are off.
+  const dailyChallenges = challenges.filter((c) => c.type === "daily" && (BOARDS_ENABLED || c.id !== "c3"));
   const weeklyChallenges = challenges.filter((c) => c.type === "weekly");
 
   const totalPointsToday = dailyChallenges.filter((c) => c.completed).reduce((s, c) => s + c.points, 0);

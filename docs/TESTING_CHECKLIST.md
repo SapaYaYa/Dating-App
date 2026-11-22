@@ -254,7 +254,17 @@ private/incognito window to start fresh. To test kilometers, set your phone
       new messages; a second Not now hides it for good.
 - [ ] Never asked after a block, report or unmatch.
 
+### Boards switched off (launch setting)
+- [ ] With `BOARDS_ENABLED` false (`constants/features.ts`): 5 tabs
+      (Discover, Pebbles, Matches, Challenges, Profile), no Community tab.
+- [ ] Discover cards show no "Both in ..." tag, and board-mates aren't moved
+      up the deck.
+- [ ] Profile has no "Show my boards on Discover" switch.
+- [ ] Challenges shows no board challenge ("Community Voice").
+- [ ] Help & Support's ads answer doesn't mention boards.
+
 ### Community boards
+*Only when `BOARDS_ENABLED` is true (not at launch).*
 - [ ] Community shows boards only; no Events tab.
 - [ ] Trending, Your Boards and All Boards sections; search finds boards by
       name, category or description.
@@ -277,6 +287,7 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] Blocked and unmatched people's posts and comments are hidden.
 
 ### Boards and Discover
+*Only when `BOARDS_ENABLED` is true (not at launch).*
 - [ ] "Both in Coffee & Conversations" on Discover cards for people who share
       a board with you.
 - [ ] Board-mates appear earlier in your deck, but only people already in it.
@@ -460,6 +471,7 @@ private/incognito window to start fresh. To test kilometers, set your phone
 - [ ] The warning and "earned" messages are based on real numbers.
 
 ### Community
+*Only when `BOARDS_ENABLED` is true (not at launch).*
 - [ ] Boards, posts and comments are shared: a board one person creates is
       visible to everyone.
 - [ ] Board rules enforced on the server (limits, duplicates, 3 per person,
