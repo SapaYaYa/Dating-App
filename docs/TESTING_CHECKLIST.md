@@ -64,6 +64,20 @@ private/incognito window to start fresh. To test kilometers, set your phone
       and Community Guidelines each open in a browser (pages must be
       published first).
 
+### Help & Support
+- [ ] Profile > Account > Help & Support opens the help screen with 5
+      sections (Pebbles and matches, Your profile, Levels, points and
+      challenges, Safety, Your account). Back returns to Profile. Readable
+      in light and dark mode.
+- [ ] Tapping a question shows its answer; tapping another closes the first.
+- [ ] Answers match the app's real numbers (5 pebbles a day, 6 at level 5;
+      3 per ad, up to 3 ads a day; free undo from level 4; home city every
+      30 days).
+- [ ] Contact us opens the phone's mail app to help@gentoodating.com with
+      the subject "Gentoo help" and the app version at the bottom (phones
+      only; the browser preview may not open mail).
+- [ ] The app version shows under Contact us.
+
 ### Pause or delete account
 - [ ] Profile > Account has "Pause or delete account"; it opens a screen
       with two cards, Pause my account and Delete my account. Back returns

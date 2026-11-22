@@ -43,7 +43,10 @@ agreed.
         delete by hand within 30 days).
   - [x] "Privacy & Safety" on Profile now shows the safety tips and how to
         report and block.
-  - [ ] Decide what "Help & Support" on Profile does (nothing today).
+  - [x] "Help & Support" (decided: option C): an in-app help screen with
+        13 common questions and a Contact us email button, plus the same
+        text for gentoodating.com/help (`docs/legal/HELP_PAGE.md`), which
+        doubles as the stores' support URL.
   - [ ] Age: is typing a birthday (18+) enough, or do we verify age?
   - [ ] Who reviews reports, how fast, and what happens to the reported
         person.

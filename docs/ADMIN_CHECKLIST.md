@@ -45,7 +45,8 @@ as **Gentoo Dating** ("Gentoo" for short).
 - [ ] Production accounts in the LLC's name: Clerk (sign-in), database and
       server hosting, photo storage.
 - [ ] A **support email address** and a support web page (both stores ask
-      for them).
+      for them). Help text is ready in `docs/legal/HELP_PAGE.md`; publish it
+      at gentoodating.com/help and set up the help@gentoodating.com inbox.
 
 ## Legal documents
 

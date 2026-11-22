@@ -18,6 +18,17 @@ Check items off as they're done.
 - [ ] Make sure production builds never set `EXPO_PUBLIC_DEMO_MODE`. It skips
       sign-in and is only for browser previews.
 
+## Help & Support
+
+- [ ] Replace the placeholder `SUPPORT_EMAIL` in
+      `artifacts/mobile/constants/help.ts` if the final address differs,
+      and make sure someone reads that inbox.
+- [ ] Publish `docs/legal/HELP_PAGE.md` at gentoodating.com/help (keep it in
+      step with `constants/help.ts`) and use it as the support URL in both
+      store listings.
+- [ ] Re-check the help answers whenever pebbles, levels, ads, badges or
+      cities change, and add the subscription once it exists.
+
 ## Pause and delete account
 
 - [ ] Run the database push before deploying: it adds the `paused` column

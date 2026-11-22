@@ -325,7 +325,7 @@ export default function ProfileScreen() {
           // people, in either direction.
           { icon: "users", label: "Show my boards on Discover", toggle: true, value: showBoardsOnDiscover, onToggle: () => setShowBoardsOnDiscover(!showBoardsOnDiscover) },
           { icon: "shield", label: "Privacy & Safety", onPress: () => router.push("/safety") },
-          { icon: "help-circle", label: "Help & Support" },
+          { icon: "help-circle", label: "Help & Support", onPress: () => router.push("/help") },
           { icon: "user-x", label: "Pause or delete account", detail: user?.paused ? "Paused" : undefined, onPress: () => router.push("/account") },
         ].map((item, i, arr) => (
           <View key={item.label}>
