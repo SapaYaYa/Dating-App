@@ -281,6 +281,19 @@ Rules live in `artifacts/mobile/constants/ads.ts`; the app plays ads through
 - [ ] Later: an ad-free paid subscription that removes sponsored cards and
       posts (decide what it does for rewarded ads).
 
+## Challenges and levels
+
+- [ ] Build the challenges in `CHALLENGES_PLAN.md` on the server, checked
+      automatically from real pebbles, messages and profile data; remove
+      the "Mark Complete" button and the placeholder challenges.
+- [ ] Change levels from 500 points each to 250 / 750 / 1,300 / 2,000
+      (level 5 is the top) in both the server (`lib/rewards.ts`) and the
+      app; free undo stays at level 4 and the 6th pebble and Priority at 5.
+- [ ] Weekly challenges reset Monday at local midnight (the screen says
+      Wednesday today).
+- [ ] After launch, compare real time-to-Priority with the plan's estimate
+      (about 13 weeks for an active user) and adjust points if needed.
+
 ## Gentoo brand
 
 - [ ] Trademark: have a lawyer check "Gentoo" for a dating app (the Gentoo

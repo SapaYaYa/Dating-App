@@ -65,12 +65,12 @@ agreed.
         Later, once there's revenue: an automatic face match (Amazon
         Rekognition, AWS Face Liveness or Persona), after researching the
         biometric privacy laws (Illinois, Texas, Washington) and costs.
-- [ ] **Challenges:** they're the only way to earn points (levels, free undo,
-      6th pebble, Priority, extra pebbles) but they're placeholders with a
-      "Mark Complete" button. Decide the real list, the points and pebbles
-      each gives, and how often they repeat. Fix the misfits: "Ice Breaker"
-      (ice-breakers were removed), "Super Connector" (5 matches a week clashes
-      with "serious"), "Event Goer" (depends on events, never discussed).
+- [x] **Challenges (decided):** the full plan is in `CHALLENGES_PLAN.md`:
+      4 daily, 3 weekly (reset Monday) and 6 one-time challenges, all
+      checked automatically; levels at 250 / 750 / 1,300 / 2,000 points, so
+      Priority takes an active user about 3 months. Building it needs
+      pebbles and chat on the server first.
+  - [ ] Later: **Event Goer** challenge, once community events exist.
 - [ ] **Free vs. paid:** the subscription's price and perks (no ads? more
       pebbles? free undo?), decided before launch.
 
@@ -94,7 +94,8 @@ agreed.
       the server.
 - [ ] Prompts and match notes.
 - [ ] Photo uploads (photos are only on the person's phone today).
-- [ ] Real challenges, Slow to reply, Great Chat, community boards.
+- [ ] Real challenges (`CHALLENGES_PLAN.md`), Slow to reply, Great Chat,
+      community boards.
 
 ## 4. Ads
 
