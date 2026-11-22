@@ -64,6 +64,24 @@ private/incognito window to start fresh. To test kilometers, set your phone
       and Community Guidelines each open in a browser (pages must be
       published first).
 
+### Age check (app store age signals)
+- [ ] Browser preview and demo: the age check is skipped; the app opens as
+      before.
+- [ ] Real phone build only (needs a development or store build; Expo Go
+      can't do it). On opening, the app asks the store for the person's age
+      range; on iPhone (iOS 26+) the system may ask the person to share it.
+- [ ] Store says under 18 (or Android "supervised" child account): the
+      "Gentoo is for adults only" screen shows instead of the app, naming
+      Apple or Google Play, and nothing else can be reached.
+- [ ] Store says 18+: the app opens normally.
+- [ ] No answer (person declines to share, region not covered yet, iOS
+      older than 26, or the store takes over 10 seconds): the app opens
+      normally and the sign-up birthday check (18+) still applies.
+- [ ] Android: test each case with Google's fake age signals
+      (FakeAgeSignalsManager), since real test accounts may not get a
+      signal. iPhone: test with Apple's sandbox or a test account set to
+      each age range.
+
 ### Help & Support
 - [ ] Profile > Account > Help & Support opens the help screen with 5
       sections (Pebbles and matches, Your profile, Levels, points and

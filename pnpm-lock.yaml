@@ -224,6 +224,9 @@ importers:
 
   artifacts/mobile:
     dependencies:
+      expo-age-range:
+        specifier: ~0.2.21
+        version: 0.2.21(expo@54.0.37)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))
       expo-av:
         specifier: ^16.0.8
         version: 16.0.8(expo@54.0.37)(react-native-web@0.21.2(react-dom@19.1.0(react@19.1.0))(react@19.1.0))(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)
@@ -4114,6 +4117,12 @@ packages:
     resolution: {integrity: sha512-9Be3ZoN4LmYR90tUoVu2te2BsbzHfhJyfEiAVfz7N5/zv+jduIfLrV2xdQXOHbaD6KgpGdO9PRPM1Y4Q9QkPkA==}
     engines: {node: ^18.19.0 || >=20.5.0}
 
+  expo-age-range@0.2.21:
+    resolution: {integrity: sha512-t9Ue6CCOZ5N3tyPT3pYuPvM3tEU4skdlq9+id2cVvtnxlAK8BIQTq8o0Qr8T/a3mitR1Tq81mmV2E2RF5pD0dg==}
+    peerDependencies:
+      expo: '*'
+      react-native: '*'
+
   expo-application@7.0.8:
     resolution: {integrity: sha512-qFGyxk7VJbrNOQWBbE09XUuGuvkOgFS9QfToaK2FdagM2aQ+x3CvGV2DuVgl/l4ZxPgIf3b/MNh9xHpwSwn74Q==}
     peerDependencies:
@@ -6837,7 +6846,7 @@ snapshots:
 
   '@babel/helper-wrap-function@7.28.6':
     dependencies:
-      '@babel/template': 7.28.6
+      '@babel/template': 7.29.7
       '@babel/traverse': 7.29.0
       '@babel/types': 7.29.8
     transitivePeerDependencies:
@@ -11184,6 +11193,11 @@ snapshots:
       signal-exit: 4.1.0
       strip-final-newline: 4.0.0
       yoctocolors: 2.1.2
+
+  expo-age-range@0.2.21(expo@54.0.37)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)):
+    dependencies:
+      expo: 54.0.37(@babel/core@7.29.0)(@expo/metro-runtime@6.1.2)(expo-router@6.0.24)(react-native@0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0))(react@19.1.0)(typescript@5.9.3)
+      react-native: 0.81.5(@babel/core@7.29.0)(@types/react@19.1.17)(react@19.1.0)
 
   expo-application@7.0.8(expo@54.0.37):
     dependencies:

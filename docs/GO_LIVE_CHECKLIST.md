@@ -18,6 +18,25 @@ Check items off as they're done.
 - [ ] Make sure production builds never set `EXPO_PUBLIC_DEMO_MODE`. It skips
       sign-in and is only for browser previews.
 
+## Age check (app store age signals)
+
+- [ ] Turn on the **Declared Age Range** capability for the app's ID in the
+      Apple Developer account (the app already asks for the
+      `com.apple.developer.declared-age-range` entitlement in `app.json`;
+      the build fails or the check returns nothing without it).
+- [ ] Use a development or store build to test; Expo Go doesn't include
+      the age module.
+- [ ] Test every case on a real iPhone and Android phone (see the testing
+      checklist), including Google's fake age signals.
+- [ ] Rate the app 18+ in App Store Connect and Google Play, so the stores
+      also block downloads by minors where they do that.
+- [ ] Before launch, re-check the state app store laws (Texas in force;
+      Utah private lawsuits only; Louisiana and Alabama reportedly 2027)
+      and whether `expo-age-range` has a newer version with breaking
+      changes (it's labeled alpha).
+- [ ] Later: tell the server when the store says someone is under 18, so an
+      existing account can be removed, not just blocked on that phone.
+
 ## Help & Support
 
 - [ ] Replace the placeholder `SUPPORT_EMAIL` in

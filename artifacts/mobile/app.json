@@ -14,7 +14,10 @@
       "backgroundColor": "#1E5A7A"
     },
     "ios": {
-      "supportsTablet": false
+      "supportsTablet": false,
+      "entitlements": {
+        "com.apple.developer.declared-age-range": true
+      }
     },
     "android": {},
     "web": {

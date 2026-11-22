@@ -88,6 +88,11 @@ as **Gentoo Dating** ("Gentoo" for short).
       New York's current wording against our in-app safety notice and the
       "no criminal background screenings" statement (built into sign-up and
       Profile > Privacy & Safety).
+- [ ] **Watch the state app store age laws** (Texas in force since the
+      Fifth Circuit's May 2026 stay; Utah private lawsuits only; Louisiana
+      and Alabama reportedly delayed to 2027). The app already blocks anyone
+      the App Store or Google Play says is under 18; re-check before launch
+      and whenever a new state law takes effect.
 - [ ] App Store **age rating questionnaire** (dating apps are 18+/17+) and
       the **privacy "nutrition labels"** (Apple) and **data safety form**
       (Google).

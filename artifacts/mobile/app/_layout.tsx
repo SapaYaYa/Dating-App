@@ -17,6 +17,7 @@ import { Platform } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 
 import { setBaseUrl } from "@workspace/api-client-react";
+import { AgeGate } from "@/components/AgeGate";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { DEMO_MODE } from "@/constants/demo";
 import { AuthProvider, DemoAuthProvider } from "@/context/AuthContext";
@@ -86,7 +87,9 @@ export default function RootLayout() {
           <CommunityProvider>
             <GestureHandlerRootView style={{ flex: 1 }}>
               <KeyboardProvider>
-                <RootLayoutNav />
+                <AgeGate>
+                  <RootLayoutNav />
+                </AgeGate>
               </KeyboardProvider>
             </GestureHandlerRootView>
           </CommunityProvider>

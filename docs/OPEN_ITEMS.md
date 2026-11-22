@@ -47,7 +47,11 @@ agreed.
         13 common questions and a Contact us email button, plus the same
         text for gentoodating.com/help (`docs/legal/HELP_PAGE.md`), which
         doubles as the stores' support URL.
-  - [ ] Age: is typing a birthday (18+) enough, or do we verify age?
+  - [x] Age (decided: option B): the birthday check at sign-up, plus the
+        App Store's and Google Play's age signals (`expo-age-range`). If the
+        store says someone is under 18, the app shows an adults-only screen
+        instead. No answer from the store falls back to the birthday. Needs
+        a real phone to test.
   - [ ] Who reviews reports, how fast, and what happens to the reported
         person.
   - [ ] Real photo verification ("Get Verified" approves everyone today).
