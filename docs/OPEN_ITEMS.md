@@ -148,8 +148,20 @@ hosting and the rest) are left for the technical person who builds it.
 
 - [ ] Hire the illustrator with `ILLUSTRATOR_BRIEF.md`; full ownership of
       the art. Meanwhile, refine the app icon and logo.
-- [ ] Change the app's internal ID from "mobile" to Gentoo before the first
-      store build.
+- [ ] **PINNED: the app's permanent ID** (discuss with the technical
+      person). Must be decided before the first build goes to either store;
+      it can never change after that.
+  - Options: `com.forhappiness.gentoo` (recommended: tied to the company,
+    which won't change, and fits future apps) or `com.gentoodating.app`
+    (matches the domain; best only if we own gentoodating.com).
+  - It sets the iPhone bundle ID and the Android package name (use the same
+    one for both), and shows in the Google Play web address.
+  - Set up with it: the Apple App ID and its capabilities (Declared Age
+    Range, push notifications), push notification keys, AdMob, Google Play
+    Age Signals, sign-in (Clerk) redirects, and app links from
+    gentoodating.com.
+  - Also rename the app's `slug` and `scheme` from "mobile" (link name
+    `gentoo://`); those can change later but should be fixed first.
 - [ ] App Store and Google Play listings, screenshots and descriptions.
 - [x] Tagline (decided): **"Find your person."** ("Find your pebble."
       was dropped: in the app a pebble is a like you give, not a person.)

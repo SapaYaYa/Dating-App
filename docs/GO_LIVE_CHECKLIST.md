@@ -358,6 +358,12 @@ Rules live in `artifacts/mobile/constants/ads.ts`; the app plays ads through
 
 ## Release
 
+- [ ] **Before the first store build:** set the permanent app ID (pinned in
+      `OPEN_ITEMS.md`, Brand) as `ios.bundleIdentifier` and
+      `android.package` in `artifacts/mobile/app.json`, and rename `slug`
+      and `scheme` from "mobile". The ID can never change once a build is
+      uploaded.
+
 - [ ] Review and merge pull request #1 into `main`.
 - [ ] Set production environment variables: Clerk keys, `DATABASE_URL`,
       and the API domain.
