@@ -151,7 +151,8 @@ hosting and the rest) are left for the technical person who builds it.
 - [ ] Change the app's internal ID from "mobile" to Gentoo before the first
       store build.
 - [ ] App Store and Google Play listings, screenshots and descriptions.
-- [ ] Confirm or change the tagline "Find your pebble."
+- [x] Tagline (decided): **"Find your person."** ("Find your pebble."
+      was dropped: in the app a pebble is a like you give, not a person.)
 
 ## 6. Housekeeping
 

@@ -304,7 +304,7 @@ export default function LoginScreen() {
             </View>
             <Text style={[styles.appName, { color: colors.brand }]}>gentoo</Text>
             <Text style={[styles.tagline, { color: colors.mutedForeground }]}>
-              Find your pebble.
+              Find your person.
             </Text>
           </View>
 

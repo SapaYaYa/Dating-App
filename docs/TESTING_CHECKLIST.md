@@ -35,7 +35,7 @@ private/incognito window to start fresh. To test kilometers, set your phone
 
 ### Gentoo look (name, colors, Gus)
 - [ ] The app is called Gentoo everywhere: Discover header ("gentoo" with the
-      pebble logo), sign-in screen ("gentoo", "Find your pebble."), and the
+      pebble logo), sign-in screen ("gentoo", "Find your person."), and the
       app name and icon (the pebble on deep-sea blue) on a phone.
 - [ ] Light mode: snow-white background, beak-orange buttons with white
       text, deep-sea blue logo and active tab.
