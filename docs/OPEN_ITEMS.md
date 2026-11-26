@@ -123,6 +123,8 @@ agreed.
 The full plan, with what each step includes and when it's done, is in
 `SERVER_WORK_PLAN.md`. Photos and profile details now come first: nobody
 can see anyone's photos today, and pebbles can be sent on prompt answers.
+Its technical decisions (photo storage, city search, real-time chat,
+hosting and the rest) are left for the technical person who builds it.
 
 - [ ] 1. Profile essentials: photo uploads, prompts, match note, home city,
       location and maximum distance.

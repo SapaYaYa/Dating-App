@@ -222,6 +222,11 @@ Everything is specified in `CHALLENGES_PLAN.md`.
 
 ## Decisions still to make along the way
 
+These are technical choices, left for the technical person who builds the
+server (the owner isn't making them). Each should weigh cost, privacy (the
+Privacy Policy must name any new service that receives people's data) and
+what's simplest to run.
+
 | Step | Decision |
 |---|---|
 | 1 | Photo storage service; automatic nudity scanning or not |
