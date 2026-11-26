@@ -120,14 +120,21 @@ agreed.
 
 ## 3. Server work (in this order)
 
-- [ ] Store pebbles (what they were for, the note) and load the Pebbles tab.
-- [ ] Matches and chat, with real-time messages.
-- [ ] Discover from real profiles, every filter and both distance limits on
-      the server.
-- [ ] Prompts and match notes.
-- [ ] Photo uploads (photos are only on the person's phone today).
-- [ ] Real challenges (`CHALLENGES_PLAN.md`), Slow to reply, Great Chat,
-      community boards.
+The full plan, with what each step includes and when it's done, is in
+`SERVER_WORK_PLAN.md`. Photos and profile details now come first: nobody
+can see anyone's photos today, and pebbles can be sent on prompt answers.
+
+- [ ] 1. Profile essentials: photo uploads, prompts, match note, home city,
+      location and maximum distance.
+- [ ] 2. Discover from real profiles, every filter and both distance limits.
+- [ ] 3. Pebbles (what they were for, the note) and the Pebbles tab.
+- [ ] 4. Matches and chat, with real-time messages.
+- [ ] 5. Badges: Slow to reply and Great Chat.
+- [ ] 6. Challenges, levels and the Priority boost (`CHALLENGES_PLAN.md`).
+- [ ] 7. Push notifications.
+- [ ] 8. Safety follow-ups: warn, suspend and ban; ban records; under-18
+      signals on the server.
+- [ ] 9. Production setup and automated tests.
 
 ## 4. Ads
 

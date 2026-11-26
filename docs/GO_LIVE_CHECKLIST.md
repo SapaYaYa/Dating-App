@@ -111,6 +111,8 @@ Check items off as they're done.
 
 ## Replace sample data with real data
 
+The order to build this in is in `SERVER_WORK_PLAN.md`.
+
 These screens still run on sample data (`MOCK_*` in
 `artifacts/mobile/constants/mockData.ts`):
 
@@ -119,15 +121,13 @@ These screens still run on sample data (`MOCK_*` in
 - [ ] **Matches and chat:** store matches and messages on the server, and
       load them in the app. Both badges depend on this.
 - [ ] **Likes:** load real likes.
-- [ ] **Community:** decide whether boards launch, and wire them to real data
-      if so.
-- [ ] **Challenges (launching, real):** track each challenge on the server
-      (e.g. a first message before noon, a board post), award its points and
-      likes there, and remove the "Mark Complete" button. Points set the level
-      (free undo at 4+, a 6th daily like at 5+), and the server already
-      stores points in `user_progress`; until challenges are real, everyone
-      on the server is level 1. Needs messages and board posts stored on the
-      server first.
+- [ ] **Community:** not launching (boards are switched off); wire them to
+      real data when they're turned on.
+- [ ] **Challenges (launching, real):** build the challenges in
+      `CHALLENGES_PLAN.md` on the server and remove the "Mark Complete"
+      button (see "Challenges and levels" below). The server already stores
+      points in `user_progress`; until challenges are real, everyone on the
+      server is level 1. Needs pebbles and messages on the server first.
 - [x] **Photo minimum:** the server accepts 3-8 photos, matching sign-up and
       the Profile screen (`artifacts/mobile/constants/photos.ts`), and a new
       profile must include them. Still to test against a real database.
@@ -292,8 +292,8 @@ Rules live in `artifacts/mobile/constants/ads.ts`; the app plays ads through
       server's ad session ID as `custom_data`.
 - [ ] Test those three against the production database with real AdMob
       messages. They were tested on a local database with test signatures.
-- [ ] Time zones: people could move their daily reset a few hours by
-      changing their phone's time zone. Decide whether that matters.
+- [x] Time zones: decided to ignore it. Changing the phone's time zone gains
+      at most about one extra day of pebbles and ad rewards, once.
 - [ ] Test the full flow on a real phone with AdMob's test ads before
       switching to real ones.
 - [ ] Later: an ad-free paid subscription that removes sponsored cards and
