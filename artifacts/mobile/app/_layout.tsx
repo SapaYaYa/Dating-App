@@ -59,6 +59,7 @@ function RootLayoutNav() {
       <Stack.Screen name="account" options={{ headerShown: false }} />
       <Stack.Screen name="help" options={{ headerShown: false }} />
       <Stack.Screen name="notifications" options={{ headerShown: false }} />
+      <Stack.Screen name="about" options={{ headerShown: false }} />
       <Stack.Screen name="community/create" options={{ headerShown: false, presentation: "modal" }} />
       <Stack.Screen name="community/[id]" options={{ headerShown: false }} />
     </Stack>

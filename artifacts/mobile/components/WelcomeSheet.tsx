@@ -3,7 +3,8 @@ import React, { useEffect, useState } from "react";
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { GentooPair, Gus } from "@/components/Gentoo";
+import { GentooPair, Gus, Pebble } from "@/components/Gentoo";
+import { STORY_PARAGRAPHS, STORY_TITLE } from "@/constants/story";
 import { useColors } from "@/hooks/useColors";
 
 /** Set once the welcome has been finished or skipped on this phone. */
@@ -12,6 +13,11 @@ export const WELCOME_SEEN_KEY = "spark_welcome_seen";
 const CARDS = [
   {
     art: "gus",
+    title: STORY_TITLE,
+    body: STORY_PARAGRAPHS.join(" "),
+  },
+  {
+    art: "pebble",
     title: "Pebbles are how you like someone",
     body: "You get 5 a day, so make each one count.",
   },
@@ -65,7 +71,13 @@ export function WelcomeSheet({ onDone }: { onDone: () => void }) {
 
         <View style={styles.center}>
           <View style={styles.art}>
-            {card.art === "pair" ? <GentooPair size={190} /> : <Gus size={190} holdingPebble={card.art === "gus"} />}
+            {card.art === "pair" ? (
+              <GentooPair size={190} />
+            ) : card.art === "pebble" ? (
+              <Pebble size={150} fill={colors.ice} heart={colors.accent} />
+            ) : (
+              <Gus size={190} holdingPebble={card.art === "gus"} />
+            )}
           </View>
           <Text style={[styles.title, { color: colors.foreground }]} accessibilityRole="header">
             {card.title}

@@ -1,5 +1,6 @@
 import { AD_RULES, REWARD_RULES } from "@/constants/ads";
 import { BOARDS_ENABLED } from "@/constants/features";
+import { STORY_TEXT } from "@/constants/story";
 import { LOCATION_RULE } from "@/constants/location";
 import { SLOW_REPLY_RULE } from "@/constants/replyBadge";
 
@@ -19,6 +20,15 @@ export interface HelpSection {
 }
 
 export const HELP_SECTIONS: HelpSection[] = [
+  {
+    title: "About Gentoo",
+    topics: [
+      {
+        question: "Why is it called Gentoo?",
+        answer: STORY_TEXT,
+      },
+    ],
+  },
   {
     title: "Pebbles and matches",
     topics: [

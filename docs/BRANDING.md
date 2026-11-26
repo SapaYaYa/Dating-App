@@ -76,6 +76,14 @@ Sketch: `docs/branding/gentoo-world.png` (source: `gentoo-world.html`).
   as the mascot on match screens, empty screens and celebrations.
 - **App icon options:** the pebble with a heart (simple, like Cash App), or
   the gentoo's face (friendly, like Duolingo). Chosen: the pebble.
+- **The story (why a penguin):** "When a gentoo penguin finds the one, it
+  searches the beach for the perfect pebble and offers it as a gift. If the
+  pebble is accepted, the two build a nest together, and many pairs stay
+  together season after season. On Gentoo, you give pebbles too, a few a
+  day, to people you're truly interested in." One-liner: "Named after the
+  gentoo penguin, which courts its partner with the perfect pebble." (Don't
+  say "mate for life"; gentoos often, not always, stay together.) Source of
+  truth: `artifacts/mobile/constants/story.ts`.
 - **Tagline:** "Find your person." (decided November 2026; "Find your
   pebble." was dropped because in the app a pebble is a like you give, not
   a person.)

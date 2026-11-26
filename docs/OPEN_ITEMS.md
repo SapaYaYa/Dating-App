@@ -110,8 +110,9 @@ agreed.
       be used once, so the most anyone gains is about one extra day of
       pebbles and ad rewards, once. Not worth extra code or annoying
       travelers.
-- [x] Onboarding (decided): a short welcome from Gus, three cards shown
+- [x] Onboarding (decided): a short welcome from Gus, four cards shown
       once right after sign-up, with Skip:
+      0. "Why a penguin?" and the penguin story (added November 2026).
       1. "Pebbles are how you like someone. You get 5 a day, so make each
          one count."
       2. "Give a pebble back and it's a pair. Then you can chat."
@@ -162,7 +163,11 @@ hosting and the rest) are left for the technical person who builds it.
     gentoodating.com.
   - Also rename the app's `slug` and `scheme` from "mobile" (link name
     `gentoo://`); those can change later but should be fixed first.
-- [ ] App Store and Google Play listings, screenshots and descriptions.
+- [x] The penguin story (decided): "Why a penguin?" in the welcome, a "Why
+      Gentoo?" link on the sign-in screen, a Help question, and the store
+      listings and website. Text in `constants/story.ts`.
+- [ ] App Store and Google Play listings: descriptions drafted in
+      `STORE_LISTING.md`; screenshots still to make from a phone build.
 - [x] Tagline (decided): **"Find your person."** ("Find your pebble."
       was dropped: in the app a pebble is a like you give, not a person.)
 

@@ -84,13 +84,17 @@ private/incognito window to start fresh. To test kilometers, set your phone
 
 ### Welcome from Gus
 - [ ] The first time the app opens after sign-up (and the first time the
-      preview opens), Gus's welcome covers the screen: 3 cards with art,
+      preview opens), Gus's welcome covers the screen: 4 cards with art,
       dots for which card you're on, Next, and Skip (top right; not on the
       last card). Readable in light and dark mode.
-- [ ] Card 1 "Pebbles are how you like someone" / "You get 5 a day, so make
-      each one count." (Gus with a pebble), card 2
-      "Give a pebble back and it's a pair" (two penguins), card 3 "Reply,
-      and you'll rise" with "Start exploring".
+- [ ] Card 1 "Why a penguin?" with the penguin story (Gus with a pebble);
+      card 2 "Pebbles are how you like someone" / "You get 5 a day, so make
+      each one count." (a pebble); card 3 "Give a pebble back and it's a
+      pair" (two penguins); card 4 "Reply, and you'll rise" with "Start
+      exploring".
+- [ ] Sign-in screen (real app only): a "Why Gentoo?" link under "Find your
+      person." opens the "Why Gentoo?" screen (two penguins and the story);
+      Back returns to sign-in.
 - [ ] Start exploring or Skip closes it, and it never shows again on that
       phone, even after reloading.
 - [ ] Badge messages (Slow to reply warning, Great Chat) wait until the
@@ -111,9 +115,10 @@ private/incognito window to start fresh. To test kilometers, set your phone
       matches and chat.
 
 ### Help & Support
-- [ ] Profile > Account > Help & Support opens the help screen with 5
-      sections (Pebbles and matches, Your profile, Levels, points and
-      challenges, Safety, Your account). Back returns to Profile. Readable
+- [ ] Profile > Account > Help & Support opens the help screen with 6
+      sections (About Gentoo, Pebbles and matches, Your profile, Levels,
+      points and challenges, Safety, Your account). "Why is it called
+      Gentoo?" shows the penguin story. Back returns to Profile. Readable
       in light and dark mode.
 - [ ] Tapping a question shows its answer; tapping another closes the first.
 - [ ] Answers match the app's real numbers (5 pebbles a day, 6 at level 5;

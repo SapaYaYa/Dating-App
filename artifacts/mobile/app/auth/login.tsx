@@ -306,6 +306,13 @@ export default function LoginScreen() {
             <Text style={[styles.tagline, { color: colors.mutedForeground }]}>
               Find your person.
             </Text>
+            <TouchableOpacity
+              onPress={() => router.push("/about")}
+              style={styles.whyLink}
+              accessibilityRole="link"
+            >
+              <Text style={[styles.whyText, { color: colors.brand }]}>Why Gentoo?</Text>
+            </TouchableOpacity>
           </View>
 
           <View style={[styles.card, { backgroundColor: isDark ? colors.card : colors.background }]}>
@@ -399,6 +406,8 @@ const styles = StyleSheet.create({
   },
   appName: { fontSize: 32, fontWeight: "800", letterSpacing: -0.5 },
   tagline: { fontSize: 15, marginTop: 4 },
+  whyLink: { minHeight: 44, justifyContent: "center", paddingHorizontal: 12 },
+  whyText: { fontSize: 14, fontWeight: "700", textDecorationLine: "underline" },
   card: { borderRadius: 20, padding: 24, gap: 16 },
   fields: { gap: 12 },
   inputWrap: {

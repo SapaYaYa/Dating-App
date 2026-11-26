@@ -59,6 +59,8 @@ as **Gentoo Dating** ("Gentoo" for short).
   effective date, mailing address, final support email, cancellation
   instructions. (The data deletion page is set to
   gentoodating.com/delete-account.)
+- [ ] **Website:** the home page line and About page ("Why a penguin?") are
+      drafted in `docs/STORE_LISTING.md`.
 - [ ] Publish all three at the addresses the app links to:
       gentoodating.com/terms, /privacy and /guidelines (set in
       `artifacts/mobile/constants/legal.ts`; change them there if the domain

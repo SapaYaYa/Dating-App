@@ -12,6 +12,12 @@ same text as the app's Help & Support screen
 Answers to common questions about **Gentoo**, the dating app by For
 Happiness LLC.
 
+## About Gentoo
+
+### Why is it called Gentoo?
+
+When a gentoo penguin finds the one, it searches the beach for the perfect pebble and offers it as a gift. If the pebble is accepted, the two build a nest together, and many pairs stay together season after season. On Gentoo, you give pebbles too, a few a day, to people you're truly interested in.
+
 ## Pebbles and matches
 
 ### What's a pebble?
